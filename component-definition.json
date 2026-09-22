@@ -944,31 +944,27 @@
           "id": "modal_v1",
           "plugins": {
             "da": {
-              "rows": 13,
+              "rows": 22,
               "columns": 1,
               "fields": [
                 {
-                  "name": "variant",
+                  "name": "layout",
                   "selector": "div:nth-child(1)>div"
                 },
                 {
-                  "name": "image",
-                  "selector": "div:nth-child(2)>div>picture>img[src]"
+                  "name": "size",
+                  "selector": "div:nth-child(2)>div"
                 },
                 {
-                  "name": "imageAlt",
-                  "selector": "div:nth-child(2)>div>picture>img[alt]"
-                },
-                {
-                  "name": "eyebrow",
+                  "name": "mediaType",
                   "selector": "div:nth-child(3)>div"
                 },
                 {
-                  "name": "title",
-                  "selector": "div:nth-child(4)>div"
+                  "name": "image",
+                  "selector": "div:nth-child(4)>div>picture>img[src]"
                 },
                 {
-                  "name": "content",
+                  "name": "imageAlt",
                   "selector": "div:nth-child(5)>div"
                 },
                 {
@@ -976,28 +972,76 @@
                   "selector": "div:nth-child(6)>div"
                 },
                 {
-                  "name": "cta1Text",
-                  "selector": "div:nth-child(7)>div>p>strong"
+                  "name": "poster",
+                  "selector": "div:nth-child(7)>div>picture>img[src]"
                 },
                 {
-                  "name": "cta1",
-                  "selector": "div:nth-child(7)>div>p>strong>a[href]"
+                  "name": "eyebrow",
+                  "selector": "div:nth-child(8)>div"
                 },
                 {
-                  "name": "cta2Text",
-                  "selector": "div:nth-child(8)>div>p>em"
-                },
-                {
-                  "name": "cta2",
-                  "selector": "div:nth-child(8)>div>p>em>a[href]"
-                },
-                {
-                  "name": "closeLabel",
+                  "name": "title",
                   "selector": "div:nth-child(9)>div"
                 },
                 {
-                  "name": "triggerText",
+                  "name": "content",
                   "selector": "div:nth-child(10)>div"
+                },
+                {
+                  "name": "supportingText",
+                  "selector": "div:nth-child(11)>div"
+                },
+                {
+                  "name": "primaryCtaText",
+                  "selector": "div:nth-child(12)>div>p>strong"
+                },
+                {
+                  "name": "primaryCta",
+                  "selector": "div:nth-child(12)>div>p>strong>a[href]"
+                },
+                {
+                  "name": "secondaryCtaText",
+                  "selector": "div:nth-child(13)>div>p>em"
+                },
+                {
+                  "name": "secondaryCta",
+                  "selector": "div:nth-child(13)>div>p>em>a[href]"
+                },
+                {
+                  "name": "primaryButtonStyle",
+                  "selector": "div:nth-child(14)>div"
+                },
+                {
+                  "name": "secondaryButtonStyle",
+                  "selector": "div:nth-child(15)>div"
+                },
+                {
+                  "name": "primaryButtonColor",
+                  "selector": "div:nth-child(16)>div"
+                },
+                {
+                  "name": "secondaryButtonColor",
+                  "selector": "div:nth-child(17)>div"
+                },
+                {
+                  "name": "alignment",
+                  "selector": "div:nth-child(18)>div"
+                },
+                {
+                  "name": "backdrop",
+                  "selector": "div:nth-child(19)>div"
+                },
+                {
+                  "name": "borderRadius",
+                  "selector": "div:nth-child(20)>div"
+                },
+                {
+                  "name": "closeLabel",
+                  "selector": "div:nth-child(21)>div"
+                },
+                {
+                  "name": "triggerText",
+                  "selector": "div:nth-child(22)>div"
                 }
               ]
             },
@@ -1007,17 +1051,28 @@
                 "template": {
                   "name": "Modal V1",
                   "model": "modal_v1",
-                  "variant": "default",
+                  "layout": "default",
+                  "size": "medium",
+                  "mediaType": "none",
                   "image": "",
                   "imageAlt": "",
+                  "video": "",
+                  "poster": "",
                   "eyebrow": "",
                   "title": "Welcome",
-                  "content": "This is a default modal.",
-                  "video": "",
-                  "cta1Text": "",
-                  "cta1": "",
-                  "cta2Text": "",
-                  "cta2": "",
+                  "content": "This is a modal dialog.",
+                  "supportingText": "",
+                  "primaryCtaText": "",
+                  "primaryCta": "",
+                  "secondaryCtaText": "",
+                  "secondaryCta": "",
+                  "primaryButtonStyle": "solid",
+                  "secondaryButtonStyle": "outline",
+                  "primaryButtonColor": "primary",
+                  "secondaryButtonColor": "secondary",
+                  "alignment": "left",
+                  "backdrop": "dark",
+                  "borderRadius": "medium",
                   "closeLabel": "Close",
                   "triggerText": "Open Modal"
                 }

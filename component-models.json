@@ -5711,8 +5711,8 @@
     "fields": [
       {
         "component": "select",
-        "name": "variant",
-        "label": "Modal Variation",
+        "name": "layout",
+        "label": "Layout",
         "valueType": "string",
         "value": "default",
         "required": true,
@@ -5722,40 +5722,60 @@
             "value": "default"
           },
           {
-            "name": "Image",
-            "value": "image"
-          },
-          {
-            "name": "Video",
-            "value": "video"
-          },
-          {
-            "name": "Content",
-            "value": "content"
-          },
-          {
-            "name": "Small",
-            "value": "small"
-          },
-          {
-            "name": "Large",
-            "value": "large"
+            "name": "Side Panel",
+            "value": "side"
           },
           {
             "name": "Full Screen",
             "value": "full-screen"
           },
           {
-            "name": "Right / Side",
-            "value": "side"
+            "name": "Bottom Sheet",
+            "value": "bottom-sheet"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "size",
+        "label": "Size",
+        "valueType": "string",
+        "value": "medium",
+        "required": true,
+        "options": [
+          {
+            "name": "Small",
+            "value": "small"
           },
           {
-            "name": "CTA",
-            "value": "cta"
+            "name": "Medium",
+            "value": "medium"
           },
           {
-            "name": "Confirmation",
-            "value": "confirmation"
+            "name": "Large",
+            "value": "large"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "mediaType",
+        "label": "Media Type",
+        "valueType": "string",
+        "value": "none",
+        "required": true,
+        "options": [
+          {
+            "name": "None",
+            "value": "none"
+          },
+          {
+            "name": "Image",
+            "value": "image"
+          },
+          {
+            "name": "Video",
+            "value": "video"
           }
         ]
       },
@@ -5772,6 +5792,21 @@
         "label": "Image Description",
         "valueType": "string",
         "value": ""
+      },
+      {
+        "component": "text",
+        "name": "video",
+        "label": "Video URL",
+        "description": "URL of the video or embedded media.",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "reference",
+        "name": "poster",
+        "label": "Video Poster",
+        "valueType": "string",
+        "multi": false
       },
       {
         "component": "text",
@@ -5795,40 +5830,202 @@
         "value": ""
       },
       {
-        "component": "text",
-        "name": "video",
-        "label": "Video URL",
-        "description": "URL of the video or embedded media.",
+        "component": "richtext",
+        "name": "supportingText",
+        "label": "Supporting Text",
         "valueType": "string",
         "value": ""
       },
       {
         "component": "text",
-        "name": "cta1Text",
+        "name": "primaryCtaText",
         "label": "Primary CTA Text",
         "valueType": "string",
         "value": ""
       },
       {
         "component": "text",
-        "name": "cta1",
+        "name": "primaryCta",
         "label": "Primary CTA Link",
         "valueType": "string",
         "value": ""
       },
       {
         "component": "text",
-        "name": "cta2Text",
+        "name": "secondaryCtaText",
         "label": "Secondary CTA Text",
         "valueType": "string",
         "value": ""
       },
       {
         "component": "text",
-        "name": "cta2",
+        "name": "secondaryCta",
         "label": "Secondary CTA Link",
         "valueType": "string",
         "value": ""
+      },
+      {
+        "component": "select",
+        "name": "primaryButtonStyle",
+        "label": "Primary Button Style",
+        "valueType": "string",
+        "value": "solid",
+        "options": [
+          {
+            "name": "Solid",
+            "value": "solid"
+          },
+          {
+            "name": "Outline",
+            "value": "outline"
+          },
+          {
+            "name": "Text",
+            "value": "text"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "secondaryButtonStyle",
+        "label": "Secondary Button Style",
+        "valueType": "string",
+        "value": "outline",
+        "options": [
+          {
+            "name": "Solid",
+            "value": "solid"
+          },
+          {
+            "name": "Outline",
+            "value": "outline"
+          },
+          {
+            "name": "Text",
+            "value": "text"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "primaryButtonColor",
+        "label": "Primary Button Color",
+        "valueType": "string",
+        "value": "primary",
+        "options": [
+          {
+            "name": "Primary",
+            "value": "primary"
+          },
+          {
+            "name": "Secondary",
+            "value": "secondary"
+          },
+          {
+            "name": "Accent",
+            "value": "accent"
+          },
+          {
+            "name": "Dark",
+            "value": "dark"
+          },
+          {
+            "name": "Light",
+            "value": "light"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "secondaryButtonColor",
+        "label": "Secondary Button Color",
+        "valueType": "string",
+        "value": "secondary",
+        "options": [
+          {
+            "name": "Primary",
+            "value": "primary"
+          },
+          {
+            "name": "Secondary",
+            "value": "secondary"
+          },
+          {
+            "name": "Accent",
+            "value": "accent"
+          },
+          {
+            "name": "Dark",
+            "value": "dark"
+          },
+          {
+            "name": "Light",
+            "value": "light"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "alignment",
+        "label": "Content Alignment",
+        "valueType": "string",
+        "value": "left",
+        "options": [
+          {
+            "name": "Left",
+            "value": "left"
+          },
+          {
+            "name": "Center",
+            "value": "center"
+          },
+          {
+            "name": "Right",
+            "value": "right"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "backdrop",
+        "label": "Backdrop",
+        "valueType": "string",
+        "value": "dark",
+        "options": [
+          {
+            "name": "Default",
+            "value": "default"
+          },
+          {
+            "name": "Dark",
+            "value": "dark"
+          },
+          {
+            "name": "Light",
+            "value": "light"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "borderRadius",
+        "label": "Border Radius",
+        "valueType": "string",
+        "value": "medium",
+        "options": [
+          {
+            "name": "Default",
+            "value": "medium"
+          },
+          {
+            "name": "Small",
+            "value": "small"
+          },
+          {
+            "name": "Large",
+            "value": "large"
+          }
+        ]
       },
       {
         "component": "text",
