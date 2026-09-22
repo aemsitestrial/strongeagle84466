@@ -5,7 +5,7 @@
       "id": "modal_v1",
       "plugins": {
         "da": {
-          "rows": 22,
+          "rows": 24,
           "columns": 1,
           "fields": [
             {
@@ -54,55 +54,55 @@
             },
             {
               "name": "primaryCtaText",
-              "selector": "div:nth-child(12)>div>p>strong"
+              "selector": "div:nth-child(12)>div"
             },
             {
               "name": "primaryCta",
-              "selector": "div:nth-child(12)>div>p>strong>a[href]"
+              "selector": "div:nth-child(13)>div"
             },
             {
               "name": "secondaryCtaText",
-              "selector": "div:nth-child(13)>div>p>em"
-            },
-            {
-              "name": "secondaryCta",
-              "selector": "div:nth-child(13)>div>p>em>a[href]"
-            },
-            {
-              "name": "primaryButtonStyle",
               "selector": "div:nth-child(14)>div"
             },
             {
-              "name": "secondaryButtonStyle",
+              "name": "secondaryCta",
               "selector": "div:nth-child(15)>div"
             },
             {
-              "name": "primaryButtonColor",
+              "name": "primaryButtonStyle",
               "selector": "div:nth-child(16)>div"
             },
             {
-              "name": "secondaryButtonColor",
+              "name": "secondaryButtonStyle",
               "selector": "div:nth-child(17)>div"
             },
             {
-              "name": "alignment",
+              "name": "primaryButtonColor",
               "selector": "div:nth-child(18)>div"
             },
             {
-              "name": "backdrop",
+              "name": "secondaryButtonColor",
               "selector": "div:nth-child(19)>div"
             },
             {
-              "name": "borderRadius",
+              "name": "alignment",
               "selector": "div:nth-child(20)>div"
             },
             {
-              "name": "closeLabel",
+              "name": "backdrop",
               "selector": "div:nth-child(21)>div"
             },
             {
-              "name": "triggerText",
+              "name": "borderRadius",
               "selector": "div:nth-child(22)>div"
+            },
+            {
+              "name": "closeLabel",
+              "selector": "div:nth-child(23)>div"
+            },
+            {
+              "name": "triggerText",
+              "selector": "div:nth-child(24)>div"
             }
           ]
         },
@@ -221,14 +221,30 @@
           "name": "image",
           "label": "Image",
           "valueType": "string",
-          "multi": false
+          "multi": false,
+          "condition": {
+            "===": [
+              {
+                "var": "mediaType"
+              },
+              "image"
+            ]
+          }
         },
         {
           "component": "text",
           "name": "imageAlt",
           "label": "Image Description",
           "valueType": "string",
-          "value": ""
+          "value": "",
+          "condition": {
+            "===": [
+              {
+                "var": "mediaType"
+              },
+              "image"
+            ]
+          }
         },
         {
           "component": "text",
@@ -236,14 +252,30 @@
           "label": "Video URL",
           "description": "URL of the video or embedded media.",
           "valueType": "string",
-          "value": ""
+          "value": "",
+          "condition": {
+            "===": [
+              {
+                "var": "mediaType"
+              },
+              "video"
+            ]
+          }
         },
         {
           "component": "reference",
           "name": "poster",
           "label": "Video Poster",
           "valueType": "string",
-          "multi": false
+          "multi": false,
+          "condition": {
+            "===": [
+              {
+                "var": "mediaType"
+              },
+              "video"
+            ]
+          }
         },
         {
           "component": "text",

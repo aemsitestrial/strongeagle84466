@@ -10,15 +10,6 @@ function getHTML(row) {
   return row?.innerHTML?.trim() || '';
 }
 
-function getLink(row) {
-  return row?.querySelector('a[href]')?.getAttribute('href') || '';
-}
-
-function getLinkText(row) {
-  const link = row?.querySelector('a[href]');
-  return link?.textContent?.trim() || getText(row);
-}
-
 function getImageSource(row) {
   const image = row?.querySelector('img[src]');
   return image?.getAttribute('src') || '';
@@ -157,11 +148,11 @@ function createModalDOM(data, block) {
   media.className = `${CLASS_PREFIX}-media`;
 
   /*
-   * Media is rendered only according to mediaType.
+   * Media Type is the source of truth.
    *
-   * Image + mediaType=image  -> image renders
-   * Video + mediaType=video  -> video renders
-   * Anything else             -> no media
+   * image -> render image only
+   * video -> render video only
+   * none  -> render no media
    */
   if (data.mediaType === 'image' && data.image) {
     const image = createImage(data.image, data.imageAlt);
@@ -368,19 +359,24 @@ export default function decorate(block) {
     title: getText(rows[8]),
     content: getHTML(rows[9]),
     supportingText: getHTML(rows[10]),
-    primaryCtaText: getLinkText(rows[11]),
-    primaryCta: getLink(rows[11]),
-    secondaryCtaText: getLinkText(rows[12]),
-    secondaryCta: getLink(rows[12]),
-    primaryButtonStyle: getText(rows[13]),
-    secondaryButtonStyle: getText(rows[14]),
-    primaryButtonColor: getText(rows[15]),
-    secondaryButtonColor: getText(rows[16]),
-    alignment: getText(rows[17]),
-    backdrop: getText(rows[18]),
-    borderRadius: getText(rows[19]),
-    closeLabel: getText(rows[20]),
-    triggerText: getText(rows[21]),
+
+    primaryCtaText: getText(rows[11]),
+    primaryCta: getText(rows[12]),
+
+    secondaryCtaText: getText(rows[13]),
+    secondaryCta: getText(rows[14]),
+
+    primaryButtonStyle: getText(rows[15]),
+    secondaryButtonStyle: getText(rows[16]),
+
+    primaryButtonColor: getText(rows[17]),
+    secondaryButtonColor: getText(rows[18]),
+
+    alignment: getText(rows[19]),
+    backdrop: getText(rows[20]),
+    borderRadius: getText(rows[21]),
+    closeLabel: getText(rows[22]),
+    triggerText: getText(rows[23]),
   };
 
   block.innerHTML = '';

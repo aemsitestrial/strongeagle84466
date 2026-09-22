@@ -5784,14 +5784,30 @@
         "name": "image",
         "label": "Image",
         "valueType": "string",
-        "multi": false
+        "multi": false,
+        "condition": {
+          "===": [
+            {
+              "var": "mediaType"
+            },
+            "image"
+          ]
+        }
       },
       {
         "component": "text",
         "name": "imageAlt",
         "label": "Image Description",
         "valueType": "string",
-        "value": ""
+        "value": "",
+        "condition": {
+          "===": [
+            {
+              "var": "mediaType"
+            },
+            "image"
+          ]
+        }
       },
       {
         "component": "text",
@@ -5799,14 +5815,30 @@
         "label": "Video URL",
         "description": "URL of the video or embedded media.",
         "valueType": "string",
-        "value": ""
+        "value": "",
+        "condition": {
+          "===": [
+            {
+              "var": "mediaType"
+            },
+            "video"
+          ]
+        }
       },
       {
         "component": "reference",
         "name": "poster",
         "label": "Video Poster",
         "valueType": "string",
-        "multi": false
+        "multi": false,
+        "condition": {
+          "===": [
+            {
+              "var": "mediaType"
+            },
+            "video"
+          ]
+        }
       },
       {
         "component": "text",
