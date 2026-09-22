@@ -5707,21 +5707,6 @@
     ]
   },
   {
-    "id": "modal",
-    "fields": [
-      {
-        "component": "aem-content",
-        "name": "link",
-        "label": "Link"
-      },
-      {
-        "component": "text",
-        "name": "linkText",
-        "label": "Text"
-      }
-    ]
-  },
-  {
     "id": "modal_v1",
     "fields": [
       {
@@ -5859,6 +5844,21 @@
         "description": "Text displayed on the button that opens the modal.",
         "valueType": "string",
         "value": "Open Modal"
+      }
+    ]
+  },
+  {
+    "id": "modal",
+    "fields": [
+      {
+        "component": "aem-content",
+        "name": "link",
+        "label": "Link"
+      },
+      {
+        "component": "text",
+        "name": "linkText",
+        "label": "Text"
       }
     ]
   },
