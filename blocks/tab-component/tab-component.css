@@ -7,6 +7,10 @@
   width: 100%;
 }
 
+/* --------------------------------
+   Tab List
+-------------------------------- */
+
 .tab-component-list {
   display: flex;
   align-items: center;
@@ -14,6 +18,8 @@
   background: var(--tab-component-background-color);
   border-bottom: 1px solid var(--tab-component-border-color);
 }
+
+/* Alignment */
 
 .tab-component.align-left .tab-component-list {
   justify-content: flex-start;
@@ -26,6 +32,10 @@
 .tab-component.align-right .tab-component-list {
   justify-content: flex-end;
 }
+
+/* --------------------------------
+   Tab Button
+-------------------------------- */
 
 .tab-component-tab {
   appearance: none;
@@ -53,47 +63,56 @@
   outline-offset: -2px;
 }
 
-/* Default */
+/* --------------------------------
+   1. Default
+-------------------------------- */
+
+.tab-component.default .tab-component-tab {
+  border-bottom: 2px solid transparent;
+}
 
 .tab-component.default .tab-component-tab.is-active {
-  background: var(--tab-component-active-color);
-  color: var(--tab-component-background-color);
+  background: rgb(0 0 0 / 6%);
+  color: var(--tab-component-text-color);
 }
 
-/* Underline */
-
-.tab-component.underline .tab-component-list {
-  border-bottom: 1px solid var(--tab-component-border-color);
-}
+/* --------------------------------
+   2. Underline
+-------------------------------- */
 
 .tab-component.underline .tab-component-tab {
   border-bottom: 3px solid transparent;
 }
 
 .tab-component.underline .tab-component-tab.is-active {
-  border-bottom-color: var(--tab-component-active-color);
-  color: var(--tab-component-active-color);
+  border-bottom-color: var(--tab-component-text-color);
+  color: var(--tab-component-text-color);
 }
 
-/* Pill */
+/* --------------------------------
+   3. Pill
+-------------------------------- */
 
 .tab-component.pill .tab-component-list {
   gap: 8px;
   padding: 8px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .tab-component.pill .tab-component-tab {
   border-radius: 999px;
+  padding: 10px 22px;
 }
 
 .tab-component.pill .tab-component-tab.is-active {
-  background: var(--tab-component-active-color);
+  background: var(--tab-component-text-color);
   color: var(--tab-component-background-color);
 }
 
-/* Vertical */
+/* --------------------------------
+   4. Vertical
+-------------------------------- */
 
 .tab-component.vertical {
   display: grid;
@@ -117,11 +136,13 @@
 }
 
 .tab-component.vertical .tab-component-tab.is-active {
-  border-right-color: var(--tab-component-active-color);
-  color: var(--tab-component-active-color);
+  border-right-color: var(--tab-component-text-color);
+  color: var(--tab-component-text-color);
 }
 
-/* Scrollable */
+/* --------------------------------
+   5. Scrollable
+-------------------------------- */
 
 .tab-component.scrollable .tab-component-list {
   justify-content: flex-start;
@@ -134,7 +155,9 @@
   white-space: nowrap;
 }
 
-/* Content */
+/* --------------------------------
+   Tab Content
+-------------------------------- */
 
 .tab-component-content {
   padding: 24px 0;
@@ -149,7 +172,9 @@
   display: none;
 }
 
-/* Mobile */
+/* --------------------------------
+   Mobile
+-------------------------------- */
 
 @media (width <= 767px) {
   .tab-component-list {
@@ -162,6 +187,10 @@
     white-space: nowrap;
   }
 
+  /*
+   * Vertical becomes horizontal
+   * on smaller screens.
+   */
   .tab-component.vertical {
     display: block;
   }
@@ -181,7 +210,7 @@
   }
 
   .tab-component.vertical .tab-component-tab.is-active {
-    border-bottom-color: var(--tab-component-active-color);
+    border-bottom-color: var(--tab-component-text-color);
   }
 
   .tab-component-content {
