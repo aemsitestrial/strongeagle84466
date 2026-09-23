@@ -2,30 +2,34 @@
   "definitions": [
     {
       "title": "Modal V1",
-      "id": "modal-v1",
+      "id": "modal_v1",
       "plugins": {
         "da": {
-          "rows": 24,
+          "rows": 13,
           "columns": 1,
           "fields": [
             {
-              "name": "layout",
+              "name": "variant",
               "selector": "div:nth-child(1)>div"
             },
             {
-              "name": "size",
-              "selector": "div:nth-child(2)>div"
-            },
-            {
-              "name": "mediaType",
-              "selector": "div:nth-child(3)>div"
-            },
-            {
               "name": "image",
-              "selector": "div:nth-child(4)>div>picture>img[src]"
+              "selector": "div:nth-child(2)>div>picture>img[src]"
             },
             {
               "name": "imageAlt",
+              "selector": "div:nth-child(2)>div>picture>img[alt]"
+            },
+            {
+              "name": "eyebrow",
+              "selector": "div:nth-child(3)>div"
+            },
+            {
+              "name": "title",
+              "selector": "div:nth-child(4)>div"
+            },
+            {
+              "name": "content",
               "selector": "div:nth-child(5)>div"
             },
             {
@@ -33,76 +37,28 @@
               "selector": "div:nth-child(6)>div"
             },
             {
-              "name": "poster",
-              "selector": "div:nth-child(7)>div>picture>img[src]"
+              "name": "cta1Text",
+              "selector": "div:nth-child(7)>div>p>strong"
             },
             {
-              "name": "eyebrow",
-              "selector": "div:nth-child(8)>div"
+              "name": "cta1",
+              "selector": "div:nth-child(7)>div>p>strong>a[href]"
             },
             {
-              "name": "title",
-              "selector": "div:nth-child(9)>div"
+              "name": "cta2Text",
+              "selector": "div:nth-child(8)>div>p>em"
             },
             {
-              "name": "content",
-              "selector": "div:nth-child(10)>div"
-            },
-            {
-              "name": "supportingText",
-              "selector": "div:nth-child(11)>div"
-            },
-            {
-              "name": "primaryCtaText",
-              "selector": "div:nth-child(12)>div"
-            },
-            {
-              "name": "primaryCta",
-              "selector": "div:nth-child(13)>div"
-            },
-            {
-              "name": "secondaryCtaText",
-              "selector": "div:nth-child(14)>div"
-            },
-            {
-              "name": "secondaryCta",
-              "selector": "div:nth-child(15)>div"
-            },
-            {
-              "name": "primaryButtonStyle",
-              "selector": "div:nth-child(16)>div"
-            },
-            {
-              "name": "secondaryButtonStyle",
-              "selector": "div:nth-child(17)>div"
-            },
-            {
-              "name": "primaryButtonColor",
-              "selector": "div:nth-child(18)>div"
-            },
-            {
-              "name": "secondaryButtonColor",
-              "selector": "div:nth-child(19)>div"
-            },
-            {
-              "name": "alignment",
-              "selector": "div:nth-child(20)>div"
-            },
-            {
-              "name": "backdrop",
-              "selector": "div:nth-child(21)>div"
-            },
-            {
-              "name": "borderRadius",
-              "selector": "div:nth-child(22)>div"
+              "name": "cta2",
+              "selector": "div:nth-child(8)>div>p>em>a[href]"
             },
             {
               "name": "closeLabel",
-              "selector": "div:nth-child(23)>div"
+              "selector": "div:nth-child(9)>div"
             },
             {
               "name": "triggerText",
-              "selector": "div:nth-child(24)>div"
+              "selector": "div:nth-child(10)>div"
             }
           ]
         },
@@ -111,29 +67,18 @@
             "resourceType": "core/franklin/components/block/v1/block",
             "template": {
               "name": "Modal V1",
-              "model": "modal-v1",
-              "layout": "default",
-              "size": "medium",
-              "mediaType": "none",
+              "model": "modal_v1",
+              "variant": "default",
               "image": "",
               "imageAlt": "",
-              "video": "",
-              "poster": "",
               "eyebrow": "",
-              "title": "Modal Title",
-              "content": "",
-              "supportingText": "",
-              "primaryCtaText": "",
-              "primaryCta": "",
-              "secondaryCtaText": "",
-              "secondaryCta": "",
-              "primaryButtonStyle": "solid",
-              "secondaryButtonStyle": "outline",
-              "primaryButtonColor": "primary",
-              "secondaryButtonColor": "secondary",
-              "alignment": "left",
-              "backdrop": "dark",
-              "borderRadius": "medium",
+              "title": "Welcome",
+              "content": "This is a default modal.",
+              "video": "",
+              "cta1Text": "",
+              "cta1": "",
+              "cta2Text": "",
+              "cta2": "",
               "closeLabel": "Close",
               "triggerText": "Open Modal"
             }
@@ -144,64 +89,19 @@
   ],
   "models": [
     {
-      "id": "modal-v1",
+      "id": "modal_v1",
       "fields": [
         {
           "component": "select",
+          "name": "variant",
+          "label": "Modal Variation",
           "valueType": "string",
-          "name": "layout",
           "value": "default",
-          "label": "Layout",
+          "required": true,
           "options": [
             {
               "name": "Default",
               "value": "default"
-            },
-            {
-              "name": "Side Panel",
-              "value": "side"
-            },
-            {
-              "name": "Full Screen",
-              "value": "full-screen"
-            },
-            {
-              "name": "Bottom Sheet",
-              "value": "bottom-sheet"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "size",
-          "value": "medium",
-          "label": "Size",
-          "options": [
-            {
-              "name": "Small",
-              "value": "small"
-            },
-            {
-              "name": "Medium",
-              "value": "medium"
-            },
-            {
-              "name": "Large",
-              "value": "large"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "mediaType",
-          "value": "none",
-          "label": "Media Type",
-          "options": [
-            {
-              "name": "None",
-              "value": "none"
             },
             {
               "name": "Image",
@@ -210,307 +110,122 @@
             {
               "name": "Video",
               "value": "video"
-            }
-          ]
-        },
-        {
-          "component": "reference",
-          "valueType": "string",
-          "name": "image",
-          "label": "Image",
-          "description": "Image displayed inside the modal.",
-          "multi": false,
-          "condition": {
-            "===": [
-              {
-                "var": "mediaType"
-              },
-              "image"
-            ]
-          }
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "imageAlt",
-          "value": "",
-          "label": "Image Description",
-          "description": "Alternative description for the image.",
-          "condition": {
-            "===": [
-              {
-                "var": "mediaType"
-              },
-              "image"
-            ]
-          }
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "video",
-          "value": "",
-          "label": "Video URL",
-          "condition": {
-            "===": [
-              {
-                "var": "mediaType"
-              },
-              "video"
-            ]
-          }
-        },
-        {
-          "component": "reference",
-          "valueType": "string",
-          "name": "poster",
-          "label": "Video Poster",
-          "multi": false,
-          "condition": {
-            "===": [
-              {
-                "var": "mediaType"
-              },
-              "video"
-            ]
-          }
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "eyebrow",
-          "value": "",
-          "label": "Eyebrow",
-          "description": "Small pre-title displayed above the heading."
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "title",
-          "value": "",
-          "label": "Heading",
-          "description": "Main modal heading."
-        },
-        {
-          "component": "richtext",
-          "valueType": "string",
-          "name": "content",
-          "value": "",
-          "label": "Content",
-          "description": "Main modal content."
-        },
-        {
-          "component": "richtext",
-          "valueType": "string",
-          "name": "supportingText",
-          "value": "",
-          "label": "Supporting Text",
-          "description": "Additional supporting information."
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "primaryCtaText",
-          "value": "",
-          "label": "Primary CTA Text"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "primaryCta",
-          "value": "",
-          "label": "Primary CTA Link"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "secondaryCtaText",
-          "value": "",
-          "label": "Secondary CTA Text"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "secondaryCta",
-          "value": "",
-          "label": "Secondary CTA Link"
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "primaryButtonStyle",
-          "value": "solid",
-          "label": "Primary Button Style",
-          "options": [
-            {
-              "name": "Solid",
-              "value": "solid"
             },
             {
-              "name": "Outline",
-              "value": "outline"
+              "name": "Content",
+              "value": "content"
             },
-            {
-              "name": "Text",
-              "value": "text"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "secondaryButtonStyle",
-          "value": "outline",
-          "label": "Secondary Button Style",
-          "options": [
-            {
-              "name": "Solid",
-              "value": "solid"
-            },
-            {
-              "name": "Outline",
-              "value": "outline"
-            },
-            {
-              "name": "Text",
-              "value": "text"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "primaryButtonColor",
-          "value": "primary",
-          "label": "Primary Button Color",
-          "options": [
-            {
-              "name": "Primary",
-              "value": "primary"
-            },
-            {
-              "name": "Secondary",
-              "value": "secondary"
-            },
-            {
-              "name": "Accent",
-              "value": "accent"
-            },
-            {
-              "name": "Dark",
-              "value": "dark"
-            },
-            {
-              "name": "Light",
-              "value": "light"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "secondaryButtonColor",
-          "value": "secondary",
-          "label": "Secondary Button Color",
-          "options": [
-            {
-              "name": "Primary",
-              "value": "primary"
-            },
-            {
-              "name": "Secondary",
-              "value": "secondary"
-            },
-            {
-              "name": "Accent",
-              "value": "accent"
-            },
-            {
-              "name": "Dark",
-              "value": "dark"
-            },
-            {
-              "name": "Light",
-              "value": "light"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "alignment",
-          "value": "left",
-          "label": "Content Alignment",
-          "options": [
-            {
-              "name": "Left",
-              "value": "left"
-            },
-            {
-              "name": "Center",
-              "value": "center"
-            },
-            {
-              "name": "Right",
-              "value": "right"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "backdrop",
-          "value": "dark",
-          "label": "Backdrop",
-          "options": [
-            {
-              "name": "Default",
-              "value": "default"
-            },
-            {
-              "name": "Dark",
-              "value": "dark"
-            },
-            {
-              "name": "Light",
-              "value": "light"
-            }
-          ]
-        },
-        {
-          "component": "select",
-          "valueType": "string",
-          "name": "borderRadius",
-          "value": "medium",
-          "label": "Border Radius",
-          "options": [
             {
               "name": "Small",
               "value": "small"
             },
             {
-              "name": "Medium",
-              "value": "medium"
-            },
-            {
               "name": "Large",
               "value": "large"
+            },
+            {
+              "name": "Full Screen",
+              "value": "full-screen"
+            },
+            {
+              "name": "Right / Side",
+              "value": "side"
+            },
+            {
+              "name": "CTA",
+              "value": "cta"
+            },
+            {
+              "name": "Confirmation",
+              "value": "confirmation"
             }
           ]
         },
         {
-          "component": "text",
+          "component": "reference",
+          "name": "image",
+          "label": "Image",
           "valueType": "string",
-          "name": "closeLabel",
-          "value": "Close",
-          "label": "Close Button Label"
+          "multi": false
         },
         {
           "component": "text",
+          "name": "imageAlt",
+          "label": "Image Description",
           "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "eyebrow",
+          "label": "Eyebrow",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "title",
+          "label": "Title",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "richtext",
+          "name": "content",
+          "label": "Content",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "video",
+          "label": "Video URL",
+          "description": "URL of the video or embedded media.",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "cta1Text",
+          "label": "Primary CTA Text",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "cta1",
+          "label": "Primary CTA Link",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "cta2Text",
+          "label": "Secondary CTA Text",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "cta2",
+          "label": "Secondary CTA Link",
+          "valueType": "string",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "name": "closeLabel",
+          "label": "Close Button Label",
+          "valueType": "string",
+          "value": "Close"
+        },
+        {
+          "component": "text",
           "name": "triggerText",
-          "value": "Open Modal",
-          "label": "Trigger Text"
+          "label": "Trigger Text",
+          "description": "Text displayed on the button that opens the modal.",
+          "valueType": "string",
+          "value": "Open Modal"
         }
       ]
     }

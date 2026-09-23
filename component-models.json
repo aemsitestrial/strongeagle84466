@@ -5707,64 +5707,19 @@
     ]
   },
   {
-    "id": "modal-v1",
+    "id": "modal_v1",
     "fields": [
       {
         "component": "select",
+        "name": "variant",
+        "label": "Modal Variation",
         "valueType": "string",
-        "name": "layout",
         "value": "default",
-        "label": "Layout",
+        "required": true,
         "options": [
           {
             "name": "Default",
             "value": "default"
-          },
-          {
-            "name": "Side Panel",
-            "value": "side"
-          },
-          {
-            "name": "Full Screen",
-            "value": "full-screen"
-          },
-          {
-            "name": "Bottom Sheet",
-            "value": "bottom-sheet"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "size",
-        "value": "medium",
-        "label": "Size",
-        "options": [
-          {
-            "name": "Small",
-            "value": "small"
-          },
-          {
-            "name": "Medium",
-            "value": "medium"
-          },
-          {
-            "name": "Large",
-            "value": "large"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "mediaType",
-        "value": "none",
-        "label": "Media Type",
-        "options": [
-          {
-            "name": "None",
-            "value": "none"
           },
           {
             "name": "Image",
@@ -5773,307 +5728,122 @@
           {
             "name": "Video",
             "value": "video"
-          }
-        ]
-      },
-      {
-        "component": "reference",
-        "valueType": "string",
-        "name": "image",
-        "label": "Image",
-        "description": "Image displayed inside the modal.",
-        "multi": false,
-        "condition": {
-          "===": [
-            {
-              "var": "mediaType"
-            },
-            "image"
-          ]
-        }
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "imageAlt",
-        "value": "",
-        "label": "Image Description",
-        "description": "Alternative description for the image.",
-        "condition": {
-          "===": [
-            {
-              "var": "mediaType"
-            },
-            "image"
-          ]
-        }
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "video",
-        "value": "",
-        "label": "Video URL",
-        "condition": {
-          "===": [
-            {
-              "var": "mediaType"
-            },
-            "video"
-          ]
-        }
-      },
-      {
-        "component": "reference",
-        "valueType": "string",
-        "name": "poster",
-        "label": "Video Poster",
-        "multi": false,
-        "condition": {
-          "===": [
-            {
-              "var": "mediaType"
-            },
-            "video"
-          ]
-        }
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "eyebrow",
-        "value": "",
-        "label": "Eyebrow",
-        "description": "Small pre-title displayed above the heading."
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "title",
-        "value": "",
-        "label": "Heading",
-        "description": "Main modal heading."
-      },
-      {
-        "component": "richtext",
-        "valueType": "string",
-        "name": "content",
-        "value": "",
-        "label": "Content",
-        "description": "Main modal content."
-      },
-      {
-        "component": "richtext",
-        "valueType": "string",
-        "name": "supportingText",
-        "value": "",
-        "label": "Supporting Text",
-        "description": "Additional supporting information."
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "primaryCtaText",
-        "value": "",
-        "label": "Primary CTA Text"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "primaryCta",
-        "value": "",
-        "label": "Primary CTA Link"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "secondaryCtaText",
-        "value": "",
-        "label": "Secondary CTA Text"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "secondaryCta",
-        "value": "",
-        "label": "Secondary CTA Link"
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "primaryButtonStyle",
-        "value": "solid",
-        "label": "Primary Button Style",
-        "options": [
-          {
-            "name": "Solid",
-            "value": "solid"
           },
           {
-            "name": "Outline",
-            "value": "outline"
+            "name": "Content",
+            "value": "content"
           },
-          {
-            "name": "Text",
-            "value": "text"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "secondaryButtonStyle",
-        "value": "outline",
-        "label": "Secondary Button Style",
-        "options": [
-          {
-            "name": "Solid",
-            "value": "solid"
-          },
-          {
-            "name": "Outline",
-            "value": "outline"
-          },
-          {
-            "name": "Text",
-            "value": "text"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "primaryButtonColor",
-        "value": "primary",
-        "label": "Primary Button Color",
-        "options": [
-          {
-            "name": "Primary",
-            "value": "primary"
-          },
-          {
-            "name": "Secondary",
-            "value": "secondary"
-          },
-          {
-            "name": "Accent",
-            "value": "accent"
-          },
-          {
-            "name": "Dark",
-            "value": "dark"
-          },
-          {
-            "name": "Light",
-            "value": "light"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "secondaryButtonColor",
-        "value": "secondary",
-        "label": "Secondary Button Color",
-        "options": [
-          {
-            "name": "Primary",
-            "value": "primary"
-          },
-          {
-            "name": "Secondary",
-            "value": "secondary"
-          },
-          {
-            "name": "Accent",
-            "value": "accent"
-          },
-          {
-            "name": "Dark",
-            "value": "dark"
-          },
-          {
-            "name": "Light",
-            "value": "light"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "alignment",
-        "value": "left",
-        "label": "Content Alignment",
-        "options": [
-          {
-            "name": "Left",
-            "value": "left"
-          },
-          {
-            "name": "Center",
-            "value": "center"
-          },
-          {
-            "name": "Right",
-            "value": "right"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "backdrop",
-        "value": "dark",
-        "label": "Backdrop",
-        "options": [
-          {
-            "name": "Default",
-            "value": "default"
-          },
-          {
-            "name": "Dark",
-            "value": "dark"
-          },
-          {
-            "name": "Light",
-            "value": "light"
-          }
-        ]
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "borderRadius",
-        "value": "medium",
-        "label": "Border Radius",
-        "options": [
           {
             "name": "Small",
             "value": "small"
           },
           {
-            "name": "Medium",
-            "value": "medium"
-          },
-          {
             "name": "Large",
             "value": "large"
+          },
+          {
+            "name": "Full Screen",
+            "value": "full-screen"
+          },
+          {
+            "name": "Right / Side",
+            "value": "side"
+          },
+          {
+            "name": "CTA",
+            "value": "cta"
+          },
+          {
+            "name": "Confirmation",
+            "value": "confirmation"
           }
         ]
       },
       {
-        "component": "text",
+        "component": "reference",
+        "name": "image",
+        "label": "Image",
         "valueType": "string",
-        "name": "closeLabel",
-        "value": "Close",
-        "label": "Close Button Label"
+        "multi": false
       },
       {
         "component": "text",
+        "name": "imageAlt",
+        "label": "Image Description",
         "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "eyebrow",
+        "label": "Eyebrow",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "title",
+        "label": "Title",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "name": "content",
+        "label": "Content",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "video",
+        "label": "Video URL",
+        "description": "URL of the video or embedded media.",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "cta1Text",
+        "label": "Primary CTA Text",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "cta1",
+        "label": "Primary CTA Link",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "cta2Text",
+        "label": "Secondary CTA Text",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "cta2",
+        "label": "Secondary CTA Link",
+        "valueType": "string",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "name": "closeLabel",
+        "label": "Close Button Label",
+        "valueType": "string",
+        "value": "Close"
+      },
+      {
+        "component": "text",
         "name": "triggerText",
-        "value": "Open Modal",
-        "label": "Trigger Text"
+        "label": "Trigger Text",
+        "description": "Text displayed on the button that opens the modal.",
+        "valueType": "string",
+        "value": "Open Modal"
       }
     ]
   },
