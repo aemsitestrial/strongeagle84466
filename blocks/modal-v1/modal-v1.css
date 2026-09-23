@@ -1,11 +1,7 @@
 .modal-v1.block {
-  width: 100%;
   position: relative;
+  width: 100%;
 }
-
-/* =========================
-   TRIGGER
-   ========================= */
 
 .modal-v1-trigger {
   display: inline-flex;
@@ -19,42 +15,26 @@
   color: #fff;
   font: inherit;
   font-weight: 600;
-  line-height: 1.2;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
 }
 
 .modal-v1-trigger:hover {
   background: #111827;
 }
 
-.modal-v1-trigger:focus-visible {
-  outline: 3px solid #2563eb;
-  outline-offset: 3px;
-}
-
-/* =========================
-   BODY LOCK
-   ========================= */
-
 body.modal-v1-no-scroll {
   overflow: hidden;
 }
 
-/* =========================
-   OVERLAY
-   ========================= */
-
 .modal-v1-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
+  box-sizing: border-box;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -69,12 +49,8 @@ body.modal-v1-no-scroll {
   pointer-events: auto;
 }
 
-/* =========================
-   BACKDROP
-   ========================= */
-
 .modal-v1-backdrop-default {
-  background: rgb(0 0 0 / 35%);
+  background: rgb(0 0 0 / 40%);
 }
 
 .modal-v1-backdrop-dark {
@@ -82,12 +58,8 @@ body.modal-v1-no-scroll {
 }
 
 .modal-v1-backdrop-light {
-  background: rgb(255 255 255 / 75%);
+  background: rgb(255 255 255 / 80%);
 }
-
-/* =========================
-   DIALOG
-   ========================= */
 
 .modal-v1-dialog {
   position: relative;
@@ -95,46 +67,28 @@ body.modal-v1-no-scroll {
   flex-direction: column;
   width: 100%;
   max-height: calc(100vh - 48px);
+  box-sizing: border-box;
   background: #fff;
   color: #1f2937;
   overflow: hidden;
-  box-shadow: 0 25px 70px rgb(0 0 0 / 25%);
-  transform: translateY(10px) scale(0.98);
-  transition: transform 0.2s ease;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
 }
-
-.modal-v1-overlay.is-open .modal-v1-dialog {
-  transform: translateY(0) scale(1);
-}
-
-/* =========================
-   SIZES
-   ========================= */
 
 .modal-v1-size-small {
-  width: min(420px, calc(100vw - 48px));
+  max-width: 420px;
 }
 
 .modal-v1-size-medium {
-  width: min(620px, calc(100vw - 48px));
+  max-width: 620px;
 }
 
 .modal-v1-size-large {
-  width: min(820px, calc(100vw - 48px));
-}
-
-/* =========================
-   LAYOUTS
-   ========================= */
-
-.modal-v1-layout-default {
-  margin: auto;
+  max-width: 820px;
 }
 
 .modal-v1-layout-side-panel {
-  width: min(620px, 100vw);
-  max-width: 620px;
-  height: 100%;
+  width: min(620px, 100%);
+  height: 100vh;
   max-height: 100vh;
   margin-left: auto;
   border-radius: 0;
@@ -149,15 +103,11 @@ body.modal-v1-no-scroll {
 
 .modal-v1-layout-bottom-sheet {
   width: 100%;
-  max-width: 100%;
-  max-height: min(90vh, 900px);
+  max-width: none;
+  max-height: 90vh;
   margin-top: auto;
   border-radius: 16px 16px 0 0;
 }
-
-/* =========================
-   BORDER RADIUS
-   ========================= */
 
 .modal-v1-radius-none {
   border-radius: 0;
@@ -175,15 +125,11 @@ body.modal-v1-no-scroll {
   border-radius: 24px;
 }
 
-/* =========================
-   CLOSE
-   ========================= */
-
 .modal-v1-close {
   position: absolute;
   top: 12px;
   right: 12px;
-  z-index: 20;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,7 +139,7 @@ body.modal-v1-no-scroll {
   border: 0;
   border-radius: 50%;
   background: rgb(0 0 0 / 8%);
-  color: #1f2937;
+  color: #111827;
   font-size: 26px;
   line-height: 1;
   cursor: pointer;
@@ -203,27 +149,6 @@ body.modal-v1-no-scroll {
   background: rgb(0 0 0 / 15%);
 }
 
-.modal-v1-close:focus-visible {
-  outline: 3px solid #2563eb;
-  outline-offset: 2px;
-}
-
-/* =========================
-   CONTENT WRAPPER
-   ========================= */
-
-.modal-v1-content {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* =========================
-   MEDIA
-   ========================= */
-
 .modal-v1-media {
   flex: 0 0 auto;
   width: 100%;
@@ -232,87 +157,24 @@ body.modal-v1-no-scroll {
   background: #f3f4f6;
 }
 
-.modal-v1-media img {
-  display: block;
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-}
-
-.modal-v1-media video {
-  display: block;
-  width: 100%;
-  height: 280px;
-  object-fit: cover;
-  background: #000;
-}
-
+.modal-v1-media img,
+.modal-v1-media video,
 .modal-v1-media iframe {
   display: block;
   width: 100%;
   height: 280px;
+  max-height: 280px;
   border: 0;
+  object-fit: cover;
 }
-
-/* Large modal media */
-
-.modal-v1-size-large .modal-v1-media,
-.modal-v1-size-large .modal-v1-media img,
-.modal-v1-size-large .modal-v1-media video,
-.modal-v1-size-large .modal-v1-media iframe {
-  max-height: 360px;
-}
-
-.modal-v1-size-large .modal-v1-media img,
-.modal-v1-size-large .modal-v1-media video,
-.modal-v1-size-large .modal-v1-media iframe {
-  height: 360px;
-}
-
-/* Full-screen media */
-
-.modal-v1-layout-full-screen .modal-v1-media {
-  max-height: 40vh;
-}
-
-.modal-v1-layout-full-screen .modal-v1-media img,
-.modal-v1-layout-full-screen .modal-v1-media video,
-.modal-v1-layout-full-screen .modal-v1-media iframe {
-  height: 40vh;
-  max-height: 40vh;
-}
-
-/* =========================
-   BODY
-   ========================= */
 
 .modal-v1-body {
   flex: 1 1 auto;
   min-height: 0;
   padding: 32px;
-  overflow: hidden auto;
-  scrollbar-gutter: stable;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
-
-/* =========================
-   ALIGNMENT
-   ========================= */
-
-.modal-v1-align-left .modal-v1-body {
-  text-align: left;
-}
-
-.modal-v1-align-center .modal-v1-body {
-  text-align: center;
-}
-
-.modal-v1-align-right .modal-v1-body {
-  text-align: right;
-}
-
-/* =========================
-   EYEBROW
-   ========================= */
 
 .modal-v1-eyebrow {
   margin-bottom: 10px;
@@ -320,25 +182,15 @@ body.modal-v1-no-scroll {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  line-height: 1.4;
   text-transform: uppercase;
 }
-
-/* =========================
-   HEADING
-   ========================= */
 
 .modal-v1-heading {
   margin: 0 0 16px;
   color: #111827;
   font-size: 32px;
-  font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
 }
-
-/* =========================
-   MAIN CONTENT
-   ========================= */
 
 .modal-v1-main-content {
   margin-bottom: 16px;
@@ -352,12 +204,8 @@ body.modal-v1-no-scroll {
   margin-bottom: 16px;
 }
 
-/* =========================
-   SUPPORTING TEXT
-   ========================= */
-
 .modal-v1-supporting-text {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   color: #6b7280;
   font-size: 14px;
   line-height: 1.6;
@@ -368,15 +216,6 @@ body.modal-v1-no-scroll {
   margin-bottom: 16px;
 }
 
-.modal-v1-main-content p:last-child,
-.modal-v1-supporting-text p:last-child {
-  margin-bottom: 0;
-}
-
-/* =========================
-   FOOTER / ACTIONS
-   ========================= */
-
 .modal-v1-footer {
   display: flex;
   flex-wrap: wrap;
@@ -386,218 +225,119 @@ body.modal-v1-no-scroll {
   border-top: 1px solid #e5e7eb;
 }
 
-.modal-v1-align-center .modal-v1-footer {
-  justify-content: center;
-}
-
-.modal-v1-align-right .modal-v1-footer {
-  justify-content: flex-end;
-}
-
-/* =========================
-   BUTTON BASE
-   ========================= */
-
 .modal-v1-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: 44px;
   padding: 11px 20px;
-  border: 1px solid transparent;
   border-radius: 6px;
   font: inherit;
-  font-size: 14px;
   font-weight: 600;
-  line-height: 1.2;
   text-decoration: none;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
 }
 
-/* =========================
-   BUTTON STYLE
-   ========================= */
-
-/* SOLID */
+/* Button styles */
 
 .modal-v1-button-style-solid {
-  border-color: transparent;
+  border: 1px solid transparent;
 }
-
-/* OUTLINE */
 
 .modal-v1-button-style-outline {
+  border: 1px solid currentcolor;
   background: transparent;
 }
-
-/* TEXT */
 
 .modal-v1-button-style-text {
-  padding-right: 8px;
-  padding-left: 8px;
-  border-color: transparent;
+  border: 0;
   background: transparent;
 }
 
-/* =========================
-   BUTTON COLORS
-   ========================= */
-
-/* PRIMARY */
+/* Primary */
 
 .modal-v1-button-color-primary {
-  --modal-button-background: #2563eb;
-  --modal-button-foreground: #fff;
-  --modal-button-border: #2563eb;
-}
-
-.modal-v1-button-color-primary.modal-v1-button-style-solid {
-  background: var(--modal-button-background);
-  color: var(--modal-button-foreground);
+  background: #2563eb;
+  color: #fff;
 }
 
 .modal-v1-button-color-primary.modal-v1-button-style-outline {
-  border-color: var(--modal-button-border);
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #2563eb;
 }
 
 .modal-v1-button-color-primary.modal-v1-button-style-text {
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #2563eb;
 }
 
-/* SECONDARY */
+/* Secondary */
 
 .modal-v1-button-color-secondary {
-  --modal-button-background: #6b7280;
-  --modal-button-foreground: #fff;
-  --modal-button-border: #6b7280;
-}
-
-.modal-v1-button-color-secondary.modal-v1-button-style-solid {
-  background: var(--modal-button-background);
-  color: var(--modal-button-foreground);
+  background: #6b7280;
+  color: #fff;
 }
 
 .modal-v1-button-color-secondary.modal-v1-button-style-outline {
-  border-color: var(--modal-button-border);
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #6b7280;
 }
 
 .modal-v1-button-color-secondary.modal-v1-button-style-text {
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #6b7280;
 }
 
-/* ACCENT */
+/* Accent */
 
 .modal-v1-button-color-accent {
-  --modal-button-background: #7c3aed;
-  --modal-button-foreground: #fff;
-  --modal-button-border: #7c3aed;
-}
-
-.modal-v1-button-color-accent.modal-v1-button-style-solid {
-  background: var(--modal-button-background);
-  color: var(--modal-button-foreground);
+  background: #7c3aed;
+  color: #fff;
 }
 
 .modal-v1-button-color-accent.modal-v1-button-style-outline {
-  border-color: var(--modal-button-border);
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #7c3aed;
 }
 
 .modal-v1-button-color-accent.modal-v1-button-style-text {
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #7c3aed;
 }
 
-/* DARK */
+/* Dark */
 
 .modal-v1-button-color-dark {
-  --modal-button-background: #111827;
-  --modal-button-foreground: #fff;
-  --modal-button-border: #111827;
-}
-
-.modal-v1-button-color-dark.modal-v1-button-style-solid {
-  background: var(--modal-button-background);
-  color: var(--modal-button-foreground);
+  background: #111827;
+  color: #fff;
 }
 
 .modal-v1-button-color-dark.modal-v1-button-style-outline {
-  border-color: var(--modal-button-border);
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #111827;
 }
 
 .modal-v1-button-color-dark.modal-v1-button-style-text {
-  color: var(--modal-button-border);
+  background: transparent;
+  color: #111827;
 }
 
-/* LIGHT */
+/* Light */
 
 .modal-v1-button-color-light {
-  --modal-button-background: #f3f4f6;
-  --modal-button-foreground: #111827;
-  --modal-button-border: #d1d5db;
-}
-
-.modal-v1-button-color-light.modal-v1-button-style-solid {
-  background: var(--modal-button-background);
-  color: var(--modal-button-foreground);
+  background: #f3f4f6;
+  color: #111827;
 }
 
 .modal-v1-button-color-light.modal-v1-button-style-outline {
-  border-color: var(--modal-button-border);
+  background: transparent;
   color: #374151;
 }
 
 .modal-v1-button-color-light.modal-v1-button-style-text {
+  background: transparent;
   color: #374151;
 }
-
-/* =========================
-   SIDE PANEL
-   ========================= */
-
-.modal-v1-layout-side-panel .modal-v1-body {
-  padding: 32px;
-}
-
-.modal-v1-layout-side-panel .modal-v1-media {
-  max-height: 260px;
-}
-
-.modal-v1-layout-side-panel .modal-v1-media img,
-.modal-v1-layout-side-panel .modal-v1-media video,
-.modal-v1-layout-side-panel .modal-v1-media iframe {
-  height: 260px;
-}
-
-/* =========================
-   BOTTOM SHEET
-   ========================= */
-
-.modal-v1-layout-bottom-sheet .modal-v1-body {
-  max-height: 60vh;
-}
-
-/* =========================
-   FULL SCREEN
-   ========================= */
-
-.modal-v1-layout-full-screen .modal-v1-body {
-  padding: 40px;
-}
-
-.modal-v1-layout-full-screen .modal-v1-heading {
-  font-size: 40px;
-}
-
-/* =========================
-   MOBILE
-   ========================= */
 
 @media (width < 600px) {
   .modal-v1-overlay {
@@ -611,19 +351,12 @@ body.modal-v1-no-scroll {
     width: 100%;
     max-width: 100%;
     max-height: 100vh;
-    height: auto;
     border-radius: 0;
   }
 
-  .modal-v1-layout-default {
-    height: auto;
-    max-height: 100vh;
-  }
-
-  .modal-v1-layout-side-panel,
-  .modal-v1-layout-full-screen,
-  .modal-v1-layout-bottom-sheet {
-    height: 100%;
+  .modal-v1-layout-full-screen {
+    width: 100%;
+    height: 100vh;
     max-height: 100vh;
   }
 
@@ -635,21 +368,12 @@ body.modal-v1-no-scroll {
   .modal-v1-media img,
   .modal-v1-media video,
   .modal-v1-media iframe {
-    max-height: 220px;
-  }
-
-  .modal-v1-media img,
-  .modal-v1-media video,
-  .modal-v1-media iframe {
     height: 220px;
+    max-height: 220px;
   }
 
   .modal-v1-heading {
     font-size: 26px;
-  }
-
-  .modal-v1-layout-full-screen .modal-v1-heading {
-    font-size: 30px;
   }
 
   .modal-v1-footer {
@@ -658,18 +382,5 @@ body.modal-v1-no-scroll {
 
   .modal-v1-button {
     width: 100%;
-  }
-}
-
-/* =========================
-   REDUCED MOTION
-   ========================= */
-
-@media (prefers-reduced-motion: reduce) {
-  .modal-v1-overlay,
-  .modal-v1-dialog,
-  .modal-v1-trigger,
-  .modal-v1-button {
-    transition: none;
   }
 }
