@@ -1217,7 +1217,7 @@
           "id": "tabs-new",
           "plugins": {
             "da": {
-              "rows": 7,
+              "rows": 9,
               "columns": 1,
               "fields": [
                 {
@@ -1229,7 +1229,7 @@
                   "selector": "div:nth-child(2)>div"
                 },
                 {
-                  "name": "tab1Content",
+                  "name": "tab1Teaser",
                   "selector": "div:nth-child(3)>div"
                 },
                 {
@@ -1237,7 +1237,7 @@
                   "selector": "div:nth-child(4)>div"
                 },
                 {
-                  "name": "tab2Content",
+                  "name": "tab2Teaser",
                   "selector": "div:nth-child(5)>div"
                 },
                 {
@@ -1245,8 +1245,16 @@
                   "selector": "div:nth-child(6)>div"
                 },
                 {
-                  "name": "tab3Content",
+                  "name": "tab3Teaser",
                   "selector": "div:nth-child(7)>div"
+                },
+                {
+                  "name": "tab4Title",
+                  "selector": "div:nth-child(8)>div"
+                },
+                {
+                  "name": "tab4Teaser",
+                  "selector": "div:nth-child(9)>div"
                 }
               ]
             },

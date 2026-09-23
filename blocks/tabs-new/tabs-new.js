@@ -3,20 +3,10 @@ function createTabButton(title, index, blockId) {
 
   button.className = 'tabs-new-tab';
   button.type = 'button';
-
   button.id = `${blockId}-tab-${index}`;
-
   button.setAttribute('role', 'tab');
-
-  button.setAttribute(
-    'aria-controls',
-    `${blockId}-panel-${index}`,
-  );
-
-  button.setAttribute(
-    'aria-selected',
-    index === 0 ? 'true' : 'false',
-  );
+  button.setAttribute('aria-controls', `${blockId}-panel-${index}`);
+  button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
 
   if (index === 0) {
     button.classList.add('active');
@@ -31,16 +21,9 @@ function createTabPanel(content, index, blockId) {
   const panel = document.createElement('div');
 
   panel.className = 'tabs-new-panel';
-
   panel.id = `${blockId}-panel-${index}`;
-
   panel.setAttribute('role', 'tabpanel');
-
-  panel.setAttribute(
-    'aria-labelledby',
-    `${blockId}-tab-${index}`,
-  );
-
+  panel.setAttribute('aria-labelledby', `${blockId}-tab-${index}`);
   panel.tabIndex = 0;
 
   if (index !== 0) {
@@ -71,7 +54,6 @@ function activateTab(block, index) {
     const active = buttonIndex === index;
 
     button.classList.toggle('active', active);
-
     button.setAttribute(
       'aria-selected',
       active ? 'true' : 'false',
@@ -82,7 +64,6 @@ function activateTab(block, index) {
     const active = panelIndex === index;
 
     panel.hidden = !active;
-
     panel.classList.toggle('active', active);
   });
 }
@@ -102,12 +83,13 @@ function setupTabs(block) {
 
       switch (event.key) {
         case 'ArrowRight':
+        case 'ArrowDown':
           newIndex = (index + 1) % buttons.length;
           break;
 
         case 'ArrowLeft':
-          newIndex = (index - 1 + buttons.length)
-            % buttons.length;
+        case 'ArrowUp':
+          newIndex = (index - 1 + buttons.length) % buttons.length;
           break;
 
         case 'Home':
@@ -125,7 +107,6 @@ function setupTabs(block) {
       event.preventDefault();
 
       buttons[newIndex].focus();
-
       activateTab(block, newIndex);
     });
   });
@@ -134,23 +115,13 @@ function setupTabs(block) {
 function getTabData(props) {
   const tabs = [];
 
-  /*
-   * Row 1 = classes
-   * Row 2 = tab 1 title
-   * Row 3 = tab 1 content
-   * Row 4 = tab 2 title
-   * Row 5 = tab 2 content
-   * Row 6 = tab 3 title
-   * Row 7 = tab 3 content
-   */
+  for (let index = 1; index < props.length; index += 2) {
+    const titleElement = props[index];
+    const teaserElement = props[index + 1];
 
-  for (let i = 1; i < props.length; i += 2) {
-    const titleElement = props[i];
-    const contentElement = props[i + 1];
-
-    if (titleElement && contentElement) {
+    if (titleElement && teaserElement) {
       const title = titleElement.textContent.trim();
-      const content = contentElement.innerHTML.trim();
+      const content = teaserElement.innerHTML.trim();
 
       if (title && content) {
         tabs.push({
@@ -164,19 +135,62 @@ function getTabData(props) {
   return tabs;
 }
 
-export function generateTabsDOM(tabs, blockId) {
+function createScrollableControls(block, navigation) {
+  const previous = document.createElement('button');
+  const next = document.createElement('button');
+
+  previous.className = 'tabs-new-scroll-button tabs-new-scroll-button-prev';
+  next.className = 'tabs-new-scroll-button tabs-new-scroll-button-next';
+
+  previous.type = 'button';
+  next.type = 'button';
+
+  previous.setAttribute('aria-label', 'Previous tabs');
+  next.setAttribute('aria-label', 'Next tabs');
+
+  previous.innerHTML = '&#8249;';
+  next.innerHTML = '&#8250;';
+
+  previous.addEventListener('click', () => {
+    navigation.scrollBy({
+      left: -250,
+      behavior: 'smooth',
+    });
+  });
+
+  next.addEventListener('click', () => {
+    navigation.scrollBy({
+      left: 250,
+      behavior: 'smooth',
+    });
+  });
+
+  block.append(previous);
+  block.append(next);
+}
+
+export default function decorate(block) {
+  const props = [
+    ...block.children,
+  ].map((row) => row.firstElementChild);
+
+  const tabs = getTabData(props);
+
+  if (!tabs.length) {
+    return;
+  }
+
+  const blockId = `tabs-new-${Math.random()
+    .toString(36)
+    .slice(2, 9)}`;
+
   const tabsDOM = document.createDocumentFragment();
 
   const navigation = document.createElement('div');
 
   navigation.className = 'tabs-new-navigation';
-
   navigation.setAttribute('role', 'tablist');
-
-  navigation.setAttribute(
-    'aria-label',
-    'Tabs',
-  );
+  navigation.setAttribute('aria-label', 'Tabs');
 
   const panels = document.createElement('div');
 
@@ -196,50 +210,18 @@ export function generateTabsDOM(tabs, blockId) {
     );
 
     navigation.append(button);
-
     panels.append(panel);
   });
 
   tabsDOM.append(navigation);
-
   tabsDOM.append(panels);
 
-  return tabsDOM;
-}
-
-export default function decorate(block) {
-  /*
-   * Follow the same row-based approach
-   * used by the Teaser reference block.
-   */
-
-  const props = [
-    ...block.children,
-  ].map((row) => row.firstElementChild);
-
-  const tabs = getTabData(props);
-
-  if (!tabs.length) {
-    return;
-  }
-
-  /*
-   * Unique ID allows multiple tabs-new
-   * blocks on the same page.
-   */
-
-  const blockId = `tabs-new-${Math.random()
-    .toString(36)
-    .slice(2, 9)}`;
-
-  const tabsDOM = generateTabsDOM(
-    tabs,
-    blockId,
-  );
-
   block.textContent = '';
-
   block.append(tabsDOM);
 
   setupTabs(block);
+
+  if (block.classList.contains('scrollable')) {
+    createScrollableControls(block, navigation);
+  }
 }

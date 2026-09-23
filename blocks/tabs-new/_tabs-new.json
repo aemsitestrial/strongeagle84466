@@ -5,7 +5,7 @@
       "id": "tabs-new",
       "plugins": {
         "da": {
-          "rows": 7,
+          "rows": 9,
           "columns": 1,
           "fields": [
             {
@@ -17,7 +17,7 @@
               "selector": "div:nth-child(2)>div"
             },
             {
-              "name": "tab1Content",
+              "name": "tab1Teaser",
               "selector": "div:nth-child(3)>div"
             },
             {
@@ -25,7 +25,7 @@
               "selector": "div:nth-child(4)>div"
             },
             {
-              "name": "tab2Content",
+              "name": "tab2Teaser",
               "selector": "div:nth-child(5)>div"
             },
             {
@@ -33,8 +33,16 @@
               "selector": "div:nth-child(6)>div"
             },
             {
-              "name": "tab3Content",
+              "name": "tab3Teaser",
               "selector": "div:nth-child(7)>div"
+            },
+            {
+              "name": "tab4Title",
+              "selector": "div:nth-child(8)>div"
+            },
+            {
+              "name": "tab4Teaser",
+              "selector": "div:nth-child(9)>div"
             }
           ]
         },
@@ -63,10 +71,10 @@
           "label": "Style",
           "valueType": "string",
           "required": true,
-          "maxSize": 2,
+          "maxSize": 1,
           "options": [
             {
-              "name": "Navigation Style",
+              "name": "Tabs Style",
               "children": [
                 {
                   "name": "Default",
@@ -79,12 +87,7 @@
                 {
                   "name": "Pill",
                   "value": "pill"
-                }
-              ]
-            },
-            {
-              "name": "Layout",
-              "children": [
+                },
                 {
                   "name": "Vertical",
                   "value": "vertical"
@@ -99,50 +102,67 @@
         },
         {
           "component": "text",
-          "valueType": "string",
           "name": "tab1Title",
+          "label": "Tab 1 Title",
+          "valueType": "string",
           "value": "Overview",
-          "label": "First Tab Title",
-          "description": "Title displayed in the first tab."
+          "required": true
         },
         {
           "component": "richtext",
+          "name": "tab1Teaser",
+          "label": "Tab 1 Teaser",
           "valueType": "string",
-          "name": "tab1Content",
           "value": "",
-          "label": "First Tab Content",
-          "description": "Content displayed when the first tab is selected."
+          "description": "Teaser content for the first tab. Use image, title, description and CTA content."
         },
         {
           "component": "text",
-          "valueType": "string",
           "name": "tab2Title",
+          "label": "Tab 2 Title",
+          "valueType": "string",
           "value": "Features",
-          "label": "Second Tab Title",
-          "description": "Title displayed in the second tab."
+          "required": true
         },
         {
           "component": "richtext",
+          "name": "tab2Teaser",
+          "label": "Tab 2 Teaser",
           "valueType": "string",
-          "name": "tab2Content",
           "value": "",
-          "label": "Second Tab Content",
-          "description": "Content displayed when the second tab is selected."
+          "description": "Teaser content for the second tab. Use image, title, description and CTA content."
         },
         {
           "component": "text",
-          "valueType": "string",
           "name": "tab3Title",
+          "label": "Tab 3 Title",
+          "valueType": "string",
           "value": "Pricing",
-          "label": "Third Tab Title"
+          "required": true
         },
         {
           "component": "richtext",
+          "name": "tab3Teaser",
+          "label": "Tab 3 Teaser",
           "valueType": "string",
-          "name": "tab3Content",
           "value": "",
-          "label": "Third Tab Content",
-          "description": "Content displayed when the third tab is selected."
+          "description": "Teaser content for the third tab. Use image, title, description and CTA content."
+        },
+        {
+          "component": "text",
+          "name": "tab4Title",
+          "label": "Tab 4 Title",
+          "valueType": "string",
+          "value": "Support",
+          "required": true
+        },
+        {
+          "component": "richtext",
+          "name": "tab4Teaser",
+          "label": "Tab 4 Teaser",
+          "valueType": "string",
+          "value": "",
+          "description": "Teaser content for the fourth tab. Use image, title, description and CTA content."
         }
       ]
     }
