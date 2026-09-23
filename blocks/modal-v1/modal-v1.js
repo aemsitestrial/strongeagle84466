@@ -1,30 +1,94 @@
 /* eslint-disable */
 
-function getValue(field) {
+/*
+ * ============================================================
+ * MODAL V1
+ * ============================================================
+ *
+ * Field order MUST match _modal-v1.json:
+ *
+ * 1  layout
+ * 2  size
+ * 3  mediaType
+ * 4  image
+ * 5  imageAlt
+ * 6  videoUrl
+ * 7  videoPoster
+ * 8  eyebrow
+ * 9  heading
+ * 10 content
+ * 11 supportingText
+ * 12 primaryCtaText
+ * 13 primaryCtaLink
+ * 14 secondaryCtaText
+ * 15 secondaryCtaLink
+ * 16 primaryButtonStyle
+ * 17 secondaryButtonStyle
+ * 18 primaryButtonColor
+ * 19 secondaryButtonColor
+ * 20 alignment
+ * 21 backdrop
+ * 22 borderRadius
+ * 23 closeLabel
+ * 24 triggerText
+ */
+
+
+/* ============================================================
+   FIELD HELPERS
+   ============================================================ */
+
+/**
+ * Read a TEXT field.
+ *
+ * IMPORTANT:
+ * Never read an <a href> from here.
+ *
+ * This prevents:
+ *
+ * https://example.com
+ *
+ * from accidentally becoming the CTA button text.
+ */
+function getTextValue(field) {
   if (!field) return '';
 
-  const input = field.querySelector('input, textarea, select');
+  const input = field.querySelector('input, textarea');
 
   if (input && input.value) {
     return input.value.trim();
   }
 
-  const link = field.querySelector('a[href]');
+  /*
+   * For select-like fields, prefer the actual selected value
+   * when available.
+   */
+  const select = field.querySelector('select');
 
-  if (link) {
-    return link.href;
+  if (select && select.value) {
+    return select.value.trim();
   }
 
-  return field.textContent.trim();
+  /*
+   * IMPORTANT:
+   * Do NOT look for <a href> here.
+   */
+  return (field.textContent || '').trim();
 }
 
-function getLink(field) {
+
+/**
+ * Read a LINK field.
+ *
+ * This function is ONLY used for CTA links and video URLs.
+ */
+function getLinkValue(field) {
   if (!field) return '';
 
-  const link = field.querySelector('a[href]');
+  const anchor = field.querySelector('a[href]');
 
-  if (link) {
-    return link.href;
+  if (anchor && anchor.href) {
+    return anchor.href;
   }
 
   const input = field.querySelector('input');
@@ -33,8 +97,23 @@ function getLink(field) {
     return input.value.trim();
   }
 
-  return field.textContent.trim();
+  return (field.textContent || '').trim();
 }
+
+
+/**
+ * Get all block fields in positional order.
+ */
+function getFields(block) {
+  return [...block.children].map(
+    (row) => row.firstElementChild || row,
+  );
+}
+
+
+/* ============================================================
+   NORMALIZATION
+   ============================================================ */
 
 function normalize(value, fallback) {
   if (!value) return fallback;
@@ -42,36 +121,63 @@ function normalize(value, fallback) {
   return value
     .trim()
     .toLowerCase()
-    .replace(/\s+/g, '-');
+    .replace(/[_\s]+/g, '-');
 }
 
-function getFields(block) {
-  return [...block.children].map((row) => {
-    return row.firstElementChild || row;
-  });
+
+/* ============================================================
+   IMAGE
+   ============================================================ */
+
+function getImageUrl(field) {
+  if (!field) return '';
+
+  const img = field.querySelector('img');
+
+  if (img) {
+    return img.currentSrc || img.src || '';
+  }
+
+  const source = field.querySelector('source[srcset]');
+
+  if (source && source.srcset) {
+    return source.srcset.split(',')[0].trim().split(' ')[0];
+  }
+
+  return getTextValue(field);
 }
+
+
+/* ============================================================
+   VIDEO
+   ============================================================ */
 
 function createVideo(url, poster) {
   if (!url) return null;
 
   const wrapper = document.createElement('div');
+
   wrapper.className = 'modal-v1-media';
 
+  /*
+   * Direct video file.
+   */
   if (
-    url.match(/\.(mp4|webm|ogg)(\?.*)?$/i) ||
+    /\.(mp4|webm|ogg)(\?.*)?$/i.test(url) ||
     url.includes('/content/dam/')
   ) {
     const video = document.createElement('video');
 
     video.controls = true;
-    video.playsInline = true;
     video.preload = 'metadata';
+    video.playsInline = true;
 
     if (poster) {
       video.poster = poster;
     }
 
     const source = document.createElement('source');
+
     source.src = url;
 
     video.append(source);
@@ -80,57 +186,73 @@ function createVideo(url, poster) {
     return wrapper;
   }
 
+  /*
+   * Convert YouTube/Vimeo URLs to embed URLs.
+   */
   let embedUrl = url;
 
-  // YouTube
   try {
     const parsed = new URL(url);
 
-    if (parsed.hostname.includes('youtube.com')) {
-      const id = parsed.searchParams.get('v');
+    /* YouTube */
 
-      if (id) {
-        embedUrl = `https://www.youtube.com/embed/${id}`;
+    if (parsed.hostname.includes('youtube.com')) {
+      const videoId = parsed.searchParams.get('v');
+
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
       }
     }
 
     if (parsed.hostname.includes('youtu.be')) {
-      const id = parsed.pathname.substring(1);
+      const videoId = parsed.pathname.substring(1);
 
-      if (id) {
-        embedUrl = `https://www.youtube.com/embed/${id}`;
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}`;
       }
     }
 
-    // Vimeo
-    if (parsed.hostname.includes('vimeo.com')) {
-      const id = parsed.pathname.split('/').filter(Boolean).pop();
+    /* Vimeo */
 
-      if (id) {
-        embedUrl = `https://player.vimeo.com/video/${id}`;
+    if (parsed.hostname.includes('vimeo.com')) {
+      const parts = parsed.pathname
+        .split('/')
+        .filter(Boolean);
+
+      const videoId = parts[parts.length - 1];
+
+      if (videoId) {
+        embedUrl = `https://player.vimeo.com/video/${videoId}`;
       }
     }
   } catch (error) {
-    // Keep original URL.
+    // Use original URL.
   }
 
   const iframe = document.createElement('iframe');
 
   iframe.src = embedUrl;
   iframe.title = 'Modal video';
-  iframe.allowFullscreen = true;
   iframe.loading = 'lazy';
-  iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+  iframe.allowFullscreen = true;
+  iframe.allow =
+    'autoplay; fullscreen; picture-in-picture';
 
   wrapper.append(iframe);
 
   return wrapper;
 }
 
+
+/* ============================================================
+   IMAGE MEDIA
+   ============================================================ */
+
 function createImage(url, alt) {
   if (!url) return null;
 
   const wrapper = document.createElement('div');
+
   wrapper.className = 'modal-v1-media';
 
   const img = document.createElement('img');
@@ -144,8 +266,26 @@ function createImage(url, alt) {
   return wrapper;
 }
 
-function createButton(text, link, style, color) {
-  if (!text) return null;
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+
+function createButton(
+  text,
+  link,
+  style,
+  color,
+) {
+  /*
+   * Most important check:
+   *
+   * If there is no CTA TEXT,
+   * do NOT create a button.
+   */
+  if (!text || !text.trim()) {
+    return null;
+  }
 
   const button = link
     ? document.createElement('a')
@@ -157,16 +297,34 @@ function createButton(text, link, style, color) {
     button.type = 'button';
   }
 
+  const normalizedStyle =
+    normalize(style, 'solid');
+
+  const normalizedColor =
+    normalize(color, 'primary');
+
   button.className = [
     'modal-v1-button',
-    `modal-v1-button-style-${normalize(style, 'solid')}`,
-    `modal-v1-button-color-${normalize(color, 'primary')}`,
+    `modal-v1-button-style-${normalizedStyle}`,
+    `modal-v1-button-color-${normalizedColor}`,
   ].join(' ');
 
-  button.textContent = text;
+  /*
+   * VERY IMPORTANT:
+   *
+   * Only CTA TEXT goes here.
+   *
+   * Never use link/style/color here.
+   */
+  button.textContent = text.trim();
 
   return button;
 }
+
+
+/* ============================================================
+   BUILD MODAL
+   ============================================================ */
 
 function buildModal(data) {
   const overlay = document.createElement('div');
@@ -176,7 +334,10 @@ function buildModal(data) {
     `modal-v1-backdrop-${data.backdrop}`,
   ].join(' ');
 
-  overlay.setAttribute('aria-hidden', 'true');
+  overlay.setAttribute(
+    'aria-hidden',
+    'true',
+  );
 
   const dialog = document.createElement('div');
 
@@ -188,78 +349,140 @@ function buildModal(data) {
     `modal-v1-radius-${data.radius}`,
   ].join(' ');
 
-  dialog.setAttribute('role', 'dialog');
-  dialog.setAttribute('aria-modal', 'true');
+  dialog.setAttribute(
+    'role',
+    'dialog',
+  );
+
+  dialog.setAttribute(
+    'aria-modal',
+    'true',
+  );
+
+
+  /* ==========================================================
+     CLOSE BUTTON
+     ========================================================== */
 
   const close = document.createElement('button');
 
   close.type = 'button';
   close.className = 'modal-v1-close';
-  close.setAttribute('aria-label', data.closeLabel);
+
+  close.setAttribute(
+    'aria-label',
+    data.closeLabel,
+  );
+
   close.textContent = '×';
 
-  /* MEDIA */
+
+  /* ==========================================================
+     MEDIA
+     ========================================================== */
 
   let media = null;
 
   if (data.mediaType === 'image') {
-    media = createImage(data.image, data.imageAlt);
+    media = createImage(
+      data.image,
+      data.imageAlt,
+    );
   }
 
   if (data.mediaType === 'video') {
-    media = createVideo(data.videoUrl, data.videoPoster);
+    media = createVideo(
+      data.videoUrl,
+      data.videoPoster,
+    );
   }
 
   if (media) {
     dialog.append(media);
   }
 
-  /* CONTENT */
+
+  /* ==========================================================
+     BODY
+     ========================================================== */
 
   const body = document.createElement('div');
+
   body.className = 'modal-v1-body';
+
+
+  /* EYEBROW */
 
   if (data.eyebrow) {
     const eyebrow = document.createElement('div');
 
-    eyebrow.className = 'modal-v1-eyebrow';
-    eyebrow.textContent = data.eyebrow;
+    eyebrow.className =
+      'modal-v1-eyebrow';
+
+    eyebrow.textContent =
+      data.eyebrow;
 
     body.append(eyebrow);
   }
 
+
+  /* HEADING */
+
   if (data.heading) {
     const heading = document.createElement('h2');
 
-    heading.className = 'modal-v1-heading';
-    heading.textContent = data.heading;
+    heading.className =
+      'modal-v1-heading';
+
+    heading.textContent =
+      data.heading;
 
     body.append(heading);
   }
 
+
+  /* CONTENT */
+
   if (data.content) {
     const content = document.createElement('div');
 
-    content.className = 'modal-v1-main-content';
-    content.innerHTML = data.contentHTML;
+    content.className =
+      'modal-v1-main-content';
+
+    content.innerHTML =
+      data.contentHTML;
 
     body.append(content);
   }
 
-  if (data.supportingText) {
-    const supporting = document.createElement('div');
 
-    supporting.className = 'modal-v1-supporting-text';
-    supporting.innerHTML = data.supportingTextHTML;
+  /* SUPPORTING TEXT */
+
+  if (data.supportingText) {
+    const supporting =
+      document.createElement('div');
+
+    supporting.className =
+      'modal-v1-supporting-text';
+
+    supporting.innerHTML =
+      data.supportingTextHTML;
 
     body.append(supporting);
   }
 
-  /* FOOTER */
+
+  /* ==========================================================
+     FOOTER
+     ========================================================== */
 
   const footer = document.createElement('div');
 
-  footer.className = 'modal-v1-footer';
+  footer.className =
+    'modal-v1-footer';
+
+
+  /* PRIMARY */
 
   const primary = createButton(
     data.primaryText,
@@ -268,6 +491,13 @@ function buildModal(data) {
     data.primaryColor,
   );
 
+  if (primary) {
+    footer.append(primary);
+  }
+
+
+  /* SECONDARY */
+
   const secondary = createButton(
     data.secondaryText,
     data.secondaryLink,
@@ -275,21 +505,25 @@ function buildModal(data) {
     data.secondaryColor,
   );
 
-  if (primary) {
-    footer.append(primary);
-  }
-
   if (secondary) {
     footer.append(secondary);
   }
 
-  if (footer.children.length) {
+
+  if (footer.children.length > 0) {
     body.append(footer);
   }
 
+
+  /* ==========================================================
+     FINISH DIALOG
+     ========================================================== */
+
   dialog.append(close);
   dialog.append(body);
+
   overlay.append(dialog);
+
 
   return {
     overlay,
@@ -297,13 +531,19 @@ function buildModal(data) {
   };
 }
 
+
+/* ============================================================
+   DECORATE
+   ============================================================ */
+
 export default function decorate(block) {
+
   /*
-   * IMPORTANT:
-   * Read the authored fields before replacing block contents.
+   * Read fields BEFORE clearing the block.
    */
 
   const fields = getFields(block);
+
 
   const [
     layoutField,
@@ -332,198 +572,380 @@ export default function decorate(block) {
     triggerTextField,
   ] = fields;
 
+
+  /* ==========================================================
+     DATA
+     ========================================================== */
+
   const data = {
-    layout: normalize(getValue(layoutField), 'default'),
-    size: normalize(getValue(sizeField), 'medium'),
-    mediaType: normalize(getValue(mediaTypeField), 'none'),
 
-    image:
-      imageField?.querySelector('img')?.currentSrc ||
-      imageField?.querySelector('img')?.src ||
-      getValue(imageField),
+    layout: normalize(
+      getTextValue(layoutField),
+      'default',
+    ),
 
-    imageAlt: getValue(imageAltField),
+    size: normalize(
+      getTextValue(sizeField),
+      'medium',
+    ),
 
-    videoUrl: getLink(videoUrlField),
+    mediaType: normalize(
+      getTextValue(mediaTypeField),
+      'none',
+    ),
 
-    videoPoster:
-      videoPosterField?.querySelector('img')?.currentSrc ||
-      videoPosterField?.querySelector('img')?.src ||
-      getValue(videoPosterField),
 
-    eyebrow: getValue(eyebrowField),
+    image: getImageUrl(imageField),
 
-    heading: getValue(headingField),
+    imageAlt: getTextValue(
+      imageAltField,
+    ),
 
-    content: getValue(contentField),
-    contentHTML: contentField?.innerHTML || '',
 
-    supportingText: getValue(supportingTextField),
-    supportingTextHTML: supportingTextField?.innerHTML || '',
+    /*
+     * LINK FIELD
+     */
+    videoUrl: getLinkValue(
+      videoUrlField,
+    ),
 
-    primaryText: getValue(primaryTextField),
-    primaryLink: getLink(primaryLinkField),
+    videoPoster: getImageUrl(
+      videoPosterField,
+    ),
 
-    secondaryText: getValue(secondaryTextField),
-    secondaryLink: getLink(secondaryLinkField),
 
-    primaryStyle: normalize(getValue(primaryStyleField), 'solid'),
-    secondaryStyle: normalize(getValue(secondaryStyleField), 'outline'),
+    /*
+     * TEXT FIELDS
+     */
+    eyebrow: getTextValue(
+      eyebrowField,
+    ),
 
-    primaryColor: normalize(getValue(primaryColorField), 'primary'),
-    secondaryColor: normalize(getValue(secondaryColorField), 'secondary'),
+    heading: getTextValue(
+      headingField,
+    ),
 
-    alignment: normalize(getValue(alignmentField), 'left'),
-    backdrop: normalize(getValue(backdropField), 'default'),
-    radius: normalize(getValue(radiusField), 'medium'),
+    content: getTextValue(
+      contentField,
+    ),
 
-    closeLabel: getValue(closeLabelField) || 'Close',
-    triggerText: getValue(triggerTextField) || 'Open Modal',
+    contentHTML:
+      contentField?.innerHTML || '',
+
+
+    supportingText:
+      getTextValue(
+        supportingTextField,
+      ),
+
+    supportingTextHTML:
+      supportingTextField?.innerHTML || '',
+
+
+    /*
+     * CTA TEXT
+     */
+    primaryText:
+      getTextValue(
+        primaryTextField,
+      ),
+
+    /*
+     * CTA LINK
+     */
+    primaryLink:
+      getLinkValue(
+        primaryLinkField,
+      ),
+
+
+    /*
+     * SECONDARY CTA
+     */
+    secondaryText:
+      getTextValue(
+        secondaryTextField,
+      ),
+
+    secondaryLink:
+      getLinkValue(
+        secondaryLinkField,
+      ),
+
+
+    /*
+     * BUTTON STYLE
+     */
+    primaryStyle:
+      getTextValue(
+        primaryStyleField,
+      ),
+
+    secondaryStyle:
+      getTextValue(
+        secondaryStyleField,
+      ),
+
+
+    /*
+     * BUTTON COLOR
+     */
+    primaryColor:
+      getTextValue(
+        primaryColorField,
+      ),
+
+    secondaryColor:
+      getTextValue(
+        secondaryColorField,
+      ),
+
+
+    /*
+     * APPEARANCE
+     */
+    alignment: normalize(
+      getTextValue(alignmentField),
+      'left',
+    ),
+
+    backdrop: normalize(
+      getTextValue(backdropField),
+      'default',
+    ),
+
+    radius: normalize(
+      getTextValue(radiusField),
+      'medium',
+    ),
+
+
+    /*
+     * CLOSE + TRIGGER
+     */
+    closeLabel:
+      getTextValue(closeLabelField) ||
+      'Close',
+
+    triggerText:
+      getTextValue(triggerTextField) ||
+      'Open Modal',
   };
 
-  /*
-   * Make sure unsupported layout values don't break the modal.
-   */
 
-  const validLayouts = [
+  /* ==========================================================
+     VALIDATION
+     ========================================================== */
+
+  const layouts = [
     'default',
     'side-panel',
     'full-screen',
     'bottom-sheet',
   ];
 
-  if (!validLayouts.includes(data.layout)) {
+  if (!layouts.includes(data.layout)) {
     data.layout = 'default';
   }
 
-  const validSizes = ['small', 'medium', 'large'];
 
-  if (!validSizes.includes(data.size)) {
+  const sizes = [
+    'small',
+    'medium',
+    'large',
+  ];
+
+  if (!sizes.includes(data.size)) {
     data.size = 'medium';
   }
 
-  const validMedia = ['none', 'image', 'video'];
 
-  if (!validMedia.includes(data.mediaType)) {
+  const mediaTypes = [
+    'none',
+    'image',
+    'video',
+  ];
+
+  if (!mediaTypes.includes(data.mediaType)) {
     data.mediaType = 'none';
   }
 
-  const validAlignment = ['left', 'center', 'right'];
 
-  if (!validAlignment.includes(data.alignment)) {
+  const alignments = [
+    'left',
+    'center',
+    'right',
+  ];
+
+  if (!alignments.includes(data.alignment)) {
     data.alignment = 'left';
   }
 
-  const validBackdrop = ['default', 'dark', 'light'];
 
-  if (!validBackdrop.includes(data.backdrop)) {
+  const backdrops = [
+    'default',
+    'dark',
+    'light',
+  ];
+
+  if (!backdrops.includes(data.backdrop)) {
     data.backdrop = 'default';
   }
 
-  const validRadius = ['none', 'small', 'medium', 'large'];
 
-  if (!validRadius.includes(data.radius)) {
+  const radiuses = [
+    'none',
+    'small',
+    'medium',
+    'large',
+  ];
+
+  if (!radiuses.includes(data.radius)) {
     data.radius = 'medium';
   }
 
-  /*
-   * Create trigger.
-   */
 
-  const trigger = document.createElement('button');
+  /* ==========================================================
+     TRIGGER
+     ========================================================== */
+
+  const trigger =
+    document.createElement('button');
 
   trigger.type = 'button';
-  trigger.className = 'modal-v1-trigger';
-  trigger.textContent = data.triggerText;
 
-  /*
-   * Build modal BEFORE clearing block.
-   */
+  trigger.className =
+    'modal-v1-trigger';
+
+  trigger.textContent =
+    data.triggerText;
+
+
+  /* ==========================================================
+     MODAL
+     ========================================================== */
 
   const modal = buildModal(data);
 
-  const { overlay, close } = modal;
+  const {
+    overlay,
+    close,
+  } = modal;
+
 
   /*
-   * Clear the original authored block content.
+   * Clear authored rows.
    */
 
   block.textContent = '';
 
+
   block.append(trigger);
   block.append(overlay);
 
-  /*
-   * OPEN
-   */
+
+  /* ==========================================================
+     OPEN
+     ========================================================== */
 
   function openModal() {
-    overlay.classList.add('is-open');
-    overlay.setAttribute('aria-hidden', 'false');
 
-    document.body.classList.add('modal-v1-no-scroll');
+    overlay.classList.add(
+      'is-open',
+    );
+
+    overlay.setAttribute(
+      'aria-hidden',
+      'false',
+    );
+
+    document.body.classList.add(
+      'modal-v1-no-scroll',
+    );
 
     requestAnimationFrame(() => {
       close.focus();
     });
   }
 
-  /*
-   * CLOSE
-   */
+
+  /* ==========================================================
+     CLOSE
+     ========================================================== */
 
   function closeModal() {
-    overlay.classList.remove('is-open');
-    overlay.setAttribute('aria-hidden', 'true');
 
-    document.body.classList.remove('modal-v1-no-scroll');
+    overlay.classList.remove(
+      'is-open',
+    );
 
-    const video = overlay.querySelector('video');
+    overlay.setAttribute(
+      'aria-hidden',
+      'true',
+    );
+
+    document.body.classList.remove(
+      'modal-v1-no-scroll',
+    );
+
+    const video =
+      overlay.querySelector('video');
 
     if (video) {
       video.pause();
     }
   }
 
-  /*
-   * Trigger
-   */
 
-  trigger.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
+  /* ==========================================================
+     EVENTS
+     ========================================================== */
 
-    openModal();
-  });
+  trigger.addEventListener(
+    'click',
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-  /*
-   * Close button
-   */
+      openModal();
+    },
+  );
 
-  close.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
 
-    closeModal();
-  });
+  close.addEventListener(
+    'click',
+    (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-  /*
-   * Click backdrop.
-   */
-
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) {
       closeModal();
-    }
-  });
+    },
+  );
 
-  /*
-   * Escape key.
-   */
 
-  overlay.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      closeModal();
-    }
-  });
+  overlay.addEventListener(
+    'click',
+    (event) => {
+      if (
+        event.target === overlay
+      ) {
+        closeModal();
+      }
+    },
+  );
+
+
+  document.addEventListener(
+    'keydown',
+    (event) => {
+      if (
+        event.key === 'Escape' &&
+        overlay.classList.contains(
+          'is-open',
+        )
+      ) {
+        closeModal();
+      }
+    },
+  );
 }
