@@ -1,15 +1,18 @@
 function createTabButton(title, index, blockId) {
   const button = document.createElement('button');
 
-  button.className = 'tabsnew-tab';
+  button.className = 'tabs-new-tab';
   button.type = 'button';
 
   button.id = `${blockId}-tab-${index}`;
+
   button.setAttribute('role', 'tab');
+
   button.setAttribute(
     'aria-controls',
     `${blockId}-panel-${index}`,
   );
+
   button.setAttribute(
     'aria-selected',
     index === 0 ? 'true' : 'false',
@@ -27,10 +30,12 @@ function createTabButton(title, index, blockId) {
 function createTabPanel(content, index, blockId) {
   const panel = document.createElement('div');
 
-  panel.className = 'tabsnew-panel';
+  panel.className = 'tabs-new-panel';
+
   panel.id = `${blockId}-panel-${index}`;
 
   panel.setAttribute('role', 'tabpanel');
+
   panel.setAttribute(
     'aria-labelledby',
     `${blockId}-tab-${index}`,
@@ -44,7 +49,7 @@ function createTabPanel(content, index, blockId) {
 
   const contentWrapper = document.createElement('div');
 
-  contentWrapper.className = 'tabsnew-content';
+  contentWrapper.className = 'tabs-new-content';
 
   contentWrapper.innerHTML = content;
 
@@ -55,11 +60,11 @@ function createTabPanel(content, index, blockId) {
 
 function activateTab(block, index) {
   const buttons = [
-    ...block.querySelectorAll('.tabsnew-tab'),
+    ...block.querySelectorAll('.tabs-new-tab'),
   ];
 
   const panels = [
-    ...block.querySelectorAll('.tabsnew-panel'),
+    ...block.querySelectorAll('.tabs-new-panel'),
   ];
 
   buttons.forEach((button, buttonIndex) => {
@@ -84,7 +89,7 @@ function activateTab(block, index) {
 
 function setupTabs(block) {
   const buttons = [
-    ...block.querySelectorAll('.tabsnew-tab'),
+    ...block.querySelectorAll('.tabs-new-tab'),
   ];
 
   buttons.forEach((button, index) => {
@@ -101,7 +106,8 @@ function setupTabs(block) {
           break;
 
         case 'ArrowLeft':
-          newIndex = (index - 1 + buttons.length) % buttons.length;
+          newIndex = (index - 1 + buttons.length)
+            % buttons.length;
           break;
 
         case 'Home':
@@ -129,15 +135,13 @@ function getTabData(props) {
   const tabs = [];
 
   /*
-   * Authoring structure:
-   *
-   * Row 1  = classes
-   * Row 2  = tab1Title
-   * Row 3  = tab1Content
-   * Row 4  = tab2Title
-   * Row 5  = tab2Content
-   * Row 6  = tab3Title
-   * Row 7  = tab3Content
+   * Row 1 = classes
+   * Row 2 = tab 1 title
+   * Row 3 = tab 1 content
+   * Row 4 = tab 2 title
+   * Row 5 = tab 2 content
+   * Row 6 = tab 3 title
+   * Row 7 = tab 3 content
    */
 
   for (let i = 1; i < props.length; i += 2) {
@@ -165,14 +169,18 @@ export function generateTabsDOM(tabs, blockId) {
 
   const navigation = document.createElement('div');
 
-  navigation.className = 'tabsnew-navigation';
+  navigation.className = 'tabs-new-navigation';
 
   navigation.setAttribute('role', 'tablist');
-  navigation.setAttribute('aria-label', 'Tabs');
+
+  navigation.setAttribute(
+    'aria-label',
+    'Tabs',
+  );
 
   const panels = document.createElement('div');
 
-  panels.className = 'tabsnew-panels';
+  panels.className = 'tabs-new-panels';
 
   tabs.forEach((tab, index) => {
     const button = createTabButton(
@@ -188,10 +196,12 @@ export function generateTabsDOM(tabs, blockId) {
     );
 
     navigation.append(button);
+
     panels.append(panel);
   });
 
   tabsDOM.append(navigation);
+
   tabsDOM.append(panels);
 
   return tabsDOM;
@@ -199,9 +209,8 @@ export function generateTabsDOM(tabs, blockId) {
 
 export default function decorate(block) {
   /*
-   * Same basic approach as the Teaser component:
-   *
-   * Get the first element from every authored row.
+   * Follow the same row-based approach
+   * used by the Teaser reference block.
    */
 
   const props = [
@@ -215,11 +224,11 @@ export default function decorate(block) {
   }
 
   /*
-   * Generate a unique ID so multiple Tabs blocks
-   * can exist on the same page.
+   * Unique ID allows multiple tabs-new
+   * blocks on the same page.
    */
 
-  const blockId = `tabsnew-${Math.random()
+  const blockId = `tabs-new-${Math.random()
     .toString(36)
     .slice(2, 9)}`;
 
@@ -227,11 +236,6 @@ export default function decorate(block) {
     tabs,
     blockId,
   );
-
-  /*
-   * Remove authored markup and replace it
-   * with the final Tabs DOM.
-   */
 
   block.textContent = '';
 

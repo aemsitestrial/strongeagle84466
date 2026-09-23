@@ -6286,7 +6286,7 @@
     ]
   },
   {
-    "id": "tabsnew",
+    "id": "tabs-new",
     "fields": [
       {
         "component": "multiselect",
@@ -6301,7 +6301,7 @@
             "children": [
               {
                 "name": "Default",
-                "value": "tabsnew"
+                "value": "tabs-new"
               },
               {
                 "name": "Underline",
@@ -6365,8 +6365,7 @@
         "valueType": "string",
         "name": "tab3Title",
         "value": "Pricing",
-        "label": "Third Tab Title",
-        "description": "Title displayed in the third tab."
+        "label": "Third Tab Title"
       },
       {
         "component": "richtext",
