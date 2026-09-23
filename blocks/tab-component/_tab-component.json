@@ -9,54 +9,61 @@
             "resourceType": "core/franklin/components/block/v1/block",
             "template": {
               "name": "Tab Component",
-              "model": "tab-component"
+              "model": "tab-component",
+              "filter": "tab-component"
             }
           }
         },
         "da": {
           "name": "tab-component",
-          "rows": 10,
-          "columns": 1,
+          "rows": 1,
+          "columns": 4,
           "fields": [
             {
               "name": "variant",
-              "selector": "div:nth-child(1)>div"
+              "selector": "div:nth-child(1)"
             },
             {
               "name": "alignment",
-              "selector": "div:nth-child(2)>div"
+              "selector": "div:nth-child(2)"
             },
             {
               "name": "backgroundColor",
-              "selector": "div:nth-child(3)>div"
+              "selector": "div:nth-child(3)"
             },
             {
               "name": "textColor",
-              "selector": "div:nth-child(4)>div"
+              "selector": "div:nth-child(4)"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Tab Item",
+      "id": "tab-item",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Tab Item",
+              "model": "tab-item"
+            }
+          }
+        },
+        "da": {
+          "name": "tab-item",
+          "rows": 2,
+          "columns": 0,
+          "fields": [
+            {
+              "name": "title",
+              "selector": "div:nth-child(1)"
             },
             {
-              "name": "tab1Title",
-              "selector": "div:nth-child(5)>div"
-            },
-            {
-              "name": "tab1Content",
-              "selector": "div:nth-child(6)>div"
-            },
-            {
-              "name": "tab2Title",
-              "selector": "div:nth-child(7)>div"
-            },
-            {
-              "name": "tab2Content",
-              "selector": "div:nth-child(8)>div"
-            },
-            {
-              "name": "tab3Title",
-              "selector": "div:nth-child(9)>div"
-            },
-            {
-              "name": "tab3Content",
-              "selector": "div:nth-child(10)>div"
+              "name": "content",
+              "selector": "div:nth-child(2)"
             }
           ]
         }
@@ -124,48 +131,34 @@
           "component": "color",
           "name": "textColor",
           "label": "Tab Text Color"
-        },
+        }
+      ]
+    },
+    {
+      "id": "tab-item",
+      "fields": [
         {
           "component": "text",
           "valueType": "string",
-          "name": "tab1Title",
-          "label": "Tab 1 Title",
+          "name": "title",
+          "label": "Tab Title",
           "required": true
         },
         {
           "component": "textarea",
           "valueType": "string",
-          "name": "tab1Content",
-          "label": "Tab 1 Content"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "tab2Title",
-          "label": "Tab 2 Title",
-          "required": true
-        },
-        {
-          "component": "textarea",
-          "valueType": "string",
-          "name": "tab2Content",
-          "label": "Tab 2 Content"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "tab3Title",
-          "label": "Tab 3 Title",
-          "required": true
-        },
-        {
-          "component": "textarea",
-          "valueType": "string",
-          "name": "tab3Content",
-          "label": "Tab 3 Content"
+          "name": "content",
+          "label": "Tab Content"
         }
       ]
     }
   ],
-  "filters": []
+  "filters": [
+    {
+      "id": "tab-component",
+      "components": [
+        "tab-item"
+      ]
+    }
+  ]
 }
