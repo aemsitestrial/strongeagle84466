@@ -5707,7 +5707,7 @@
     ]
   },
   {
-    "id": "modal_v1",
+    "id": "modal-v1",
     "fields": [
       {
         "component": "select",
