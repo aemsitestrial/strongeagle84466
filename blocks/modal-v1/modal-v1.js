@@ -57,10 +57,6 @@ function asText(value) {
   return value?.textContent?.trim() || '';
 }
 
-function getCellValue(cell) {
-  return cell?.firstElementChild || cell;
-}
-
 function normalize(value, supported, fallback) {
   const normalized = String(value || '').trim().toLowerCase();
 
@@ -69,211 +65,145 @@ function normalize(value, supported, fallback) {
     : fallback;
 }
 
-function getImageSource(element) {
-  const image = element?.querySelector('img');
+function getImageSource(value) {
+  const image = value?.querySelector('img');
 
   return image?.src || '';
 }
 
+function getLink(value) {
+  const link = value?.querySelector('a');
+
+  return link?.href || asText(value);
+}
+
 function normalizeBlock(block) {
-  const data = {
-    layout: 'default',
-    size: 'medium',
-    mediaType: 'none',
-    image: '',
-    imageAlt: '',
-    video: '',
-    poster: '',
-    eyebrow: '',
-    title: '',
-    content: '',
-    supportingText: '',
-    primaryCtaText: '',
-    primaryCta: '',
-    secondaryCtaText: '',
-    secondaryCta: '',
-    primaryButtonStyle: 'solid',
-    secondaryButtonStyle: 'outline',
-    primaryButtonColor: 'primary',
-    secondaryButtonColor: 'secondary',
-    alignment: 'left',
-    backdrop: 'dark',
-    borderRadius: 'medium',
-    closeLabel: 'Close',
-    triggerText: 'Open Modal',
+  /*
+   * Follow the same positional structure as Teaser.
+   *
+   * Each authoring field is one row with one cell.
+   */
+  const props = [...block.children].map(
+    (row) => row.firstElementChild,
+  );
+
+  const [
+    layout,
+    size,
+    mediaType,
+    image,
+    imageAlt,
+    video,
+    poster,
+    eyebrow,
+    title,
+    content,
+    supportingText,
+    primaryCtaText,
+    primaryCta,
+    secondaryCtaText,
+    secondaryCta,
+    primaryButtonStyle,
+    secondaryButtonStyle,
+    primaryButtonColor,
+    secondaryButtonColor,
+    alignment,
+    backdrop,
+    borderRadius,
+    closeLabel,
+    triggerText,
+  ] = props;
+
+  return {
+    layout: normalize(
+      asText(layout),
+      SUPPORTED_LAYOUTS,
+      'default',
+    ),
+
+    size: normalize(
+      asText(size),
+      SUPPORTED_SIZES,
+      'medium',
+    ),
+
+    mediaType: normalize(
+      asText(mediaType),
+      SUPPORTED_MEDIA_TYPES,
+      'none',
+    ),
+
+    image: getImageSource(image),
+
+    imageAlt: asText(imageAlt),
+
+    video: asText(video),
+
+    poster: getImageSource(poster) || asText(poster),
+
+    eyebrow: asText(eyebrow),
+
+    title: title?.innerHTML?.trim() || '',
+
+    content: content?.innerHTML?.trim() || '',
+
+    supportingText:
+      supportingText?.innerHTML?.trim() || '',
+
+    primaryCtaText: asText(primaryCtaText),
+
+    primaryCta: getLink(primaryCta),
+
+    secondaryCtaText: asText(secondaryCtaText),
+
+    secondaryCta: getLink(secondaryCta),
+
+    primaryButtonStyle: normalize(
+      asText(primaryButtonStyle),
+      SUPPORTED_BUTTON_STYLES,
+      'solid',
+    ),
+
+    secondaryButtonStyle: normalize(
+      asText(secondaryButtonStyle),
+      SUPPORTED_BUTTON_STYLES,
+      'outline',
+    ),
+
+    primaryButtonColor: normalize(
+      asText(primaryButtonColor),
+      SUPPORTED_BUTTON_COLORS,
+      'primary',
+    ),
+
+    secondaryButtonColor: normalize(
+      asText(secondaryButtonColor),
+      SUPPORTED_BUTTON_COLORS,
+      'secondary',
+    ),
+
+    alignment: normalize(
+      asText(alignment),
+      SUPPORTED_ALIGNMENTS,
+      'left',
+    ),
+
+    backdrop: normalize(
+      asText(backdrop),
+      SUPPORTED_BACKDROPS,
+      'dark',
+    ),
+
+    borderRadius: normalize(
+      asText(borderRadius),
+      SUPPORTED_RADIUS,
+      'medium',
+    ),
+
+    closeLabel: asText(closeLabel) || 'Close',
+
+    triggerText: asText(triggerText) || 'Open Modal',
   };
-
-  [...block.children].forEach((row) => {
-    const cells = [...row.children || []];
-
-    if (cells.length < 2) {
-      return;
-    }
-
-    const key = asText(cells[0]).toLowerCase();
-    const value = getCellValue(cells[1]);
-
-    switch (key) {
-      case 'layout':
-        data.layout = normalize(
-          asText(value),
-          SUPPORTED_LAYOUTS,
-          'default',
-        );
-        break;
-
-      case 'size':
-        data.size = normalize(
-          asText(value),
-          SUPPORTED_SIZES,
-          'medium',
-        );
-        break;
-
-      case 'mediatype':
-      case 'media type':
-        data.mediaType = normalize(
-          asText(value),
-          SUPPORTED_MEDIA_TYPES,
-          'none',
-        );
-        break;
-
-      case 'image':
-        data.image = getImageSource(value);
-        break;
-
-      case 'imagealt':
-      case 'image description':
-        data.imageAlt = asText(value);
-        break;
-
-      case 'video':
-      case 'video url':
-        data.video = asText(value);
-        break;
-
-      case 'poster':
-      case 'video poster':
-        data.poster = getImageSource(value) || asText(value);
-        break;
-
-      case 'eyebrow':
-        data.eyebrow = asText(value);
-        break;
-
-      case 'title':
-      case 'heading':
-        data.title = value?.innerHTML?.trim() || '';
-        break;
-
-      case 'content':
-        data.content = value?.innerHTML?.trim() || '';
-        break;
-
-      case 'supportingtext':
-      case 'supporting text':
-        data.supportingText = value?.innerHTML?.trim() || '';
-        break;
-
-      case 'primaryctatext':
-      case 'primary cta text':
-        data.primaryCtaText = asText(value);
-        break;
-
-      case 'primarycta':
-      case 'primary cta link':
-        data.primaryCta = value?.querySelector('a')?.href || asText(value);
-        break;
-
-      case 'secondaryctatext':
-      case 'secondary cta text':
-        data.secondaryCtaText = asText(value);
-        break;
-
-      case 'secondarycta':
-      case 'secondary cta link':
-        data.secondaryCta = value?.querySelector('a')?.href || asText(value);
-        break;
-
-      case 'primarybuttonstyle':
-      case 'primary button style':
-        data.primaryButtonStyle = normalize(
-          asText(value),
-          SUPPORTED_BUTTON_STYLES,
-          'solid',
-        );
-        break;
-
-      case 'secondarybuttonstyle':
-      case 'secondary button style':
-        data.secondaryButtonStyle = normalize(
-          asText(value),
-          SUPPORTED_BUTTON_STYLES,
-          'outline',
-        );
-        break;
-
-      case 'primarybuttoncolor':
-      case 'primary button color':
-        data.primaryButtonColor = normalize(
-          asText(value),
-          SUPPORTED_BUTTON_COLORS,
-          'primary',
-        );
-        break;
-
-      case 'secondarybuttoncolor':
-      case 'secondary button color':
-        data.secondaryButtonColor = normalize(
-          asText(value),
-          SUPPORTED_BUTTON_COLORS,
-          'secondary',
-        );
-        break;
-
-      case 'alignment':
-      case 'content alignment':
-        data.alignment = normalize(
-          asText(value),
-          SUPPORTED_ALIGNMENTS,
-          'left',
-        );
-        break;
-
-      case 'backdrop':
-        data.backdrop = normalize(
-          asText(value),
-          SUPPORTED_BACKDROPS,
-          'dark',
-        );
-        break;
-
-      case 'borderradius':
-      case 'border radius':
-        data.borderRadius = normalize(
-          asText(value),
-          SUPPORTED_RADIUS,
-          'medium',
-        );
-        break;
-
-      case 'closelabel':
-      case 'close button label':
-        data.closeLabel = asText(value) || 'Close';
-        break;
-
-      case 'triggertext':
-      case 'trigger text':
-        data.triggerText = asText(value) || 'Open Modal';
-        break;
-
-      default:
-        break;
-    }
-  });
-
-  return data;
 }
 
 function createElement(tagName, className, content = '') {
@@ -332,6 +262,14 @@ function createVideo(src, poster) {
 }
 
 function createMedia(data) {
+  /*
+   * Media Type is the source of truth.
+   *
+   * Image → only image
+   * Video → only video
+   * None  → nothing
+   */
+
   if (data.mediaType === 'image' && data.image) {
     const media = document.createElement('div');
 
@@ -425,7 +363,7 @@ function createActions(data) {
     actions.append(secondary);
   }
 
-  return actions.childElementCount
+  return actions.childElementCount > 0
     ? actions
     : null;
 }
@@ -442,7 +380,10 @@ function createModal(data) {
     `modal-v1-backdrop-${data.backdrop}`,
   ].join(' ');
 
-  overlay.setAttribute('aria-hidden', 'true');
+  overlay.setAttribute(
+    'aria-hidden',
+    'true',
+  );
 
   const dialog = document.createElement('div');
 
@@ -454,8 +395,15 @@ function createModal(data) {
     `modal-v1-radius-${data.borderRadius}`,
   ].join(' ');
 
-  dialog.setAttribute('role', 'dialog');
-  dialog.setAttribute('aria-modal', 'true');
+  dialog.setAttribute(
+    'role',
+    'dialog',
+  );
+
+  dialog.setAttribute(
+    'aria-modal',
+    'true',
+  );
 
   if (data.title) {
     dialog.setAttribute(
@@ -467,11 +415,14 @@ function createModal(data) {
   const closeButton = document.createElement('button');
 
   closeButton.className = 'modal-v1-close';
+
   closeButton.type = 'button';
+
   closeButton.setAttribute(
     'aria-label',
     data.closeLabel,
   );
+
   closeButton.innerHTML = '&times;';
 
   dialog.append(closeButton);
@@ -490,6 +441,7 @@ function createModal(data) {
     const eyebrow = document.createElement('div');
 
     eyebrow.className = 'modal-v1-eyebrow';
+
     eyebrow.textContent = data.eyebrow.toUpperCase();
 
     content.append(eyebrow);
@@ -518,13 +470,13 @@ function createModal(data) {
   }
 
   if (data.supportingText) {
-    const supportingText = createElement(
+    const supporting = createElement(
       'div',
       'modal-v1-supporting-text',
       data.supportingText,
     );
 
-    content.append(supportingText);
+    content.append(supporting);
   }
 
   const actions = createActions(data);
@@ -534,6 +486,7 @@ function createModal(data) {
   }
 
   dialog.append(content);
+
   overlay.append(dialog);
 
   return {
@@ -554,16 +507,26 @@ function setupModal(
   const getFocusableElements = () => [
     ...dialog.querySelectorAll(
       'a[href], button:not([disabled]), '
-      + 'input:not([disabled]), textarea:not([disabled]), '
+      + 'input:not([disabled]), '
+      + 'textarea:not([disabled]), '
       + 'select:not([disabled]), '
       + '[tabindex]:not([tabindex="-1"])',
     ),
   ];
 
   const closeModal = () => {
-    overlay.classList.remove('is-open');
-    overlay.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-v1-open');
+    overlay.classList.remove(
+      'is-open',
+    );
+
+    overlay.setAttribute(
+      'aria-hidden',
+      'true',
+    );
+
+    document.body.classList.remove(
+      'modal-v1-open',
+    );
 
     if (
       previousFocus
@@ -576,76 +539,94 @@ function setupModal(
   const openModal = () => {
     previousFocus = document.activeElement;
 
-    overlay.classList.add('is-open');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-v1-open');
+    overlay.classList.add(
+      'is-open',
+    );
+
+    overlay.setAttribute(
+      'aria-hidden',
+      'false',
+    );
+
+    document.body.classList.add(
+      'modal-v1-open',
+    );
 
     closeButton.focus();
   };
 
-  trigger.addEventListener('click', (event) => {
-    event.preventDefault();
-    openModal();
-  });
+  trigger.addEventListener(
+    'click',
+    (event) => {
+      event.preventDefault();
+      openModal();
+    },
+  );
 
   closeButton.addEventListener(
     'click',
     closeModal,
   );
 
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) {
-      closeModal();
-    }
-  });
+  overlay.addEventListener(
+    'click',
+    (event) => {
+      if (event.target === overlay) {
+        closeModal();
+      }
+    },
+  );
 
-  document.addEventListener('keydown', (event) => {
-    if (!overlay.classList.contains('is-open')) {
-      return;
-    }
+  document.addEventListener(
+    'keydown',
+    (event) => {
+      if (
+        !overlay.classList.contains(
+          'is-open',
+        )
+      ) {
+        return;
+      }
 
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeModal();
-      return;
-    }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeModal();
+        return;
+      }
 
-    if (event.key !== 'Tab') {
-      return;
-    }
+      if (event.key !== 'Tab') {
+        return;
+      }
 
-    const focusableElements = getFocusableElements();
+      const focusableElements = getFocusableElements();
 
-    if (!focusableElements.length) {
-      event.preventDefault();
-      closeButton.focus();
-      return;
-    }
+      if (!focusableElements.length) {
+        event.preventDefault();
+        closeButton.focus();
+        return;
+      }
 
-    const first = focusableElements[0];
-    const last = focusableElements[
-      focusableElements.length - 1
-    ];
+      const first = focusableElements[0];
 
-    if (
-      event.shiftKey
-      && document.activeElement === first
-    ) {
-      event.preventDefault();
-      last.focus();
-    } else if (
-      !event.shiftKey
-      && document.activeElement === last
-    ) {
-      event.preventDefault();
-      first.focus();
-    }
-  });
+      const last = focusableElements[
+        focusableElements.length - 1
+      ];
 
-  return {
-    openModal,
-    closeModal,
-  };
+      if (
+        event.shiftKey
+        && document.activeElement === first
+      ) {
+        event.preventDefault();
+        last.focus();
+      } else if (
+        !event.shiftKey
+        && document.activeElement === last
+      ) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+  );
 }
 
 export function generateModalDOM(data) {
@@ -658,7 +639,9 @@ export function generateModalDOM(data) {
   const trigger = document.createElement('button');
 
   trigger.className = 'modal-v1-trigger';
+
   trigger.type = 'button';
+
   trigger.textContent = data.triggerText;
 
   setupModal(
@@ -679,9 +662,13 @@ export function generateModalDOM(data) {
 export default function decorate(block) {
   const data = normalizeBlock(block);
 
+  /*
+   * Keep the original EDS block and
+   * replace only its authored content.
+   */
   block.textContent = '';
 
-  block.append(
-    generateModalDOM(data),
-  );
+  const modalDOM = generateModalDOM(data);
+
+  block.append(modalDOM);
 }
