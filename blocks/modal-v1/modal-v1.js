@@ -5,7 +5,7 @@
  * MODAL V1
  * ============================================================
  *
- * Field order MUST match _modal-v1.json:
+ * FIELD ORDER
  *
  * 1  layout
  * 2  size
@@ -35,57 +35,58 @@
 
 
 /* ============================================================
-   FIELD HELPERS
+   BASIC FIELD HELPERS
    ============================================================ */
 
-/**
- * Read a TEXT field.
+function getFields(block) {
+  return [...block.children].map(
+    (row) => row.firstElementChild || row,
+  );
+}
+
+
+/*
+ * Text fields:
  *
  * IMPORTANT:
- * Never read an <a href> from here.
+ * This function NEVER reads an <a href>.
  *
- * This prevents:
- *
- * https://example.com
- *
- * from accidentally becoming the CTA button text.
+ * Therefore a CTA link cannot accidentally become
+ * the CTA button text.
  */
 function getTextValue(field) {
   if (!field) return '';
 
-  const input = field.querySelector('input, textarea');
+  const input = field.querySelector(
+    'input, textarea',
+  );
 
   if (input && input.value) {
     return input.value.trim();
   }
 
-  /*
-   * For select-like fields, prefer the actual selected value
-   * when available.
-   */
   const select = field.querySelector('select');
 
   if (select && select.value) {
     return select.value.trim();
   }
 
-  /*
-   * IMPORTANT:
-   * Do NOT look for <a href> here.
-   */
   return (field.textContent || '').trim();
 }
 
 
-/**
- * Read a LINK field.
+/*
+ * Link fields:
  *
- * This function is ONLY used for CTA links and video URLs.
+ * Only use this function for fields that are
+ * actually supposed to contain URLs.
  */
 function getLinkValue(field) {
   if (!field) return '';
 
-  const anchor = field.querySelector('a[href]');
+  const anchor = field.querySelector(
+    'a[href]',
+  );
 
   if (anchor && anchor.href) {
     return anchor.href;
@@ -101,13 +102,13 @@ function getLinkValue(field) {
 }
 
 
-/**
- * Get all block fields in positional order.
+/*
+ * Rich text HTML.
  */
-function getFields(block) {
-  return [...block.children].map(
-    (row) => row.firstElementChild || row,
-  );
+function getFieldHTML(field) {
+  if (!field) return '';
+
+  return field.innerHTML || '';
 }
 
 
@@ -126,22 +127,81 @@ function normalize(value, fallback) {
 
 
 /* ============================================================
+   VALUE CHECKERS
+   ============================================================ */
+
+function isUrl(value) {
+  if (!value) return false;
+
+  const text = value.trim();
+
+  return (
+    text.startsWith('http://') ||
+    text.startsWith('https://') ||
+    text.startsWith('/') ||
+    text.startsWith('#') ||
+    text.startsWith('mailto:') ||
+    text.startsWith('tel:')
+  );
+}
+
+
+function isButtonStyle(value) {
+  const normalized = normalize(
+    value,
+    '',
+  );
+
+  return [
+    'solid',
+    'outline',
+    'text',
+  ].includes(normalized);
+}
+
+
+function isButtonColor(value) {
+  const normalized = normalize(
+    value,
+    '',
+  );
+
+  return [
+    'primary',
+    'secondary',
+    'accent',
+    'dark',
+    'light',
+  ].includes(normalized);
+}
+
+
+/* ============================================================
    IMAGE
    ============================================================ */
 
 function getImageUrl(field) {
   if (!field) return '';
 
-  const img = field.querySelector('img');
+  const image = field.querySelector('img');
 
-  if (img) {
-    return img.currentSrc || img.src || '';
+  if (image) {
+    return (
+      image.currentSrc ||
+      image.src ||
+      ''
+    );
   }
 
-  const source = field.querySelector('source[srcset]');
+  const source = field.querySelector(
+    'source[srcset]',
+  );
 
   if (source && source.srcset) {
-    return source.srcset.split(',')[0].trim().split(' ')[0];
+    return source.srcset
+      .split(',')[0]
+      .trim()
+      .split(' ')[0];
   }
 
   return getTextValue(field);
@@ -155,18 +215,22 @@ function getImageUrl(field) {
 function createVideo(url, poster) {
   if (!url) return null;
 
-  const wrapper = document.createElement('div');
+  const wrapper =
+    document.createElement('div');
 
-  wrapper.className = 'modal-v1-media';
+  wrapper.className =
+    'modal-v1-media';
+
 
   /*
-   * Direct video file.
+   * Direct video files.
    */
   if (
     /\.(mp4|webm|ogg)(\?.*)?$/i.test(url) ||
     url.includes('/content/dam/')
   ) {
-    const video = document.createElement('video');
+    const video =
+      document.createElement('video');
 
     video.controls = true;
     video.preload = 'metadata';
@@ -176,7 +240,8 @@ function createVideo(url, poster) {
       video.poster = poster;
     }
 
-    const source = document.createElement('source');
+    const source =
+      document.createElement('source');
 
     source.src = url;
 
@@ -186,55 +251,84 @@ function createVideo(url, poster) {
     return wrapper;
   }
 
+
   /*
-   * Convert YouTube/Vimeo URLs to embed URLs.
+   * Embedded video.
    */
   let embedUrl = url;
 
   try {
     const parsed = new URL(url);
 
+
     /* YouTube */
 
-    if (parsed.hostname.includes('youtube.com')) {
-      const videoId = parsed.searchParams.get('v');
+    if (
+      parsed.hostname.includes(
+        'youtube.com',
+      )
+    ) {
+      const id =
+        parsed.searchParams.get('v');
 
-      if (videoId) {
-        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      if (id) {
+        embedUrl =
+          `https://www.youtube.com/embed/${id}`;
       }
     }
 
-    if (parsed.hostname.includes('youtu.be')) {
-      const videoId = parsed.pathname.substring(1);
 
-      if (videoId) {
-        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    if (
+      parsed.hostname.includes(
+        'youtu.be',
+      )
+    ) {
+      const id =
+        parsed.pathname.substring(1);
+
+      if (id) {
+        embedUrl =
+          `https://www.youtube.com/embed/${id}`;
       }
     }
+
 
     /* Vimeo */
 
-    if (parsed.hostname.includes('vimeo.com')) {
-      const parts = parsed.pathname
-        .split('/')
-        .filter(Boolean);
+    if (
+      parsed.hostname.includes(
+        'vimeo.com',
+      )
+    ) {
+      const parts =
+        parsed.pathname
+          .split('/')
+          .filter(Boolean);
 
-      const videoId = parts[parts.length - 1];
+      const id =
+        parts[parts.length - 1];
 
-      if (videoId) {
-        embedUrl = `https://player.vimeo.com/video/${videoId}`;
+      if (id) {
+        embedUrl =
+          `https://player.vimeo.com/video/${id}`;
       }
     }
   } catch (error) {
-    // Use original URL.
+    /*
+     * If URL parsing fails,
+     * use the original URL.
+     */
   }
 
-  const iframe = document.createElement('iframe');
+
+  const iframe =
+    document.createElement('iframe');
 
   iframe.src = embedUrl;
   iframe.title = 'Modal video';
   iframe.loading = 'lazy';
   iframe.allowFullscreen = true;
+
   iframe.allow =
     'autoplay; fullscreen; picture-in-picture';
 
@@ -251,24 +345,27 @@ function createVideo(url, poster) {
 function createImage(url, alt) {
   if (!url) return null;
 
-  const wrapper = document.createElement('div');
+  const wrapper =
+    document.createElement('div');
 
-  wrapper.className = 'modal-v1-media';
+  wrapper.className =
+    'modal-v1-media';
 
-  const img = document.createElement('img');
+  const image =
+    document.createElement('img');
 
-  img.src = url;
-  img.alt = alt || '';
-  img.loading = 'lazy';
+  image.src = url;
+  image.alt = alt || '';
+  image.loading = 'lazy';
 
-  wrapper.append(img);
+  wrapper.append(image);
 
   return wrapper;
 }
 
 
 /* ============================================================
-   BUTTON
+   CTA BUTTON
    ============================================================ */
 
 function createButton(
@@ -277,19 +374,36 @@ function createButton(
   style,
   color,
 ) {
+  const buttonText =
+    (text || '').trim();
+
+
   /*
-   * Most important check:
-   *
-   * If there is no CTA TEXT,
-   * do NOT create a button.
+   * Don't create an empty button.
    */
-  if (!text || !text.trim()) {
+  if (!buttonText) {
     return null;
   }
+
+
+  /*
+   * CRITICAL PROTECTION:
+   *
+   * These values are styling values,
+   * NOT button labels.
+   */
+  if (
+    isButtonStyle(buttonText) ||
+    isButtonColor(buttonText)
+  ) {
+    return null;
+  }
+
 
   const button = link
     ? document.createElement('a')
     : document.createElement('button');
+
 
   if (link) {
     button.href = link;
@@ -297,11 +411,18 @@ function createButton(
     button.type = 'button';
   }
 
+
   const normalizedStyle =
-    normalize(style, 'solid');
+    isButtonStyle(style)
+      ? normalize(style, 'solid')
+      : 'solid';
+
 
   const normalizedColor =
-    normalize(color, 'primary');
+    isButtonColor(color)
+      ? normalize(color, 'primary')
+      : 'primary';
+
 
   button.className = [
     'modal-v1-button',
@@ -309,14 +430,12 @@ function createButton(
     `modal-v1-button-color-${normalizedColor}`,
   ].join(' ');
 
+
   /*
-   * VERY IMPORTANT:
-   *
-   * Only CTA TEXT goes here.
-   *
-   * Never use link/style/color here.
+   * ONLY actual CTA text goes here.
    */
-  button.textContent = text.trim();
+  button.textContent = buttonText;
+
 
   return button;
 }
@@ -327,7 +446,8 @@ function createButton(
    ============================================================ */
 
 function buildModal(data) {
-  const overlay = document.createElement('div');
+  const overlay =
+    document.createElement('div');
 
   overlay.className = [
     'modal-v1-overlay',
@@ -339,7 +459,9 @@ function buildModal(data) {
     'true',
   );
 
-  const dialog = document.createElement('div');
+
+  const dialog =
+    document.createElement('div');
 
   dialog.className = [
     'modal-v1-dialog',
@@ -361,13 +483,16 @@ function buildModal(data) {
 
 
   /* ==========================================================
-     CLOSE BUTTON
+     CLOSE
      ========================================================== */
 
-  const close = document.createElement('button');
+  const close =
+    document.createElement('button');
 
   close.type = 'button';
-  close.className = 'modal-v1-close';
+
+  close.className =
+    'modal-v1-close';
 
   close.setAttribute(
     'aria-label',
@@ -406,15 +531,18 @@ function buildModal(data) {
      BODY
      ========================================================== */
 
-  const body = document.createElement('div');
+  const body =
+    document.createElement('div');
 
-  body.className = 'modal-v1-body';
+  body.className =
+    'modal-v1-body';
 
 
   /* EYEBROW */
 
   if (data.eyebrow) {
-    const eyebrow = document.createElement('div');
+    const eyebrow =
+      document.createElement('div');
 
     eyebrow.className =
       'modal-v1-eyebrow';
@@ -429,7 +557,8 @@ function buildModal(data) {
   /* HEADING */
 
   if (data.heading) {
-    const heading = document.createElement('h2');
+    const heading =
+      document.createElement('h2');
 
     heading.className =
       'modal-v1-heading';
@@ -444,7 +573,8 @@ function buildModal(data) {
   /* CONTENT */
 
   if (data.content) {
-    const content = document.createElement('div');
+    const content =
+      document.createElement('div');
 
     content.className =
       'modal-v1-main-content';
@@ -473,37 +603,40 @@ function buildModal(data) {
 
 
   /* ==========================================================
-     FOOTER
+     CTA FOOTER
      ========================================================== */
 
-  const footer = document.createElement('div');
+  const footer =
+    document.createElement('div');
 
   footer.className =
     'modal-v1-footer';
 
 
-  /* PRIMARY */
+  /* PRIMARY CTA */
 
-  const primary = createButton(
-    data.primaryText,
-    data.primaryLink,
-    data.primaryStyle,
-    data.primaryColor,
-  );
+  const primary =
+    createButton(
+      data.primaryText,
+      data.primaryLink,
+      data.primaryStyle,
+      data.primaryColor,
+    );
 
   if (primary) {
     footer.append(primary);
   }
 
 
-  /* SECONDARY */
+  /* SECONDARY CTA */
 
-  const secondary = createButton(
-    data.secondaryText,
-    data.secondaryLink,
-    data.secondaryStyle,
-    data.secondaryColor,
-  );
+  const secondary =
+    createButton(
+      data.secondaryText,
+      data.secondaryLink,
+      data.secondaryStyle,
+      data.secondaryColor,
+    );
 
   if (secondary) {
     footer.append(secondary);
@@ -516,7 +649,7 @@ function buildModal(data) {
 
 
   /* ==========================================================
-     FINISH DIALOG
+     DIALOG
      ========================================================== */
 
   dialog.append(close);
@@ -539,99 +672,149 @@ function buildModal(data) {
 export default function decorate(block) {
 
   /*
-   * Read fields BEFORE clearing the block.
+   * Read all authored fields BEFORE clearing block.
    */
 
-  const fields = getFields(block);
+  const fields =
+    getFields(block);
 
 
   const [
     layoutField,
     sizeField,
     mediaTypeField,
+
     imageField,
     imageAltField,
+
     videoUrlField,
     videoPosterField,
+
     eyebrowField,
     headingField,
     contentField,
     supportingTextField,
-    primaryTextField,
-    primaryLinkField,
-    secondaryTextField,
-    secondaryLinkField,
-    primaryStyleField,
-    secondaryStyleField,
-    primaryColorField,
-    secondaryColorField,
+
+    primaryCtaTextField,
+    primaryCtaLinkField,
+
+    secondaryCtaTextField,
+    secondaryCtaLinkField,
+
+    primaryButtonStyleField,
+    secondaryButtonStyleField,
+
+    primaryButtonColorField,
+    secondaryButtonColorField,
+
     alignmentField,
     backdropField,
     radiusField,
+
     closeLabelField,
     triggerTextField,
   ] = fields;
 
 
   /* ==========================================================
-     DATA
+     BASIC VALUES
+     ========================================================== */
+
+  const layout =
+    normalize(
+      getTextValue(layoutField),
+      'default',
+    );
+
+  const size =
+    normalize(
+      getTextValue(sizeField),
+      'medium',
+    );
+
+  const mediaType =
+    normalize(
+      getTextValue(mediaTypeField),
+      'none',
+    );
+
+
+  /* ==========================================================
+     CONTENT
      ========================================================== */
 
   const data = {
 
-    layout: normalize(
-      getTextValue(layoutField),
+    layout: [
       'default',
-    ),
+      'side-panel',
+      'full-screen',
+      'bottom-sheet',
+    ].includes(layout)
+      ? layout
+      : 'default',
 
-    size: normalize(
-      getTextValue(sizeField),
+    size: [
+      'small',
       'medium',
-    ),
+      'large',
+    ].includes(size)
+      ? size
+      : 'medium',
 
-    mediaType: normalize(
-      getTextValue(mediaTypeField),
+    mediaType: [
       'none',
-    ),
+      'image',
+      'video',
+    ].includes(mediaType)
+      ? mediaType
+      : 'none',
 
 
-    image: getImageUrl(imageField),
+    /* MEDIA */
 
-    imageAlt: getTextValue(
-      imageAltField,
-    ),
+    image:
+      getImageUrl(
+        imageField,
+      ),
+
+    imageAlt:
+      getTextValue(
+        imageAltField,
+      ),
+
+    videoUrl:
+      getLinkValue(
+        videoUrlField,
+      ),
+
+    videoPoster:
+      getImageUrl(
+        videoPosterField,
+      ),
 
 
-    /*
-     * LINK FIELD
-     */
-    videoUrl: getLinkValue(
-      videoUrlField,
-    ),
+    /* TEXT */
 
-    videoPoster: getImageUrl(
-      videoPosterField,
-    ),
+    eyebrow:
+      getTextValue(
+        eyebrowField,
+      ),
 
+    heading:
+      getTextValue(
+        headingField,
+      ),
 
-    /*
-     * TEXT FIELDS
-     */
-    eyebrow: getTextValue(
-      eyebrowField,
-    ),
-
-    heading: getTextValue(
-      headingField,
-    ),
-
-    content: getTextValue(
-      contentField,
-    ),
+    content:
+      getTextValue(
+        contentField,
+      ),
 
     contentHTML:
-      contentField?.innerHTML || '',
-
+      getFieldHTML(
+        contentField,
+      ),
 
     supportingText:
       getTextValue(
@@ -639,169 +822,252 @@ export default function decorate(block) {
       ),
 
     supportingTextHTML:
-      supportingTextField?.innerHTML || '',
+      getFieldHTML(
+        supportingTextField,
+      ),
 
 
-    /*
-     * CTA TEXT
-     */
+    /* CTA */
+
     primaryText:
       getTextValue(
-        primaryTextField,
+        primaryCtaTextField,
       ),
 
-    /*
-     * CTA LINK
-     */
     primaryLink:
       getLinkValue(
-        primaryLinkField,
+        primaryCtaLinkField,
       ),
 
-
-    /*
-     * SECONDARY CTA
-     */
     secondaryText:
       getTextValue(
-        secondaryTextField,
+        secondaryCtaTextField,
       ),
 
     secondaryLink:
       getLinkValue(
-        secondaryLinkField,
+        secondaryCtaLinkField,
       ),
 
 
-    /*
-     * BUTTON STYLE
-     */
+    /* BUTTON STYLE */
+
     primaryStyle:
       getTextValue(
-        primaryStyleField,
+        primaryButtonStyleField,
       ),
 
     secondaryStyle:
       getTextValue(
-        secondaryStyleField,
+        secondaryButtonStyleField,
       ),
 
 
-    /*
-     * BUTTON COLOR
-     */
+    /* BUTTON COLOR */
+
     primaryColor:
       getTextValue(
-        primaryColorField,
+        primaryButtonColorField,
       ),
 
     secondaryColor:
       getTextValue(
-        secondaryColorField,
+        secondaryButtonColorField,
       ),
 
 
-    /*
-     * APPEARANCE
-     */
-    alignment: normalize(
-      getTextValue(alignmentField),
-      'left',
-    ),
+    /* APPEARANCE */
 
-    backdrop: normalize(
-      getTextValue(backdropField),
-      'default',
-    ),
+    alignment:
+      normalize(
+        getTextValue(
+          alignmentField,
+        ),
+        'left',
+      ),
 
-    radius: normalize(
-      getTextValue(radiusField),
-      'medium',
-    ),
+    backdrop:
+      normalize(
+        getTextValue(
+          backdropField,
+        ),
+        'default',
+      ),
+
+    radius:
+      normalize(
+        getTextValue(
+          radiusField,
+        ),
+        'medium',
+      ),
 
 
-    /*
-     * CLOSE + TRIGGER
-     */
+    /* CLOSE / TRIGGER */
+
     closeLabel:
-      getTextValue(closeLabelField) ||
-      'Close',
+      getTextValue(
+        closeLabelField,
+      ) || 'Close',
 
     triggerText:
-      getTextValue(triggerTextField) ||
-      'Open Modal',
+      getTextValue(
+        triggerTextField,
+      ) || 'Open Modal',
   };
 
 
   /* ==========================================================
-     VALIDATION
+     NORMALIZE BUTTON STYLE
      ========================================================== */
 
-  const layouts = [
-    'default',
-    'side-panel',
-    'full-screen',
-    'bottom-sheet',
-  ];
+  if (
+    !isButtonStyle(
+      data.primaryStyle,
+    )
+  ) {
+    data.primaryStyle =
+      'solid';
+  }
 
-  if (!layouts.includes(data.layout)) {
-    data.layout = 'default';
+  if (
+    !isButtonStyle(
+      data.secondaryStyle,
+    )
+  ) {
+    data.secondaryStyle =
+      'outline';
   }
 
 
-  const sizes = [
-    'small',
-    'medium',
-    'large',
-  ];
+  /* ==========================================================
+     NORMALIZE BUTTON COLORS
+     ========================================================== */
 
-  if (!sizes.includes(data.size)) {
-    data.size = 'medium';
+  if (
+    !isButtonColor(
+      data.primaryColor,
+    )
+  ) {
+    data.primaryColor =
+      'primary';
+  }
+
+  if (
+    !isButtonColor(
+      data.secondaryColor,
+    )
+  ) {
+    data.secondaryColor =
+      'secondary';
   }
 
 
-  const mediaTypes = [
-    'none',
-    'image',
-    'video',
-  ];
+  /* ==========================================================
+     NORMALIZE ALIGNMENT
+     ========================================================== */
 
-  if (!mediaTypes.includes(data.mediaType)) {
-    data.mediaType = 'none';
+  if (
+    ![
+      'left',
+      'center',
+      'right',
+    ].includes(
+      data.alignment,
+    )
+  ) {
+    data.alignment =
+      'left';
   }
 
 
-  const alignments = [
-    'left',
-    'center',
-    'right',
-  ];
+  /* ==========================================================
+     NORMALIZE BACKDROP
+     ========================================================== */
 
-  if (!alignments.includes(data.alignment)) {
-    data.alignment = 'left';
+  if (
+    ![
+      'default',
+      'dark',
+      'light',
+    ].includes(
+      data.backdrop,
+    )
+  ) {
+    data.backdrop =
+      'default';
   }
 
 
-  const backdrops = [
-    'default',
-    'dark',
-    'light',
-  ];
+  /* ==========================================================
+     NORMALIZE RADIUS
+     ========================================================== */
 
-  if (!backdrops.includes(data.backdrop)) {
-    data.backdrop = 'default';
+  if (
+    ![
+      'none',
+      'small',
+      'medium',
+      'large',
+    ].includes(
+      data.radius,
+    )
+  ) {
+    data.radius =
+      'medium';
   }
 
 
-  const radiuses = [
-    'none',
-    'small',
-    'medium',
-    'large',
-  ];
+  /* ==========================================================
+     CTA SAFETY
+     ========================================================== */
 
-  if (!radiuses.includes(data.radius)) {
-    data.radius = 'medium';
+  /*
+   * If a styling value somehow entered a CTA text field,
+   * NEVER display it as the button label.
+   */
+
+  if (
+    isButtonStyle(
+      data.primaryText,
+    ) ||
+    isButtonColor(
+      data.primaryText,
+    )
+  ) {
+    data.primaryText = '';
+  }
+
+
+  if (
+    isButtonStyle(
+      data.secondaryText,
+    ) ||
+    isButtonColor(
+      data.secondaryText,
+    )
+  ) {
+    data.secondaryText = '';
+  }
+
+
+  /*
+   * If the link field isn't actually a link,
+   * don't use it as href.
+   */
+
+  if (
+    data.primaryLink &&
+    !isUrl(data.primaryLink)
+  ) {
+    data.primaryLink = '';
+  }
+
+  if (
+    data.secondaryLink &&
+    !isUrl(data.secondaryLink)
+  ) {
+    data.secondaryLink = '';
   }
 
 
@@ -822,10 +1088,11 @@ export default function decorate(block) {
 
 
   /* ==========================================================
-     MODAL
+     BUILD MODAL
      ========================================================== */
 
-  const modal = buildModal(data);
+  const modal =
+    buildModal(data);
 
   const {
     overlay,
@@ -833,12 +1100,11 @@ export default function decorate(block) {
   } = modal;
 
 
-  /*
-   * Clear authored rows.
-   */
+  /* ==========================================================
+     REPLACE AUTHORED CONTENT
+     ========================================================== */
 
   block.textContent = '';
-
 
   block.append(trigger);
   block.append(overlay);
@@ -888,8 +1154,11 @@ export default function decorate(block) {
       'modal-v1-no-scroll',
     );
 
+
     const video =
-      overlay.querySelector('video');
+      overlay.querySelector(
+        'video',
+      );
 
     if (video) {
       video.pause();
@@ -898,12 +1167,13 @@ export default function decorate(block) {
 
 
   /* ==========================================================
-     EVENTS
+     TRIGGER EVENT
      ========================================================== */
 
   trigger.addEventListener(
     'click',
     (event) => {
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -912,9 +1182,14 @@ export default function decorate(block) {
   );
 
 
+  /* ==========================================================
+     CLOSE EVENT
+     ========================================================== */
+
   close.addEventListener(
     'click',
     (event) => {
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -923,9 +1198,14 @@ export default function decorate(block) {
   );
 
 
+  /* ==========================================================
+     BACKDROP CLICK
+     ========================================================== */
+
   overlay.addEventListener(
     'click',
     (event) => {
+
       if (
         event.target === overlay
       ) {
@@ -935,9 +1215,14 @@ export default function decorate(block) {
   );
 
 
+  /* ==========================================================
+     ESCAPE
+     ========================================================== */
+
   document.addEventListener(
     'keydown',
     (event) => {
+
       if (
         event.key === 'Escape' &&
         overlay.classList.contains(
