@@ -5715,7 +5715,6 @@
         "name": "layout",
         "value": "default",
         "label": "Layout",
-        "description": "Controls the position and presentation of the modal.",
         "options": [
           {
             "name": "Default",
@@ -5741,7 +5740,6 @@
         "name": "size",
         "value": "medium",
         "label": "Size",
-        "description": "Controls the width and overall size of the modal.",
         "options": [
           {
             "name": "Small",
@@ -5763,7 +5761,6 @@
         "name": "mediaType",
         "value": "none",
         "label": "Media Type",
-        "description": "Select the type of media displayed inside the modal.",
         "options": [
           {
             "name": "None",
@@ -5784,7 +5781,7 @@
         "valueType": "string",
         "name": "image",
         "label": "Image",
-        "description": "The image displayed inside the modal.",
+        "description": "Image displayed inside the modal.",
         "multi": false,
         "condition": {
           "===": [
@@ -5801,7 +5798,7 @@
         "name": "imageAlt",
         "value": "",
         "label": "Image Description",
-        "description": "Alternative text for the modal image.",
+        "description": "Alternative description for the image.",
         "condition": {
           "===": [
             {
@@ -5817,7 +5814,6 @@
         "name": "video",
         "value": "",
         "label": "Video URL",
-        "description": "URL of the video displayed inside the modal.",
         "condition": {
           "===": [
             {
@@ -5832,7 +5828,6 @@
         "valueType": "string",
         "name": "poster",
         "label": "Video Poster",
-        "description": "Poster image displayed before the video starts.",
         "multi": false,
         "condition": {
           "===": [
@@ -5849,7 +5844,7 @@
         "name": "eyebrow",
         "value": "",
         "label": "Eyebrow",
-        "description": "Small pre-title displayed above the modal title."
+        "description": "Small pre-title displayed above the heading."
       },
       {
         "component": "text",
@@ -5857,7 +5852,7 @@
         "name": "title",
         "value": "",
         "label": "Heading",
-        "description": "Main heading displayed inside the modal."
+        "description": "Main modal heading."
       },
       {
         "component": "richtext",
@@ -5865,7 +5860,7 @@
         "name": "content",
         "value": "",
         "label": "Content",
-        "description": "Main rich text content displayed inside the modal."
+        "description": "Main modal content."
       },
       {
         "component": "richtext",
@@ -5873,39 +5868,35 @@
         "name": "supportingText",
         "value": "",
         "label": "Supporting Text",
-        "description": "Additional supporting content displayed below the main content."
+        "description": "Additional supporting information."
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "primaryCtaText",
         "value": "",
-        "label": "Primary CTA Text",
-        "description": "Text displayed inside the primary CTA."
+        "label": "Primary CTA Text"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "primaryCta",
         "value": "",
-        "label": "Primary CTA Link",
-        "description": "Link opened by the primary CTA."
+        "label": "Primary CTA Link"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "secondaryCtaText",
         "value": "",
-        "label": "Secondary CTA Text",
-        "description": "Text displayed inside the secondary CTA."
+        "label": "Secondary CTA Text"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "secondaryCta",
         "value": "",
-        "label": "Secondary CTA Link",
-        "description": "Link opened by the secondary CTA."
+        "label": "Secondary CTA Link"
       },
       {
         "component": "select",
@@ -6075,16 +6066,14 @@
         "valueType": "string",
         "name": "closeLabel",
         "value": "Close",
-        "label": "Close Button Label",
-        "description": "Accessible label for the close button."
+        "label": "Close Button Label"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "triggerText",
         "value": "Open Modal",
-        "label": "Trigger Text",
-        "description": "Text displayed on the button that opens the modal."
+        "label": "Trigger Text"
       }
     ]
   },

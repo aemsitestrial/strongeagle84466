@@ -34,7 +34,7 @@
   outline-offset: 3px;
 }
 
-/* Prevent background scrolling */
+/* Body lock */
 
 body.modal-v1-open {
   overflow: hidden;
@@ -147,7 +147,7 @@ body.modal-v1-open {
   border-radius: 16px 16px 0 0;
 }
 
-/* Border radius */
+/* Radius */
 
 .modal-v1-radius-small {
   border-radius: 4px;
@@ -220,8 +220,6 @@ body.modal-v1-open {
   background: #000;
 }
 
-/* Large media */
-
 .modal-v1-size-large .modal-v1-image img {
   max-height: 360px;
 }
@@ -241,7 +239,7 @@ body.modal-v1-open {
   padding: 2rem;
 }
 
-/* Content alignment */
+/* Alignment */
 
 .modal-v1-align-left .modal-v1-content {
   text-align: left;
@@ -311,7 +309,7 @@ body.modal-v1-open {
   margin-bottom: 0;
 }
 
-/* Body links */
+/* Links */
 
 .modal-v1-body a {
   color: #2563eb;
@@ -398,7 +396,7 @@ body.modal-v1-open {
   --modal-button-border: #d1d5db;
 }
 
-/* Solid button */
+/* Solid */
 
 .modal-v1-button-solid {
   color: var(--modal-button-text);
@@ -410,7 +408,7 @@ body.modal-v1-open {
   filter: brightness(0.92);
 }
 
-/* Outline button */
+/* Outline */
 
 .modal-v1-button-outline {
   color: var(--modal-button-bg);
@@ -423,7 +421,7 @@ body.modal-v1-open {
   background: var(--modal-button-bg);
 }
 
-/* Text button */
+/* Text */
 
 .modal-v1-button-text {
   min-height: auto;
@@ -438,7 +436,7 @@ body.modal-v1-open {
   text-decoration: underline;
 }
 
-/* Side panel sizes */
+/* Side panel */
 
 .modal-v1-layout-side.modal-v1-size-small {
   width: min(420px, 100%);

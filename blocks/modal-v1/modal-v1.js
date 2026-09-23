@@ -323,6 +323,7 @@ function createVideo(src, poster) {
   }
 
   const source = document.createElement('source');
+
   source.src = src;
 
   video.append(source);
@@ -331,26 +332,39 @@ function createVideo(src, poster) {
 }
 
 function createMedia(data) {
-  const media = document.createElement('div');
-  media.className = 'modal-v1-media';
-
   if (data.mediaType === 'image' && data.image) {
-    const image = createImage(data.image, data.imageAlt);
+    const media = document.createElement('div');
+
+    media.className = 'modal-v1-media';
+
+    const image = createImage(
+      data.image,
+      data.imageAlt,
+    );
 
     if (image) {
       media.append(image);
+      return media;
     }
   }
 
   if (data.mediaType === 'video' && data.video) {
-    const video = createVideo(data.video, data.poster);
+    const media = document.createElement('div');
+
+    media.className = 'modal-v1-media';
+
+    const video = createVideo(
+      data.video,
+      data.poster,
+    );
 
     if (video) {
       media.append(video);
+      return media;
     }
   }
 
-  return media.childElementCount > 0 ? media : null;
+  return null;
 }
 
 function createAction(
@@ -411,7 +425,9 @@ function createActions(data) {
     actions.append(secondary);
   }
 
-  return actions.childElementCount > 0 ? actions : null;
+  return actions.childElementCount
+    ? actions
+    : null;
 }
 
 function createModal(data) {
@@ -442,14 +458,20 @@ function createModal(data) {
   dialog.setAttribute('aria-modal', 'true');
 
   if (data.title) {
-    dialog.setAttribute('aria-labelledby', titleId);
+    dialog.setAttribute(
+      'aria-labelledby',
+      titleId,
+    );
   }
 
   const closeButton = document.createElement('button');
 
   closeButton.className = 'modal-v1-close';
   closeButton.type = 'button';
-  closeButton.setAttribute('aria-label', data.closeLabel);
+  closeButton.setAttribute(
+    'aria-label',
+    data.closeLabel,
+  );
   closeButton.innerHTML = '&times;';
 
   dialog.append(closeButton);
@@ -460,19 +482,17 @@ function createModal(data) {
     dialog.append(media);
   }
 
-  const contentWrapper = document.createElement('div');
+  const content = document.createElement('div');
 
-  contentWrapper.className = 'modal-v1-content';
+  content.className = 'modal-v1-content';
 
   if (data.eyebrow) {
-    const eyebrow = createElement(
-      'div',
-      'modal-v1-eyebrow',
-    );
+    const eyebrow = document.createElement('div');
 
+    eyebrow.className = 'modal-v1-eyebrow';
     eyebrow.textContent = data.eyebrow.toUpperCase();
 
-    contentWrapper.append(eyebrow);
+    content.append(eyebrow);
   }
 
   if (data.title) {
@@ -484,17 +504,17 @@ function createModal(data) {
 
     title.id = titleId;
 
-    contentWrapper.append(title);
+    content.append(title);
   }
 
   if (data.content) {
-    const content = createElement(
+    const body = createElement(
       'div',
       'modal-v1-body',
       data.content,
     );
 
-    contentWrapper.append(content);
+    content.append(body);
   }
 
   if (data.supportingText) {
@@ -504,16 +524,16 @@ function createModal(data) {
       data.supportingText,
     );
 
-    contentWrapper.append(supportingText);
+    content.append(supportingText);
   }
 
   const actions = createActions(data);
 
   if (actions) {
-    contentWrapper.append(actions);
+    content.append(actions);
   }
 
-  dialog.append(contentWrapper);
+  dialog.append(content);
   overlay.append(dialog);
 
   return {
@@ -529,13 +549,14 @@ function setupModal(
   closeButton,
   trigger,
 ) {
-  let previousFocus = null;
+  let previousFocus;
 
   const getFocusableElements = () => [
     ...dialog.querySelectorAll(
       'a[href], button:not([disabled]), '
       + 'input:not([disabled]), textarea:not([disabled]), '
-      + 'select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      + 'select:not([disabled]), '
+      + '[tabindex]:not([tabindex="-1"])',
     ),
   ];
 
@@ -544,7 +565,10 @@ function setupModal(
     overlay.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('modal-v1-open');
 
-    if (previousFocus && typeof previousFocus.focus === 'function') {
+    if (
+      previousFocus
+      && typeof previousFocus.focus === 'function'
+    ) {
       previousFocus.focus();
     }
   };
@@ -564,7 +588,10 @@ function setupModal(
     openModal();
   });
 
-  closeButton.addEventListener('click', closeModal);
+  closeButton.addEventListener(
+    'click',
+    closeModal,
+  );
 
   overlay.addEventListener('click', (event) => {
     if (event.target === overlay) {
@@ -596,12 +623,20 @@ function setupModal(
     }
 
     const first = focusableElements[0];
-    const last = focusableElements[focusableElements.length - 1];
+    const last = focusableElements[
+      focusableElements.length - 1
+    ];
 
-    if (event.shiftKey && document.activeElement === first) {
+    if (
+      event.shiftKey
+      && document.activeElement === first
+    ) {
       event.preventDefault();
       last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
+    } else if (
+      !event.shiftKey
+      && document.activeElement === last
+    ) {
       event.preventDefault();
       first.focus();
     }
@@ -659,7 +694,7 @@ export default function decorate(block) {
 
   block.textContent = '';
 
-  const modalDOM = generateModalDOM(data);
-
-  block.append(modalDOM);
+  block.append(
+    generateModalDOM(data),
+  );
 }
