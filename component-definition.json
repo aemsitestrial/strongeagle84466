@@ -1105,7 +1105,10 @@
                 "template": {
                   "name": "Tab Component",
                   "model": "tab-component",
-                  "filter": "tab-component"
+                  "filter": "tab-component",
+                  "classes": [
+                    "tab-component"
+                  ]
                 }
               }
             }
@@ -1135,7 +1138,10 @@
                 "resourceType": "core/franklin/components/block/v1/block/item",
                 "template": {
                   "name": "Tab Item",
-                  "model": "tab-item"
+                  "model": "tab-item",
+                  "classes": [
+                    "tab-item"
+                  ]
                 }
               }
             }
