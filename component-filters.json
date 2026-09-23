@@ -99,12 +99,6 @@
     ]
   },
   {
-    "id": "tab-component",
-    "components": [
-      "tab-item"
-    ]
-  },
-  {
     "id": "table",
     "components": [
       "table-row"

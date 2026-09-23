@@ -1,3 +1,7 @@
+function getText(element) {
+  return element?.textContent?.trim() || '';
+}
+
 function getValue(element) {
   if (!element) return '';
 
@@ -7,7 +11,7 @@ function getValue(element) {
     return input.value?.trim() || '';
   }
 
-  return element.textContent?.trim() || '';
+  return getText(element);
 }
 
 function getColor(element) {
@@ -19,103 +23,41 @@ function getColor(element) {
     return input.value.trim();
   }
 
-  return element.textContent?.trim() || '';
+  return getText(element);
 }
 
-function getSettings(block) {
-  const firstRow = block.firstElementChild;
+function getTabData(block) {
+  const rows = [...block.children];
 
-  if (!firstRow) {
-    return {
-      variant: 'default',
-      alignment: 'left',
-      backgroundColor: '',
-      textColor: '',
-    };
-  }
+  const values = rows.map((row) => row.firstElementChild);
 
-  const cells = [...firstRow.children];
+  const variant = getValue(values[0]).toLowerCase() || 'default';
+  const alignment = getValue(values[1]).toLowerCase() || 'left';
+  const backgroundColor = getColor(values[2]);
+  const textColor = getColor(values[3]);
+
+  const tabs = [
+    {
+      title: getValue(values[4]),
+      content: getValue(values[5]),
+    },
+    {
+      title: getValue(values[6]),
+      content: getValue(values[7]),
+    },
+    {
+      title: getValue(values[8]),
+      content: getValue(values[9]),
+    },
+  ].filter((tab) => tab.title);
 
   return {
-    variant: getValue(cells[0]).toLowerCase() || 'default',
-    alignment: getValue(cells[1]).toLowerCase() || 'left',
-    backgroundColor: getColor(cells[2]),
-    textColor: getColor(cells[3]),
+    variant,
+    alignment,
+    backgroundColor,
+    textColor,
+    tabs,
   };
-}
-
-function getTabItems(block) {
-  const rows = [...block.children].slice(1);
-
-  const tabs = [];
-
-  /*
-   * XWalk/container representation:
-   *
-   * One row can contain:
-   *   Title | Content
-   *
-   * DA representation:
-   *
-   * Title
-   * Content
-   *
-   * Therefore support both structures.
-   */
-
-  let index = 0;
-
-  while (index < rows.length) {
-    const row = rows[index];
-
-    if (!row) {
-      index += 1;
-    } else {
-      const cells = [...row.children];
-
-      /*
-       * Two-column child item.
-       */
-      if (cells.length >= 2) {
-        const title = getValue(cells[0]);
-        const content = getValue(cells[1]);
-
-        if (title) {
-          tabs.push({
-            title,
-            content,
-          });
-        }
-
-        index += 1;
-      } else {
-        /*
-         * Two-row DA child item.
-         *
-         * Row 1 = title
-         * Row 2 = content
-         */
-        const title = getValue(cells[0]);
-
-        const contentRow = rows[index + 1];
-
-        const content = contentRow
-          ? getValue(contentRow.firstElementChild)
-          : '';
-
-        if (title) {
-          tabs.push({
-            title,
-            content,
-          });
-        }
-
-        index += 2;
-      }
-    }
-  }
-
-  return tabs;
 }
 
 function createTabButton(tab, index) {
@@ -123,26 +65,12 @@ function createTabButton(tab, index) {
 
   button.className = 'tab-component-tab';
   button.type = 'button';
-
   button.setAttribute('role', 'tab');
-
-  button.setAttribute(
-    'aria-selected',
-    index === 0 ? 'true' : 'false',
-  );
-
-  button.setAttribute(
-    'aria-controls',
-    `tab-component-panel-${index}`,
-  );
-
+  button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+  button.setAttribute('aria-controls', `tab-component-panel-${index}`);
   button.id = `tab-component-tab-${index}`;
 
   button.textContent = tab.title;
-
-  if (index === 0) {
-    button.classList.add('is-active');
-  }
 
   return button;
 }
@@ -151,11 +79,8 @@ function createTabPanel(tab, index) {
   const panel = document.createElement('div');
 
   panel.className = 'tab-component-panel';
-
   panel.id = `tab-component-panel-${index}`;
-
   panel.setAttribute('role', 'tabpanel');
-
   panel.setAttribute(
     'aria-labelledby',
     `tab-component-tab-${index}`,
@@ -184,12 +109,12 @@ function activateTab(block, index) {
   buttons.forEach((button, buttonIndex) => {
     const active = buttonIndex === index;
 
-    button.classList.toggle('is-active', active);
-
     button.setAttribute(
       'aria-selected',
       active ? 'true' : 'false',
     );
+
+    button.classList.toggle('is-active', active);
   });
 
   panels.forEach((panel, panelIndex) => {
@@ -198,65 +123,45 @@ function activateTab(block, index) {
 }
 
 export default function decorate(block) {
-  const settings = getSettings(block);
-  const tabs = getTabItems(block);
+  const data = getTabData(block);
 
-  if (!tabs.length) {
+  if (!data.tabs.length) {
     return;
   }
 
-  /*
-   * Apply variation.
-   */
-  block.classList.add(settings.variant);
+  block.classList.add(data.variant);
+  block.classList.add(`align-${data.alignment}`);
 
-  /*
-   * Apply alignment.
-   */
-  block.classList.add(`align-${settings.alignment}`);
-
-  /*
-   * Apply authored background color.
-   */
-  if (settings.backgroundColor) {
+  if (data.backgroundColor) {
     block.style.setProperty(
       '--tab-component-background-color',
-      settings.backgroundColor,
+      data.backgroundColor,
     );
   }
 
-  /*
-   * Apply authored text color.
-   */
-  if (settings.textColor) {
+  if (data.textColor) {
     block.style.setProperty(
       '--tab-component-text-color',
-      settings.textColor,
+      data.textColor,
     );
   }
 
-  /*
-   * Create tab navigation.
-   */
   const tabsList = document.createElement('div');
 
   tabsList.className = 'tab-component-list';
-
   tabsList.setAttribute('role', 'tablist');
 
-  /*
-   * Create content.
-   */
   const content = document.createElement('div');
 
   content.className = 'tab-component-content';
 
-  /*
-   * Create all tabs dynamically.
-   */
-  tabs.forEach((tab, index) => {
+  data.tabs.forEach((tab, index) => {
     const button = createTabButton(tab, index);
     const panel = createTabPanel(tab, index);
+
+    if (index === 0) {
+      button.classList.add('is-active');
+    }
 
     button.addEventListener('click', () => {
       activateTab(block, index);
@@ -266,8 +171,5 @@ export default function decorate(block) {
     content.append(panel);
   });
 
-  /*
-   * Replace authored rows with final markup.
-   */
   block.replaceChildren(tabsList, content);
 }
