@@ -1,58 +1,293 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 
-const CLASS_PREFIX = 'modal-v1';
+const SUPPORTED_LAYOUTS = [
+  'default',
+  'side',
+  'full-screen',
+  'bottom-sheet',
+];
 
-function getText(row) {
-  return row?.textContent?.trim() || '';
+const SUPPORTED_SIZES = [
+  'small',
+  'medium',
+  'large',
+];
+
+const SUPPORTED_MEDIA_TYPES = [
+  'none',
+  'image',
+  'video',
+];
+
+const SUPPORTED_ALIGNMENTS = [
+  'left',
+  'center',
+  'right',
+];
+
+const SUPPORTED_BACKDROPS = [
+  'default',
+  'dark',
+  'light',
+];
+
+const SUPPORTED_RADIUS = [
+  'small',
+  'medium',
+  'large',
+];
+
+const SUPPORTED_BUTTON_STYLES = [
+  'solid',
+  'outline',
+  'text',
+];
+
+const SUPPORTED_BUTTON_COLORS = [
+  'primary',
+  'secondary',
+  'accent',
+  'dark',
+  'light',
+];
+
+let modalId = 0;
+
+function asText(value) {
+  return value?.textContent?.trim() || '';
 }
 
-function getHTML(row) {
-  return row?.innerHTML?.trim() || '';
+function getCellValue(cell) {
+  return cell?.firstElementChild || cell;
 }
 
-function getImageSource(row) {
-  const image = row?.querySelector('img[src]');
-  return image?.getAttribute('src') || '';
+function normalize(value, supported, fallback) {
+  const normalized = String(value || '').trim().toLowerCase();
+
+  return supported.includes(normalized)
+    ? normalized
+    : fallback;
 }
 
-function createButton(text, href, style, color, type) {
-  if (!text) {
-    return null;
-  }
+function getImageSource(element) {
+  const image = element?.querySelector('img');
 
-  const button = document.createElement(href ? 'a' : 'button');
+  return image?.src || '';
+}
 
-  button.className = [
-    `${CLASS_PREFIX}-button`,
-    `${CLASS_PREFIX}-button-${style || 'solid'}`,
-    `${CLASS_PREFIX}-button-${color || 'primary'}`,
-    `${CLASS_PREFIX}-button-${type}`,
-  ].join(' ');
+function normalizeBlock(block) {
+  const data = {
+    layout: 'default',
+    size: 'medium',
+    mediaType: 'none',
+    image: '',
+    imageAlt: '',
+    video: '',
+    poster: '',
+    eyebrow: '',
+    title: '',
+    content: '',
+    supportingText: '',
+    primaryCtaText: '',
+    primaryCta: '',
+    secondaryCtaText: '',
+    secondaryCta: '',
+    primaryButtonStyle: 'solid',
+    secondaryButtonStyle: 'outline',
+    primaryButtonColor: 'primary',
+    secondaryButtonColor: 'secondary',
+    alignment: 'left',
+    backdrop: 'dark',
+    borderRadius: 'medium',
+    closeLabel: 'Close',
+    triggerText: 'Open Modal',
+  };
 
-  button.textContent = text;
+  [...block.children].forEach((row) => {
+    const cells = [...row.children || []];
 
-  if (href) {
-    button.href = href;
-
-    if (/^https?:\/\//i.test(href)) {
-      button.target = '_blank';
-      button.rel = 'noopener noreferrer';
+    if (cells.length < 2) {
+      return;
     }
-  } else {
-    button.type = 'button';
-  }
 
-  return button;
+    const key = asText(cells[0]).toLowerCase();
+    const value = getCellValue(cells[1]);
+
+    switch (key) {
+      case 'layout':
+        data.layout = normalize(
+          asText(value),
+          SUPPORTED_LAYOUTS,
+          'default',
+        );
+        break;
+
+      case 'size':
+        data.size = normalize(
+          asText(value),
+          SUPPORTED_SIZES,
+          'medium',
+        );
+        break;
+
+      case 'mediatype':
+      case 'media type':
+        data.mediaType = normalize(
+          asText(value),
+          SUPPORTED_MEDIA_TYPES,
+          'none',
+        );
+        break;
+
+      case 'image':
+        data.image = getImageSource(value);
+        break;
+
+      case 'imagealt':
+      case 'image description':
+        data.imageAlt = asText(value);
+        break;
+
+      case 'video':
+      case 'video url':
+        data.video = asText(value);
+        break;
+
+      case 'poster':
+      case 'video poster':
+        data.poster = getImageSource(value) || asText(value);
+        break;
+
+      case 'eyebrow':
+        data.eyebrow = asText(value);
+        break;
+
+      case 'title':
+      case 'heading':
+        data.title = value?.innerHTML?.trim() || '';
+        break;
+
+      case 'content':
+        data.content = value?.innerHTML?.trim() || '';
+        break;
+
+      case 'supportingtext':
+      case 'supporting text':
+        data.supportingText = value?.innerHTML?.trim() || '';
+        break;
+
+      case 'primaryctatext':
+      case 'primary cta text':
+        data.primaryCtaText = asText(value);
+        break;
+
+      case 'primarycta':
+      case 'primary cta link':
+        data.primaryCta = value?.querySelector('a')?.href || asText(value);
+        break;
+
+      case 'secondaryctatext':
+      case 'secondary cta text':
+        data.secondaryCtaText = asText(value);
+        break;
+
+      case 'secondarycta':
+      case 'secondary cta link':
+        data.secondaryCta = value?.querySelector('a')?.href || asText(value);
+        break;
+
+      case 'primarybuttonstyle':
+      case 'primary button style':
+        data.primaryButtonStyle = normalize(
+          asText(value),
+          SUPPORTED_BUTTON_STYLES,
+          'solid',
+        );
+        break;
+
+      case 'secondarybuttonstyle':
+      case 'secondary button style':
+        data.secondaryButtonStyle = normalize(
+          asText(value),
+          SUPPORTED_BUTTON_STYLES,
+          'outline',
+        );
+        break;
+
+      case 'primarybuttoncolor':
+      case 'primary button color':
+        data.primaryButtonColor = normalize(
+          asText(value),
+          SUPPORTED_BUTTON_COLORS,
+          'primary',
+        );
+        break;
+
+      case 'secondarybuttoncolor':
+      case 'secondary button color':
+        data.secondaryButtonColor = normalize(
+          asText(value),
+          SUPPORTED_BUTTON_COLORS,
+          'secondary',
+        );
+        break;
+
+      case 'alignment':
+      case 'content alignment':
+        data.alignment = normalize(
+          asText(value),
+          SUPPORTED_ALIGNMENTS,
+          'left',
+        );
+        break;
+
+      case 'backdrop':
+        data.backdrop = normalize(
+          asText(value),
+          SUPPORTED_BACKDROPS,
+          'dark',
+        );
+        break;
+
+      case 'borderradius':
+      case 'border radius':
+        data.borderRadius = normalize(
+          asText(value),
+          SUPPORTED_RADIUS,
+          'medium',
+        );
+        break;
+
+      case 'closelabel':
+      case 'close button label':
+        data.closeLabel = asText(value) || 'Close';
+        break;
+
+      case 'triggertext':
+      case 'trigger text':
+        data.triggerText = asText(value) || 'Open Modal';
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  return data;
 }
 
-function getVariantClasses(data) {
-  return [
-    `${CLASS_PREFIX}-layout-${data.layout || 'default'}`,
-    `${CLASS_PREFIX}-size-${data.size || 'medium'}`,
-    `${CLASS_PREFIX}-align-${data.alignment || 'left'}`,
-    `${CLASS_PREFIX}-backdrop-${data.backdrop || 'dark'}`,
-    `${CLASS_PREFIX}-radius-${data.borderRadius || 'medium'}`,
-  ];
+function createElement(tagName, className, content = '') {
+  const element = document.createElement(tagName);
+
+  if (className) {
+    element.className = className;
+  }
+
+  if (content) {
+    element.innerHTML = content;
+  }
+
+  return element;
 }
 
 function createImage(src, alt) {
@@ -60,21 +295,14 @@ function createImage(src, alt) {
     return null;
   }
 
-  const picture = createOptimizedPicture(src, alt || '', false, [
-    {
-      media: '(min-width: 1200px)',
-      width: '1200',
-    },
-    {
-      media: '(min-width: 768px)',
-      width: '900',
-    },
-    {
-      width: '600',
-    },
-  ]);
+  const picture = createOptimizedPicture(
+    src,
+    alt || '',
+    false,
+    [{ width: '1360' }],
+  );
 
-  picture.classList.add(`${CLASS_PREFIX}-media-image`);
+  picture.className = 'modal-v1-image';
 
   return picture;
 }
@@ -84,76 +312,28 @@ function createVideo(src, poster) {
     return null;
   }
 
-  const wrapper = document.createElement('div');
+  const video = document.createElement('video');
 
-  wrapper.className = `${CLASS_PREFIX}-video-wrapper`;
-
-  const iframe = document.createElement('iframe');
-
-  iframe.className = `${CLASS_PREFIX}-video`;
-  iframe.src = src;
-  iframe.title = 'Modal video';
-  iframe.loading = 'lazy';
-  iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-  iframe.allowFullscreen = true;
+  video.className = 'modal-v1-video';
+  video.controls = true;
+  video.preload = 'metadata';
 
   if (poster) {
-    iframe.dataset.poster = poster;
+    video.poster = poster;
   }
 
-  wrapper.append(iframe);
+  const source = document.createElement('source');
+  source.src = src;
 
-  return wrapper;
+  video.append(source);
+
+  return video;
 }
 
-function createCloseButton(label) {
-  const button = document.createElement('button');
-
-  button.type = 'button';
-  button.className = `${CLASS_PREFIX}-close`;
-  button.setAttribute('aria-label', label || 'Close');
-  button.innerHTML = '<span aria-hidden="true">&times;</span>';
-
-  return button;
-}
-
-function createModalDOM(data, block) {
-  const overlay = document.createElement('div');
-
-  overlay.className = [
-    `${CLASS_PREFIX}-overlay`,
-    ...getVariantClasses(data),
-  ].join(' ');
-
-  overlay.setAttribute('aria-hidden', 'true');
-
-  const dialog = document.createElement('div');
-
-  dialog.className = [
-    `${CLASS_PREFIX}-dialog`,
-    ...getVariantClasses(data),
-  ].join(' ');
-
-  dialog.setAttribute('role', 'dialog');
-  dialog.setAttribute('aria-modal', 'true');
-
-  const closeButton = createCloseButton(data.closeLabel || 'Close');
-
-  const body = document.createElement('div');
-
-  body.className = `${CLASS_PREFIX}-body`;
-
+function createMedia(data) {
   const media = document.createElement('div');
+  media.className = 'modal-v1-media';
 
-  media.className = `${CLASS_PREFIX}-media`;
-
-  /*
-   * Media Type is the source of truth.
-   *
-   * image -> render image only
-   * video -> render video only
-   * none  -> render no media
-   */
   if (data.mediaType === 'image' && data.image) {
     const image = createImage(data.image, data.imageAlt);
 
@@ -170,58 +350,44 @@ function createModalDOM(data, block) {
     }
   }
 
-  if (media.children.length) {
-    dialog.append(media);
+  return media.childElementCount > 0 ? media : null;
+}
+
+function createAction(
+  text,
+  href,
+  style,
+  color,
+  type,
+) {
+  if (!text) {
+    return null;
   }
 
-  if (data.eyebrow) {
-    const eyebrow = document.createElement('div');
+  const link = document.createElement('a');
 
-    eyebrow.className = `${CLASS_PREFIX}-eyebrow`;
-    eyebrow.textContent = data.eyebrow;
+  link.className = [
+    'modal-v1-button',
+    `modal-v1-button-${style}`,
+    `modal-v1-button-${color}`,
+    `modal-v1-button-${type}`,
+  ].join(' ');
 
-    body.append(eyebrow);
+  link.textContent = text;
+
+  if (href) {
+    link.href = href;
   }
 
-  if (data.title) {
-    const title = document.createElement('h2');
+  return link;
+}
 
-    title.className = `${CLASS_PREFIX}-title`;
-    title.textContent = data.title;
-
-    const titleId = `${CLASS_PREFIX}-title-${Math.random()
-      .toString(36)
-      .slice(2, 10)}`;
-
-    title.id = titleId;
-    dialog.setAttribute('aria-labelledby', titleId);
-
-    body.append(title);
-  }
-
-  if (data.content) {
-    const content = document.createElement('div');
-
-    content.className = `${CLASS_PREFIX}-content`;
-    content.innerHTML = data.content;
-
-    body.append(content);
-  }
-
-  if (data.supportingText) {
-    const supportingText = document.createElement('div');
-
-    supportingText.className = `${CLASS_PREFIX}-supporting-text`;
-    supportingText.innerHTML = data.supportingText;
-
-    body.append(supportingText);
-  }
-
+function createActions(data) {
   const actions = document.createElement('div');
 
-  actions.className = `${CLASS_PREFIX}-actions`;
+  actions.className = 'modal-v1-actions';
 
-  const primaryButton = createButton(
+  const primary = createAction(
     data.primaryCtaText,
     data.primaryCta,
     data.primaryButtonStyle,
@@ -229,7 +395,7 @@ function createModalDOM(data, block) {
     'primary',
   );
 
-  const secondaryButton = createButton(
+  const secondary = createAction(
     data.secondaryCtaText,
     data.secondaryCta,
     data.secondaryButtonStyle,
@@ -237,22 +403,118 @@ function createModalDOM(data, block) {
     'secondary',
   );
 
-  if (primaryButton) {
-    actions.append(primaryButton);
+  if (primary) {
+    actions.append(primary);
   }
 
-  if (secondaryButton) {
-    actions.append(secondaryButton);
+  if (secondary) {
+    actions.append(secondary);
   }
 
-  if (actions.children.length) {
-    body.append(actions);
+  return actions.childElementCount > 0 ? actions : null;
+}
+
+function createModal(data) {
+  modalId += 1;
+
+  const titleId = `modal-v1-title-${modalId}`;
+
+  const overlay = document.createElement('div');
+
+  overlay.className = [
+    'modal-v1-overlay',
+    `modal-v1-backdrop-${data.backdrop}`,
+  ].join(' ');
+
+  overlay.setAttribute('aria-hidden', 'true');
+
+  const dialog = document.createElement('div');
+
+  dialog.className = [
+    'modal-v1-dialog',
+    `modal-v1-layout-${data.layout}`,
+    `modal-v1-size-${data.size}`,
+    `modal-v1-align-${data.alignment}`,
+    `modal-v1-radius-${data.borderRadius}`,
+  ].join(' ');
+
+  dialog.setAttribute('role', 'dialog');
+  dialog.setAttribute('aria-modal', 'true');
+
+  if (data.title) {
+    dialog.setAttribute('aria-labelledby', titleId);
   }
 
-  dialog.append(body);
-  dialog.prepend(closeButton);
+  const closeButton = document.createElement('button');
+
+  closeButton.className = 'modal-v1-close';
+  closeButton.type = 'button';
+  closeButton.setAttribute('aria-label', data.closeLabel);
+  closeButton.innerHTML = '&times;';
+
+  dialog.append(closeButton);
+
+  const media = createMedia(data);
+
+  if (media) {
+    dialog.append(media);
+  }
+
+  const contentWrapper = document.createElement('div');
+
+  contentWrapper.className = 'modal-v1-content';
+
+  if (data.eyebrow) {
+    const eyebrow = createElement(
+      'div',
+      'modal-v1-eyebrow',
+    );
+
+    eyebrow.textContent = data.eyebrow.toUpperCase();
+
+    contentWrapper.append(eyebrow);
+  }
+
+  if (data.title) {
+    const title = createElement(
+      'h2',
+      'modal-v1-title',
+      data.title,
+    );
+
+    title.id = titleId;
+
+    contentWrapper.append(title);
+  }
+
+  if (data.content) {
+    const content = createElement(
+      'div',
+      'modal-v1-body',
+      data.content,
+    );
+
+    contentWrapper.append(content);
+  }
+
+  if (data.supportingText) {
+    const supportingText = createElement(
+      'div',
+      'modal-v1-supporting-text',
+      data.supportingText,
+    );
+
+    contentWrapper.append(supportingText);
+  }
+
+  const actions = createActions(data);
+
+  if (actions) {
+    contentWrapper.append(actions);
+  }
+
+  dialog.append(contentWrapper);
   overlay.append(dialog);
-  block.append(overlay);
 
   return {
     overlay,
@@ -261,40 +523,46 @@ function createModalDOM(data, block) {
   };
 }
 
-function setupModal(block, modalDOM, trigger) {
-  const {
-    overlay,
-    dialog,
-    closeButton,
-  } = modalDOM;
+function setupModal(
+  overlay,
+  dialog,
+  closeButton,
+  trigger,
+) {
+  let previousFocus = null;
 
-  let previousFocusedElement = null;
+  const getFocusableElements = () => [
+    ...dialog.querySelectorAll(
+      'a[href], button:not([disabled]), '
+      + 'input:not([disabled]), textarea:not([disabled]), '
+      + 'select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ];
 
   const closeModal = () => {
-    overlay.classList.remove(`${CLASS_PREFIX}-is-open`);
+    overlay.classList.remove('is-open');
     overlay.setAttribute('aria-hidden', 'true');
-    block.classList.remove(`${CLASS_PREFIX}-is-active`);
+    document.body.classList.remove('modal-v1-open');
 
-    if (previousFocusedElement instanceof HTMLElement) {
-      previousFocusedElement.focus();
-    } else {
-      trigger.focus();
+    if (previousFocus && typeof previousFocus.focus === 'function') {
+      previousFocus.focus();
     }
   };
 
   const openModal = () => {
-    previousFocusedElement = document.activeElement;
+    previousFocus = document.activeElement;
 
-    overlay.classList.add(`${CLASS_PREFIX}-is-open`);
+    overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
-    block.classList.add(`${CLASS_PREFIX}-is-active`);
+    document.body.classList.add('modal-v1-open');
 
-    requestAnimationFrame(() => {
-      closeButton.focus();
-    });
+    closeButton.focus();
   };
 
-  trigger.addEventListener('click', openModal);
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    openModal();
+  });
 
   closeButton.addEventListener('click', closeModal);
 
@@ -304,12 +572,8 @@ function setupModal(block, modalDOM, trigger) {
     }
   });
 
-  dialog.addEventListener('click', (event) => {
-    event.stopPropagation();
-  });
-
   document.addEventListener('keydown', (event) => {
-    if (!overlay.classList.contains(`${CLASS_PREFIX}-is-open`)) {
+    if (!overlay.classList.contains('is-open')) {
       return;
     }
 
@@ -323,73 +587,79 @@ function setupModal(block, modalDOM, trigger) {
       return;
     }
 
-    const focusableElements = dialog.querySelectorAll(
-      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
-    );
+    const focusableElements = getFocusableElements();
 
     if (!focusableElements.length) {
+      event.preventDefault();
+      closeButton.focus();
       return;
     }
 
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+    const first = focusableElements[0];
+    const last = focusableElements[focusableElements.length - 1];
 
-    if (event.shiftKey && document.activeElement === firstElement) {
+    if (event.shiftKey && document.activeElement === first) {
       event.preventDefault();
-      lastElement.focus();
-    } else if (!event.shiftKey && document.activeElement === lastElement) {
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
       event.preventDefault();
-      firstElement.focus();
+      first.focus();
     }
   });
+
+  return {
+    openModal,
+    closeModal,
+  };
 }
 
-export default function decorate(block) {
-  const rows = [...block.children];
-
-  const data = {
-    layout: getText(rows[0]),
-    size: getText(rows[1]),
-    mediaType: getText(rows[2]),
-    image: getImageSource(rows[3]),
-    imageAlt: getText(rows[4]),
-    video: getText(rows[5]),
-    poster: getImageSource(rows[6]),
-    eyebrow: getText(rows[7]),
-    title: getText(rows[8]),
-    content: getHTML(rows[9]),
-    supportingText: getHTML(rows[10]),
-
-    primaryCtaText: getText(rows[11]),
-    primaryCta: getText(rows[12]),
-
-    secondaryCtaText: getText(rows[13]),
-    secondaryCta: getText(rows[14]),
-
-    primaryButtonStyle: getText(rows[15]),
-    secondaryButtonStyle: getText(rows[16]),
-
-    primaryButtonColor: getText(rows[17]),
-    secondaryButtonColor: getText(rows[18]),
-
-    alignment: getText(rows[19]),
-    backdrop: getText(rows[20]),
-    borderRadius: getText(rows[21]),
-    closeLabel: getText(rows[22]),
-    triggerText: getText(rows[23]),
-  };
-
-  block.innerHTML = '';
+export function generateModalDOM(data) {
+  const {
+    overlay,
+    dialog,
+    closeButton,
+  } = createModal(data);
 
   const trigger = document.createElement('button');
 
+  trigger.className = 'modal-v1-trigger';
   trigger.type = 'button';
-  trigger.className = `${CLASS_PREFIX}-trigger`;
-  trigger.textContent = data.triggerText || 'Open Modal';
+  trigger.textContent = data.triggerText;
 
-  block.append(trigger);
+  setupModal(
+    overlay,
+    dialog,
+    closeButton,
+    trigger,
+  );
 
-  const modalDOM = createModalDOM(data, block);
+  const fragment = document.createDocumentFragment();
 
-  setupModal(block, modalDOM, trigger);
+  fragment.append(trigger);
+  fragment.append(overlay);
+
+  return fragment;
+}
+
+export default function decorate(block) {
+  const data = normalizeBlock(block);
+
+  if (
+    !data.title
+    && !data.content
+    && !data.image
+    && !data.video
+    && !data.eyebrow
+    && !data.primaryCtaText
+    && !data.secondaryCtaText
+  ) {
+    block.remove();
+    return;
+  }
+
+  block.textContent = '';
+
+  const modalDOM = generateModalDOM(data);
+
+  block.append(modalDOM);
 }

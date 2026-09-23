@@ -5707,15 +5707,15 @@
     ]
   },
   {
-    "id": "modal_v1",
+    "id": "modal-v1",
     "fields": [
       {
         "component": "select",
-        "name": "layout",
-        "label": "Layout",
         "valueType": "string",
+        "name": "layout",
         "value": "default",
-        "required": true,
+        "label": "Layout",
+        "description": "Controls the position and presentation of the modal.",
         "options": [
           {
             "name": "Default",
@@ -5737,11 +5737,11 @@
       },
       {
         "component": "select",
-        "name": "size",
-        "label": "Size",
         "valueType": "string",
+        "name": "size",
         "value": "medium",
-        "required": true,
+        "label": "Size",
+        "description": "Controls the width and overall size of the modal.",
         "options": [
           {
             "name": "Small",
@@ -5759,11 +5759,11 @@
       },
       {
         "component": "select",
-        "name": "mediaType",
-        "label": "Media Type",
         "valueType": "string",
+        "name": "mediaType",
         "value": "none",
-        "required": true,
+        "label": "Media Type",
+        "description": "Select the type of media displayed inside the modal.",
         "options": [
           {
             "name": "None",
@@ -5781,9 +5781,10 @@
       },
       {
         "component": "reference",
+        "valueType": "string",
         "name": "image",
         "label": "Image",
-        "valueType": "string",
+        "description": "The image displayed inside the modal.",
         "multi": false,
         "condition": {
           "===": [
@@ -5796,10 +5797,11 @@
       },
       {
         "component": "text",
-        "name": "imageAlt",
-        "label": "Image Description",
         "valueType": "string",
+        "name": "imageAlt",
         "value": "",
+        "label": "Image Description",
+        "description": "Alternative text for the modal image.",
         "condition": {
           "===": [
             {
@@ -5811,11 +5813,11 @@
       },
       {
         "component": "text",
-        "name": "video",
-        "label": "Video URL",
-        "description": "URL of the video or embedded media.",
         "valueType": "string",
+        "name": "video",
         "value": "",
+        "label": "Video URL",
+        "description": "URL of the video displayed inside the modal.",
         "condition": {
           "===": [
             {
@@ -5827,9 +5829,10 @@
       },
       {
         "component": "reference",
+        "valueType": "string",
         "name": "poster",
         "label": "Video Poster",
-        "valueType": "string",
+        "description": "Poster image displayed before the video starts.",
         "multi": false,
         "condition": {
           "===": [
@@ -5842,66 +5845,74 @@
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "eyebrow",
+        "value": "",
         "label": "Eyebrow",
-        "valueType": "string",
-        "value": ""
+        "description": "Small pre-title displayed above the modal title."
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "title",
-        "label": "Title",
-        "valueType": "string",
-        "value": ""
+        "value": "",
+        "label": "Heading",
+        "description": "Main heading displayed inside the modal."
       },
       {
         "component": "richtext",
+        "valueType": "string",
         "name": "content",
+        "value": "",
         "label": "Content",
-        "valueType": "string",
-        "value": ""
+        "description": "Main rich text content displayed inside the modal."
       },
       {
         "component": "richtext",
+        "valueType": "string",
         "name": "supportingText",
+        "value": "",
         "label": "Supporting Text",
-        "valueType": "string",
-        "value": ""
+        "description": "Additional supporting content displayed below the main content."
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "primaryCtaText",
+        "value": "",
         "label": "Primary CTA Text",
-        "valueType": "string",
-        "value": ""
+        "description": "Text displayed inside the primary CTA."
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "primaryCta",
+        "value": "",
         "label": "Primary CTA Link",
-        "valueType": "string",
-        "value": ""
+        "description": "Link opened by the primary CTA."
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "secondaryCtaText",
+        "value": "",
         "label": "Secondary CTA Text",
-        "valueType": "string",
-        "value": ""
+        "description": "Text displayed inside the secondary CTA."
       },
       {
         "component": "text",
+        "valueType": "string",
         "name": "secondaryCta",
+        "value": "",
         "label": "Secondary CTA Link",
-        "valueType": "string",
-        "value": ""
+        "description": "Link opened by the secondary CTA."
       },
       {
         "component": "select",
+        "valueType": "string",
         "name": "primaryButtonStyle",
-        "label": "Primary Button Style",
-        "valueType": "string",
         "value": "solid",
+        "label": "Primary Button Style",
         "options": [
           {
             "name": "Solid",
@@ -5919,10 +5930,10 @@
       },
       {
         "component": "select",
+        "valueType": "string",
         "name": "secondaryButtonStyle",
-        "label": "Secondary Button Style",
-        "valueType": "string",
         "value": "outline",
+        "label": "Secondary Button Style",
         "options": [
           {
             "name": "Solid",
@@ -5940,10 +5951,10 @@
       },
       {
         "component": "select",
+        "valueType": "string",
         "name": "primaryButtonColor",
-        "label": "Primary Button Color",
-        "valueType": "string",
         "value": "primary",
+        "label": "Primary Button Color",
         "options": [
           {
             "name": "Primary",
@@ -5969,10 +5980,10 @@
       },
       {
         "component": "select",
+        "valueType": "string",
         "name": "secondaryButtonColor",
-        "label": "Secondary Button Color",
-        "valueType": "string",
         "value": "secondary",
+        "label": "Secondary Button Color",
         "options": [
           {
             "name": "Primary",
@@ -5998,10 +6009,10 @@
       },
       {
         "component": "select",
-        "name": "alignment",
-        "label": "Content Alignment",
         "valueType": "string",
+        "name": "alignment",
         "value": "left",
+        "label": "Content Alignment",
         "options": [
           {
             "name": "Left",
@@ -6019,10 +6030,10 @@
       },
       {
         "component": "select",
-        "name": "backdrop",
-        "label": "Backdrop",
         "valueType": "string",
+        "name": "backdrop",
         "value": "dark",
+        "label": "Backdrop",
         "options": [
           {
             "name": "Default",
@@ -6040,18 +6051,18 @@
       },
       {
         "component": "select",
-        "name": "borderRadius",
-        "label": "Border Radius",
         "valueType": "string",
+        "name": "borderRadius",
         "value": "medium",
+        "label": "Border Radius",
         "options": [
-          {
-            "name": "Default",
-            "value": "medium"
-          },
           {
             "name": "Small",
             "value": "small"
+          },
+          {
+            "name": "Medium",
+            "value": "medium"
           },
           {
             "name": "Large",
@@ -6061,18 +6072,19 @@
       },
       {
         "component": "text",
-        "name": "closeLabel",
-        "label": "Close Button Label",
         "valueType": "string",
-        "value": "Close"
+        "name": "closeLabel",
+        "value": "Close",
+        "label": "Close Button Label",
+        "description": "Accessible label for the close button."
       },
       {
         "component": "text",
-        "name": "triggerText",
-        "label": "Trigger Text",
-        "description": "Text displayed on the button that opens the modal.",
         "valueType": "string",
-        "value": "Open Modal"
+        "name": "triggerText",
+        "value": "Open Modal",
+        "label": "Trigger Text",
+        "description": "Text displayed on the button that opens the modal."
       }
     ]
   },
