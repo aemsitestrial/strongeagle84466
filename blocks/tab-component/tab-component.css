@@ -7,10 +7,6 @@
   width: 100%;
 }
 
-/* --------------------------------
-   Tab List
--------------------------------- */
-
 .tab-component-list {
   display: flex;
   align-items: center;
@@ -18,8 +14,6 @@
   background: var(--tab-component-background-color);
   border-bottom: 1px solid var(--tab-component-border-color);
 }
-
-/* Alignment */
 
 .tab-component.align-left .tab-component-list {
   justify-content: flex-start;
@@ -32,10 +26,6 @@
 .tab-component.align-right .tab-component-list {
   justify-content: flex-end;
 }
-
-/* --------------------------------
-   Tab Button
--------------------------------- */
 
 .tab-component-tab {
   appearance: none;
@@ -63,56 +53,47 @@
   outline-offset: -2px;
 }
 
-/* --------------------------------
-   1. Default
--------------------------------- */
-
-.tab-component.default .tab-component-tab {
-  border-bottom: 2px solid transparent;
-}
+/* Default */
 
 .tab-component.default .tab-component-tab.is-active {
-  background: rgb(0 0 0 / 6%);
-  color: var(--tab-component-text-color);
+  background: var(--tab-component-active-color);
+  color: var(--tab-component-background-color);
 }
 
-/* --------------------------------
-   2. Underline
--------------------------------- */
+/* Underline */
+
+.tab-component.underline .tab-component-list {
+  border-bottom: 1px solid var(--tab-component-border-color);
+}
 
 .tab-component.underline .tab-component-tab {
   border-bottom: 3px solid transparent;
 }
 
 .tab-component.underline .tab-component-tab.is-active {
-  border-bottom-color: var(--tab-component-text-color);
-  color: var(--tab-component-text-color);
+  border-bottom-color: var(--tab-component-active-color);
+  color: var(--tab-component-active-color);
 }
 
-/* --------------------------------
-   3. Pill
--------------------------------- */
+/* Pill */
 
 .tab-component.pill .tab-component-list {
   gap: 8px;
   padding: 8px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 .tab-component.pill .tab-component-tab {
   border-radius: 999px;
-  padding: 10px 22px;
 }
 
 .tab-component.pill .tab-component-tab.is-active {
-  background: var(--tab-component-text-color);
+  background: var(--tab-component-active-color);
   color: var(--tab-component-background-color);
 }
 
-/* --------------------------------
-   4. Vertical
--------------------------------- */
+/* Vertical */
 
 .tab-component.vertical {
   display: grid;
@@ -136,13 +117,11 @@
 }
 
 .tab-component.vertical .tab-component-tab.is-active {
-  border-right-color: var(--tab-component-text-color);
-  color: var(--tab-component-text-color);
+  border-right-color: var(--tab-component-active-color);
+  color: var(--tab-component-active-color);
 }
 
-/* --------------------------------
-   5. Scrollable
--------------------------------- */
+/* Scrollable */
 
 .tab-component.scrollable .tab-component-list {
   justify-content: flex-start;
@@ -155,9 +134,7 @@
   white-space: nowrap;
 }
 
-/* --------------------------------
-   Tab Content
--------------------------------- */
+/* Content */
 
 .tab-component-content {
   padding: 24px 0;
@@ -172,9 +149,7 @@
   display: none;
 }
 
-/* --------------------------------
-   Mobile
--------------------------------- */
+/* Mobile */
 
 @media (width <= 767px) {
   .tab-component-list {
@@ -187,10 +162,6 @@
     white-space: nowrap;
   }
 
-  /*
-   * Vertical becomes horizontal
-   * on smaller screens.
-   */
   .tab-component.vertical {
     display: block;
   }
@@ -210,7 +181,7 @@
   }
 
   .tab-component.vertical .tab-component-tab.is-active {
-    border-bottom-color: var(--tab-component-text-color);
+    border-bottom-color: var(--tab-component-active-color);
   }
 
   .tab-component-content {

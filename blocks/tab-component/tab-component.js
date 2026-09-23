@@ -1,3 +1,7 @@
+function getText(element) {
+  return element?.textContent?.trim() || '';
+}
+
 function getValue(element) {
   if (!element) return '';
 
@@ -7,7 +11,7 @@ function getValue(element) {
     return input.value?.trim() || '';
   }
 
-  return element.textContent?.trim() || '';
+  return getText(element);
 }
 
 function getColor(element) {
@@ -19,34 +23,40 @@ function getColor(element) {
     return input.value.trim();
   }
 
-  return element.textContent?.trim() || '';
+  return getText(element);
 }
 
-function getSettings(block) {
-  const settingsRows = [...block.children].filter(
-    (child) => !child.classList.contains('tab-item'),
-  );
+function getTabData(block) {
+  const rows = [...block.children];
+
+  const values = rows.map((row) => row.firstElementChild);
+
+  const variant = getValue(values[0]).toLowerCase() || 'default';
+  const alignment = getValue(values[1]).toLowerCase() || 'left';
+  const backgroundColor = getColor(values[2]);
+  const textColor = getColor(values[3]);
+
+  const tabs = [
+    {
+      title: getValue(values[4]),
+      content: getValue(values[5]),
+    },
+    {
+      title: getValue(values[6]),
+      content: getValue(values[7]),
+    },
+    {
+      title: getValue(values[8]),
+      content: getValue(values[9]),
+    },
+  ].filter((tab) => tab.title);
 
   return {
-    variant: getValue(settingsRows[0]).toLowerCase() || 'default',
-    alignment: getValue(settingsRows[1]).toLowerCase() || 'left',
-    backgroundColor: getColor(settingsRows[2]),
-    textColor: getColor(settingsRows[3]),
-  };
-}
-
-function getTabItems(block) {
-  return [...block.children].filter(
-    (child) => child.classList.contains('tab-item'),
-  );
-}
-
-function getTabData(item) {
-  const fields = [...item.children];
-
-  return {
-    title: getValue(fields[0]),
-    content: getValue(fields[1]),
+    variant,
+    alignment,
+    backgroundColor,
+    textColor,
+    tabs,
   };
 }
 
@@ -55,25 +65,12 @@ function createTabButton(tab, index) {
 
   button.className = 'tab-component-tab';
   button.type = 'button';
-
   button.setAttribute('role', 'tab');
-  button.setAttribute(
-    'aria-selected',
-    index === 0 ? 'true' : 'false',
-  );
-
-  button.setAttribute(
-    'aria-controls',
-    `tab-component-panel-${index}`,
-  );
-
+  button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+  button.setAttribute('aria-controls', `tab-component-panel-${index}`);
   button.id = `tab-component-tab-${index}`;
 
   button.textContent = tab.title;
-
-  if (index === 0) {
-    button.classList.add('is-active');
-  }
 
   return button;
 }
@@ -82,11 +79,8 @@ function createTabPanel(tab, index) {
   const panel = document.createElement('div');
 
   panel.className = 'tab-component-panel';
-
   panel.id = `tab-component-panel-${index}`;
-
   panel.setAttribute('role', 'tabpanel');
-
   panel.setAttribute(
     'aria-labelledby',
     `tab-component-tab-${index}`,
@@ -115,12 +109,12 @@ function activateTab(block, index) {
   buttons.forEach((button, buttonIndex) => {
     const active = buttonIndex === index;
 
-    button.classList.toggle('is-active', active);
-
     button.setAttribute(
       'aria-selected',
       active ? 'true' : 'false',
     );
+
+    button.classList.toggle('is-active', active);
   });
 
   panels.forEach((panel, panelIndex) => {
@@ -129,65 +123,45 @@ function activateTab(block, index) {
 }
 
 export default function decorate(block) {
-  const settings = getSettings(block);
+  const data = getTabData(block);
 
-  const tabs = getTabItems(block)
-    .map(getTabData)
-    .filter((tab) => tab.title);
-
-  if (!tabs.length) {
+  if (!data.tabs.length) {
     return;
   }
 
-  /*
-   * Add the authored variation and alignment
-   * as classes on the block.
-   */
-  block.classList.add(settings.variant);
-  block.classList.add(`align-${settings.alignment}`);
+  block.classList.add(data.variant);
+  block.classList.add(`align-${data.alignment}`);
 
-  /*
-   * Apply authored colors as CSS variables.
-   */
-  if (settings.backgroundColor) {
+  if (data.backgroundColor) {
     block.style.setProperty(
       '--tab-component-background-color',
-      settings.backgroundColor,
+      data.backgroundColor,
     );
   }
 
-  if (settings.textColor) {
+  if (data.textColor) {
     block.style.setProperty(
       '--tab-component-text-color',
-      settings.textColor,
+      data.textColor,
     );
   }
 
-  /*
-   * Create tab navigation.
-   */
   const tabsList = document.createElement('div');
 
   tabsList.className = 'tab-component-list';
-
   tabsList.setAttribute('role', 'tablist');
 
-  /*
-   * Create tab content container.
-   */
   const content = document.createElement('div');
 
   content.className = 'tab-component-content';
 
-  /*
-   * Create all tabs dynamically.
-   *
-   * This means there is no fixed limit of
-   * three tabs.
-   */
-  tabs.forEach((tab, index) => {
+  data.tabs.forEach((tab, index) => {
     const button = createTabButton(tab, index);
     const panel = createTabPanel(tab, index);
+
+    if (index === 0) {
+      button.classList.add('is-active');
+    }
 
     button.addEventListener('click', () => {
       activateTab(block, index);
@@ -197,9 +171,5 @@ export default function decorate(block) {
     content.append(panel);
   });
 
-  /*
-   * Replace the authored structure with
-   * the final Tabs markup.
-   */
   block.replaceChildren(tabsList, content);
 }

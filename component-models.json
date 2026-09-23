@@ -5970,24 +5970,45 @@
         "component": "color",
         "name": "textColor",
         "label": "Tab Text Color"
-      }
-    ]
-  },
-  {
-    "id": "tab-item",
-    "fields": [
+      },
       {
         "component": "text",
         "valueType": "string",
-        "name": "title",
-        "label": "Tab Title",
+        "name": "tab1Title",
+        "label": "Tab 1 Title",
         "required": true
       },
       {
         "component": "textarea",
         "valueType": "string",
-        "name": "content",
-        "label": "Tab Content"
+        "name": "tab1Content",
+        "label": "Tab 1 Content"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab2Title",
+        "label": "Tab 2 Title",
+        "required": true
+      },
+      {
+        "component": "textarea",
+        "valueType": "string",
+        "name": "tab2Content",
+        "label": "Tab 2 Content"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab3Title",
+        "label": "Tab 3 Title",
+        "required": true
+      },
+      {
+        "component": "textarea",
+        "valueType": "string",
+        "name": "tab3Content",
+        "label": "Tab 3 Content"
       }
     ]
   },
