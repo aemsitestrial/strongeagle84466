@@ -1,0 +1,519 @@
+/* stylelint-disable no-descending-specificity */
+
+/* =========================================================
+   TABS NEW - BASE
+   ========================================================= */
+
+.tabsnew.block {
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #e4e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabsnew.block *,
+.tabsnew.block *::before,
+.tabsnew.block *::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   TAB NAVIGATION
+   ========================================================= */
+
+.tabsnew.block > .tabsnew-navigation {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 58px;
+  padding: 0 16px;
+  gap: 4px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  overflow: auto hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabsnew.block
+  > .tabsnew-navigation::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* =========================================================
+   TAB BUTTON
+   ========================================================= */
+
+.tabsnew.block .tabsnew-tab {
+  position: relative;
+  flex: 0 0 auto;
+  appearance: none;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  color: #344054;
+  cursor: pointer;
+  padding: 17px 22px;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease;
+  outline: none;
+}
+
+.tabsnew.block .tabsnew-tab:hover {
+  color: #d71920;
+}
+
+.tabsnew.block .tabsnew-tab:focus-visible {
+  outline: 2px solid #d71920;
+  outline-offset: -2px;
+}
+
+.tabsnew.block
+  .tabsnew-tab.active,
+.tabsnew.block
+  .tabsnew-tab[aria-selected='true'] {
+  color: #d71920;
+}
+
+
+/* =========================================================
+   TAB PANELS
+   ========================================================= */
+
+.tabsnew.block > .tabsnew-panels {
+  width: 100%;
+}
+
+.tabsnew.block .tabsnew-panel {
+  width: 100%;
+  padding: 24px;
+}
+
+.tabsnew.block .tabsnew-panel[hidden] {
+  display: none;
+}
+
+
+/* =========================================================
+   TAB CONTENT
+   ========================================================= */
+
+.tabsnew.block .tabsnew-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+
+/* =========================================================
+   CONTENT IMAGE - PICTURE
+   ========================================================= */
+
+.tabsnew.block
+  .tabsnew-content :where(picture) img {
+  display: block;
+  width: 100%;
+  height: 175px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.tabsnew.block
+  .tabsnew-content > img {
+  display: block;
+  width: 280px;
+  min-width: 280px;
+  height: 175px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.tabsnew.block
+  .tabsnew-content picture {
+  display: block;
+  width: 280px;
+  min-width: 280px;
+  margin: 0;
+}
+
+
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
+.tabsnew.block
+  .tabsnew-content
+  :where(h1, h2, h3, h4, h5, h6) {
+  margin: 0 0 12px;
+  color: #172033;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   PARAGRAPHS
+   ========================================================= */
+
+.tabsnew.block
+  .tabsnew-content p {
+  margin: 0 0 16px;
+  color: #64748b;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   CTA / LINKS
+   ========================================================= */
+
+.tabsnew.block
+  .tabsnew-content a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background: #d71920;
+  color: #fff;
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.tabsnew.block
+  .tabsnew-content a:hover {
+  background: #b51218;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   VARIATION 1
+   DEFAULT
+   ========================================================= */
+
+.tabsnew.block.tabsnew
+  .tabsnew-tab.active::after,
+.tabsnew.block.tabsnew
+  .tabsnew-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: -1px;
+  height: 3px;
+  background: #d71920;
+}
+
+
+/* =========================================================
+   VARIATION 2
+   UNDERLINE
+   ========================================================= */
+
+.tabsnew.block.underline
+  > .tabsnew-navigation {
+  gap: 8px;
+}
+
+.tabsnew.block.underline
+  .tabsnew-tab {
+  padding: 17px 22px;
+}
+
+.tabsnew.block.underline
+  .tabsnew-tab.active::after,
+.tabsnew.block.underline
+  .tabsnew-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: #d71920;
+}
+
+
+/* =========================================================
+   VARIATION 3
+   PILL
+   ========================================================= */
+
+.tabsnew.block.pill
+  > .tabsnew-navigation {
+  min-height: 72px;
+  padding: 12px 16px;
+  gap: 12px;
+  border-bottom: 0;
+}
+
+.tabsnew.block.pill
+  .tabsnew-tab {
+  min-width: 110px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: #f1f3f5;
+  color: #344054;
+}
+
+.tabsnew.block.pill
+  .tabsnew-tab:hover {
+  background: #e8eaed;
+  color: #172033;
+}
+
+.tabsnew.block.pill
+  .tabsnew-tab.active,
+.tabsnew.block.pill
+  .tabsnew-tab[aria-selected='true'] {
+  background: #d71920;
+  color: #fff;
+}
+
+.tabsnew.block.pill
+  .tabsnew-tab.active::after,
+.tabsnew.block.pill
+  .tabsnew-tab[aria-selected='true']::after {
+  display: none;
+}
+
+
+/* =========================================================
+   VARIATION 4
+   VERTICAL
+   ========================================================= */
+
+.tabsnew.block.vertical {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+}
+
+.tabsnew.block.vertical
+  > .tabsnew-navigation {
+  height: 100%;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 16px 0;
+  gap: 0;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 0;
+  overflow: visible auto;
+}
+
+.tabsnew.block:where(.vertical)
+  .tabsnew-tab {
+  width: 100%;
+  padding: 14px 20px;
+  text-align: left;
+  border-radius: 0;
+}
+
+.tabsnew.block:where(.vertical)
+  .tabsnew-tab.active,
+.tabsnew.block:where(.vertical)
+  .tabsnew-tab[aria-selected='true'] {
+  background: #fff5f5;
+  color: #d71920;
+}
+
+.tabsnew.block:where(.vertical)
+  .tabsnew-tab.active::after,
+.tabsnew.block:where(.vertical)
+  .tabsnew-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: #d71920;
+}
+
+.tabsnew.block.vertical
+  > .tabsnew-panels {
+  min-width: 0;
+}
+
+.tabsnew.block.vertical
+  .tabsnew-panel {
+  min-height: 260px;
+  height: 100%;
+}
+
+
+/* =========================================================
+   VARIATION 5
+   SCROLLABLE
+   ========================================================= */
+
+.tabsnew.block.scrollable
+  > .tabsnew-navigation {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  justify-content: flex-start;
+}
+
+.tabsnew.block:where(.scrollable)
+  .tabsnew-tab {
+  flex: 0 0 auto;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (width <= 899px) {
+  .tabsnew.block
+    > .tabsnew-navigation {
+    padding: 0 10px;
+    overflow-x: auto;
+  }
+
+  .tabsnew.block
+    .tabsnew-tab {
+    padding: 15px 17px;
+    font-size: 14px;
+  }
+
+  .tabsnew.block
+    .tabsnew-panel {
+    padding: 20px;
+  }
+
+  .tabsnew.block
+    .tabsnew-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .tabsnew.block
+    .tabsnew-content picture {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .tabsnew.block
+    .tabsnew-content :where(picture) img {
+    width: 100%;
+    height: 220px;
+  }
+
+  .tabsnew.block
+    .tabsnew-content > img {
+    width: 100%;
+    min-width: 0;
+    height: 220px;
+  }
+
+
+  /* -------------------------------------------------------
+     Vertical tabs become horizontal on mobile
+     ------------------------------------------------------- */
+
+  .tabsnew.block.vertical {
+    display: block;
+  }
+
+  .tabsnew.block.vertical
+    > .tabsnew-navigation {
+    min-height: 0;
+    height: auto;
+    flex-direction: row;
+    padding: 0;
+    border-right: 0;
+    border-bottom: 1px solid #e5e7eb;
+    overflow: auto hidden;
+  }
+
+  .tabsnew.block.vertical
+    .tabsnew-tab {
+    width: auto;
+    text-align: center;
+  }
+
+  .tabsnew.block.vertical
+    .tabsnew-tab.active::after,
+  .tabsnew.block.vertical
+    .tabsnew-tab[aria-selected='true']::after {
+    inset: auto 10px -1px;
+    width: auto;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (width <= 600px) {
+  .tabsnew.block {
+    border-radius: 8px;
+  }
+
+  .tabsnew.block
+    .tabsnew-panel {
+    padding: 16px;
+  }
+
+  .tabsnew.block
+    .tabsnew-content :where(picture) img,
+  .tabsnew.block
+    .tabsnew-content > img {
+    height: 180px;
+  }
+
+  .tabsnew.block
+    .tabsnew-content
+    :where(h1, h2, h3, h4, h5, h6) {
+    font-size: 21px;
+  }
+
+  .tabsnew.block
+    .tabsnew-content p {
+    font-size: 14px;
+  }
+
+  .tabsnew.block.pill
+    > .tabsnew-navigation {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .tabsnew.block.pill
+    .tabsnew-tab {
+    min-width: auto;
+    padding: 9px 17px;
+  }
+}

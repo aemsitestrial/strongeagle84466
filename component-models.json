@@ -6344,6 +6344,99 @@
     ]
   },
   {
+    "id": "tabsnew",
+    "fields": [
+      {
+        "component": "multiselect",
+        "name": "classes",
+        "label": "Style",
+        "valueType": "string",
+        "required": true,
+        "maxSize": 2,
+        "options": [
+          {
+            "name": "Navigation Style",
+            "children": [
+              {
+                "name": "Default",
+                "value": "tabsnew"
+              },
+              {
+                "name": "Underline",
+                "value": "underline"
+              },
+              {
+                "name": "Pill",
+                "value": "pill"
+              }
+            ]
+          },
+          {
+            "name": "Layout",
+            "children": [
+              {
+                "name": "Vertical",
+                "value": "vertical"
+              },
+              {
+                "name": "Scrollable",
+                "value": "scrollable"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab1Title",
+        "value": "Overview",
+        "label": "First Tab Title",
+        "description": "Title displayed in the first tab."
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "tab1Content",
+        "value": "",
+        "label": "First Tab Content",
+        "description": "Content displayed when the first tab is selected."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab2Title",
+        "value": "Features",
+        "label": "Second Tab Title",
+        "description": "Title displayed in the second tab."
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "tab2Content",
+        "value": "",
+        "label": "Second Tab Content",
+        "description": "Content displayed when the second tab is selected."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab3Title",
+        "value": "Pricing",
+        "label": "Third Tab Title",
+        "description": "Title displayed in the third tab."
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "tab3Content",
+        "value": "",
+        "label": "Third Tab Content",
+        "description": "Content displayed when the third tab is selected."
+      }
+    ]
+  },
+  {
     "id": "teaser",
     "fields": [
       {
