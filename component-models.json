@@ -5911,6 +5911,108 @@
     ]
   },
   {
+    "id": "tab-component",
+    "fields": [
+      {
+        "component": "select",
+        "name": "variant",
+        "label": "Tabs Style",
+        "required": true,
+        "options": [
+          {
+            "name": "Default",
+            "value": "default"
+          },
+          {
+            "name": "Underline",
+            "value": "underline"
+          },
+          {
+            "name": "Pill",
+            "value": "pill"
+          },
+          {
+            "name": "Vertical",
+            "value": "vertical"
+          },
+          {
+            "name": "Scrollable",
+            "value": "scrollable"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "alignment",
+        "label": "Tab Alignment",
+        "required": true,
+        "options": [
+          {
+            "name": "Left",
+            "value": "left"
+          },
+          {
+            "name": "Center",
+            "value": "center"
+          },
+          {
+            "name": "Right",
+            "value": "right"
+          }
+        ]
+      },
+      {
+        "component": "color",
+        "name": "backgroundColor",
+        "label": "Tab Background Color"
+      },
+      {
+        "component": "color",
+        "name": "textColor",
+        "label": "Tab Text Color"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab1Title",
+        "label": "Tab 1 Title",
+        "required": true
+      },
+      {
+        "component": "textarea",
+        "valueType": "string",
+        "name": "tab1Content",
+        "label": "Tab 1 Content"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab2Title",
+        "label": "Tab 2 Title",
+        "required": true
+      },
+      {
+        "component": "textarea",
+        "valueType": "string",
+        "name": "tab2Content",
+        "label": "Tab 2 Content"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "tab3Title",
+        "label": "Tab 3 Title",
+        "required": true
+      },
+      {
+        "component": "textarea",
+        "valueType": "string",
+        "name": "tab3Content",
+        "label": "Tab 3 Content"
+      }
+    ]
+  },
+  {
     "id": "table",
     "fields": [
       {
