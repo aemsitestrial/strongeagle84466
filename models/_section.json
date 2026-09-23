@@ -62,6 +62,7 @@
         "search",
         "tabs",
         "tabs-new",
+          "tab-component",
         "table",
         "text",
         "title",
