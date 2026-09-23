@@ -1141,7 +1141,9 @@
                   "model": "tab-item",
                   "classes": [
                     "tab-item"
-                  ]
+                  ],
+                  "title": "Tab Item",
+                  "content": "Tab content"
                 }
               }
             }
