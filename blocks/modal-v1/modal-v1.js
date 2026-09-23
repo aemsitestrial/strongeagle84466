@@ -679,19 +679,6 @@ export function generateModalDOM(data) {
 export default function decorate(block) {
   const data = normalizeBlock(block);
 
-  if (
-    !data.title
-    && !data.content
-    && !data.image
-    && !data.video
-    && !data.eyebrow
-    && !data.primaryCtaText
-    && !data.secondaryCtaText
-  ) {
-    block.remove();
-    return;
-  }
-
   block.textContent = '';
 
   block.append(
