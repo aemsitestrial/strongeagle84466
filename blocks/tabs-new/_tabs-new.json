@@ -5,44 +5,9 @@
       "id": "tabs-new",
       "plugins": {
         "da": {
-          "rows": 9,
-          "columns": 1,
           "fields": [
             {
-              "name": "classes",
-              "selector": "div:nth-child(1)>div>ul"
-            },
-            {
-              "name": "tab1Title",
-              "selector": "div:nth-child(2)>div"
-            },
-            {
-              "name": "tab1Teaser",
-              "selector": "div:nth-child(3)>div"
-            },
-            {
-              "name": "tab2Title",
-              "selector": "div:nth-child(4)>div"
-            },
-            {
-              "name": "tab2Teaser",
-              "selector": "div:nth-child(5)>div"
-            },
-            {
-              "name": "tab3Title",
-              "selector": "div:nth-child(6)>div"
-            },
-            {
-              "name": "tab3Teaser",
-              "selector": "div:nth-child(7)>div"
-            },
-            {
-              "name": "tab4Title",
-              "selector": "div:nth-child(8)>div"
-            },
-            {
-              "name": "tab4Teaser",
-              "selector": "div:nth-child(9)>div"
+              "name": "classes"
             }
           ]
         },
@@ -52,9 +17,29 @@
             "template": {
               "name": "Tabs New",
               "model": "tabs-new",
+              "filter": "tabs-new",
               "classes": [
-                "tabs-new"
+                "default",
+                "light"
               ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tabs Item",
+      "id": "tabs-item",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Tab",
+              "model": "tabs-item",
+              "title": "Tab Title",
+              "content_heading": "Tab Heading",
+              "content_headingType": "h3"
             }
           }
         }
@@ -70,102 +55,127 @@
           "name": "classes",
           "label": "Style",
           "valueType": "string",
-          "required": true,
-          "maxSize": 1,
+          "maxSize": 2,
           "options": [
             {
-              "name": "Tabs Style",
+              "name": "Layout",
               "children": [
                 {
                   "name": "Default",
-                  "value": "tabs-new"
+                  "value": "default"
                 },
                 {
                   "name": "Underline",
                   "value": "underline"
                 },
                 {
-                  "name": "Pill",
-                  "value": "pill"
+                  "name": "Pills",
+                  "value": "pills"
                 },
                 {
                   "name": "Vertical",
                   "value": "vertical"
                 },
                 {
-                  "name": "Scrollable",
-                  "value": "scrollable"
+                  "name": "Cards",
+                  "value": "cards"
+                }
+              ]
+            },
+            {
+              "name": "Theme",
+              "children": [
+                {
+                  "name": "Light",
+                  "value": "light"
+                },
+                {
+                  "name": "Dark",
+                  "value": "dark"
+                },
+                {
+                  "name": "TCS Red",
+                  "value": "tcs-red"
+                },
+                {
+                  "name": "TCS Blue",
+                  "value": "tcs-blue"
+                },
+                {
+                  "name": "TCS Yellow",
+                  "value": "tcs-yellow"
                 }
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "tabs-item",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "title",
+          "value": "",
+          "label": "Tab Title"
         },
         {
           "component": "text",
-          "name": "tab1Title",
-          "label": "Tab 1 Title",
           "valueType": "string",
-          "value": "Overview",
-          "required": true
+          "name": "content_heading",
+          "value": "",
+          "label": "Heading"
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "content_headingType",
+          "value": "h3",
+          "label": "Heading Type",
+          "options": [
+            {
+              "name": "H3",
+              "value": "h3"
+            },
+            {
+              "name": "H4",
+              "value": "h4"
+            },
+            {
+              "name": "H5",
+              "value": "h5"
+            },
+            {
+              "name": "H6",
+              "value": "h6"
+            }
+          ]
+        },
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "content_image",
+          "label": "Image",
+          "multi": false
         },
         {
           "component": "richtext",
-          "name": "tab1Teaser",
-          "label": "Tab 1 Teaser",
           "valueType": "string",
+          "name": "content_richtext",
           "value": "",
-          "description": "Teaser content for the first tab. Use image, title, description and CTA content."
-        },
-        {
-          "component": "text",
-          "name": "tab2Title",
-          "label": "Tab 2 Title",
-          "valueType": "string",
-          "value": "Features",
-          "required": true
-        },
-        {
-          "component": "richtext",
-          "name": "tab2Teaser",
-          "label": "Tab 2 Teaser",
-          "valueType": "string",
-          "value": "",
-          "description": "Teaser content for the second tab. Use image, title, description and CTA content."
-        },
-        {
-          "component": "text",
-          "name": "tab3Title",
-          "label": "Tab 3 Title",
-          "valueType": "string",
-          "value": "Pricing",
-          "required": true
-        },
-        {
-          "component": "richtext",
-          "name": "tab3Teaser",
-          "label": "Tab 3 Teaser",
-          "valueType": "string",
-          "value": "",
-          "description": "Teaser content for the third tab. Use image, title, description and CTA content."
-        },
-        {
-          "component": "text",
-          "name": "tab4Title",
-          "label": "Tab 4 Title",
-          "valueType": "string",
-          "value": "Support",
-          "required": true
-        },
-        {
-          "component": "richtext",
-          "name": "tab4Teaser",
-          "label": "Tab 4 Teaser",
-          "valueType": "string",
-          "value": "",
-          "description": "Teaser content for the fourth tab. Use image, title, description and CTA content."
+          "label": "Content"
         }
       ]
     }
   ],
-  "filters": []
+  "filters": [
+    {
+      "id": "tabs-new",
+      "components": [
+        "tabs-item"
+      ]
+    }
+  ]
 }

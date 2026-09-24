@@ -1227,44 +1227,9 @@
           "id": "tabs-new",
           "plugins": {
             "da": {
-              "rows": 9,
-              "columns": 1,
               "fields": [
                 {
-                  "name": "classes",
-                  "selector": "div:nth-child(1)>div>ul"
-                },
-                {
-                  "name": "tab1Title",
-                  "selector": "div:nth-child(2)>div"
-                },
-                {
-                  "name": "tab1Teaser",
-                  "selector": "div:nth-child(3)>div"
-                },
-                {
-                  "name": "tab2Title",
-                  "selector": "div:nth-child(4)>div"
-                },
-                {
-                  "name": "tab2Teaser",
-                  "selector": "div:nth-child(5)>div"
-                },
-                {
-                  "name": "tab3Title",
-                  "selector": "div:nth-child(6)>div"
-                },
-                {
-                  "name": "tab3Teaser",
-                  "selector": "div:nth-child(7)>div"
-                },
-                {
-                  "name": "tab4Title",
-                  "selector": "div:nth-child(8)>div"
-                },
-                {
-                  "name": "tab4Teaser",
-                  "selector": "div:nth-child(9)>div"
+                  "name": "classes"
                 }
               ]
             },
@@ -1274,9 +1239,29 @@
                 "template": {
                   "name": "Tabs New",
                   "model": "tabs-new",
+                  "filter": "tabs-new",
                   "classes": [
-                    "tabs-new"
+                    "default",
+                    "light"
                   ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Tabs Item",
+          "id": "tabs-item",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Tab",
+                  "model": "tabs-item",
+                  "title": "Tab Title",
+                  "content_heading": "Tab Heading",
+                  "content_headingType": "h3"
                 }
               }
             }

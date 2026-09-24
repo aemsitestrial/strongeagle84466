@@ -123,6 +123,12 @@
     ]
   },
   {
+    "id": "tabs-new",
+    "components": [
+      "tabs-item"
+    ]
+  },
+  {
     "id": "tabs",
     "components": [
       "tabs-item"

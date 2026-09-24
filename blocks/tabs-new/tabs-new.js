@@ -1,227 +1,98 @@
-function createTabButton(title, index, blockId) {
-  const button = document.createElement('button');
+// eslint-disable-next-line import/no-unresolved
+import { moveInstrumentation } from '../../scripts/scripts.js';
 
-  button.className = 'tabs-new-tab';
-  button.type = 'button';
-  button.id = `${blockId}-tab-${index}`;
-  button.setAttribute('role', 'tab');
-  button.setAttribute('aria-controls', `${blockId}-panel-${index}`);
-  button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+let tabBlockCount = 0;
 
-  if (index === 0) {
-    button.classList.add('active');
-  }
+export default async function decorate(block) {
+  tabBlockCount += 1;
 
-  button.textContent = title;
+  const tabList = document.createElement('div');
+  tabList.className = 'tabs-list';
+  tabList.setAttribute('role', 'tablist');
+  tabList.id = `tabs-new-list-${tabBlockCount}`;
 
-  return button;
-}
+  const panels = [...block.children];
 
-function createTabPanel(content, index, blockId) {
-  const panel = document.createElement('div');
+  panels.forEach((panel, index) => {
+    const firstCell = panel.firstElementChild;
 
-  panel.className = 'tabs-new-panel';
-  panel.id = `${blockId}-panel-${index}`;
-  panel.setAttribute('role', 'tabpanel');
-  panel.setAttribute('aria-labelledby', `${blockId}-tab-${index}`);
-  panel.tabIndex = 0;
+    if (!firstCell) {
+      return;
+    }
 
-  if (index !== 0) {
-    panel.hidden = true;
-  }
+    const tabTitleElement = firstCell.querySelector('h1, h2, h3, h4, h5, h6, p');
 
-  const contentWrapper = document.createElement('div');
+    const tabTitle = tabTitleElement
+      ? tabTitleElement.textContent.trim()
+      : `Tab ${index + 1}`;
 
-  contentWrapper.className = 'tabs-new-content';
+    const panelId = `tabs-new-panel-${tabBlockCount}-${index + 1}`;
+    const buttonId = `tabs-new-tab-${tabBlockCount}-${index + 1}`;
 
-  contentWrapper.innerHTML = content;
+    panel.classList.add('tabs-panel');
 
-  panel.append(contentWrapper);
+    panel.id = panelId;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', buttonId);
+    panel.setAttribute('aria-hidden', index !== 0);
 
-  return panel;
-}
+    const button = document.createElement('button');
 
-function activateTab(block, index) {
-  const buttons = [
-    ...block.querySelectorAll('.tabs-new-tab'),
-  ];
+    button.className = 'tabs-tab';
+    button.id = buttonId;
+    button.type = 'button';
 
-  const panels = [
-    ...block.querySelectorAll('.tabs-new-panel'),
-  ];
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-controls', panelId);
+    button.setAttribute('aria-selected', index === 0);
 
-  buttons.forEach((button, buttonIndex) => {
-    const active = buttonIndex === index;
+    button.innerHTML = `<span>${tabTitle}</span>`;
 
-    button.classList.toggle('active', active);
-    button.setAttribute(
-      'aria-selected',
-      active ? 'true' : 'false',
-    );
-  });
-
-  panels.forEach((panel, panelIndex) => {
-    const active = panelIndex === index;
-
-    panel.hidden = !active;
-    panel.classList.toggle('active', active);
-  });
-}
-
-function setupTabs(block) {
-  const buttons = [
-    ...block.querySelectorAll('.tabs-new-tab'),
-  ];
-
-  buttons.forEach((button, index) => {
     button.addEventListener('click', () => {
-      activateTab(block, index);
+      block.querySelectorAll('.tabs-panel').forEach((tabPanel) => {
+        tabPanel.setAttribute('aria-hidden', 'true');
+      });
+
+      tabList.querySelectorAll('.tabs-tab').forEach((tabButton) => {
+        tabButton.setAttribute('aria-selected', 'false');
+      });
+
+      panel.setAttribute('aria-hidden', 'false');
+      button.setAttribute('aria-selected', 'true');
     });
 
     button.addEventListener('keydown', (event) => {
-      let newIndex;
+      const tabs = [...tabList.querySelectorAll('.tabs-tab')];
+      const currentIndex = tabs.indexOf(button);
 
-      switch (event.key) {
-        case 'ArrowRight':
-        case 'ArrowDown':
-          newIndex = (index + 1) % buttons.length;
-          break;
+      let nextIndex = currentIndex;
 
-        case 'ArrowLeft':
-        case 'ArrowUp':
-          newIndex = (index - 1 + buttons.length) % buttons.length;
-          break;
-
-        case 'Home':
-          newIndex = 0;
-          break;
-
-        case 'End':
-          newIndex = buttons.length - 1;
-          break;
-
-        default:
-          return;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        nextIndex = (currentIndex + 1) % tabs.length;
       }
 
-      event.preventDefault();
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      }
 
-      buttons[newIndex].focus();
-      activateTab(block, newIndex);
+      if (nextIndex !== currentIndex) {
+        event.preventDefault();
+        tabs[nextIndex].focus();
+        tabs[nextIndex].click();
+      }
     });
-  });
-}
 
-function getTabData(props) {
-  const tabs = [];
+    tabList.appendChild(button);
 
-  for (let index = 1; index < props.length; index += 2) {
-    const titleElement = props[index];
-    const teaserElement = props[index + 1];
-
-    if (titleElement && teaserElement) {
-      const title = titleElement.textContent.trim();
-      const content = teaserElement.innerHTML.trim();
-
-      if (title && content) {
-        tabs.push({
-          title,
-          content,
-        });
-      }
+    if (tabTitleElement) {
+      tabTitleElement.remove();
     }
-  }
 
-  return tabs;
-}
-
-function createScrollableControls(block, navigation) {
-  const previous = document.createElement('button');
-  const next = document.createElement('button');
-
-  previous.className = 'tabs-new-scroll-button tabs-new-scroll-button-prev';
-  next.className = 'tabs-new-scroll-button tabs-new-scroll-button-next';
-
-  previous.type = 'button';
-  next.type = 'button';
-
-  previous.setAttribute('aria-label', 'Previous tabs');
-  next.setAttribute('aria-label', 'Next tabs');
-
-  previous.innerHTML = '&#8249;';
-  next.innerHTML = '&#8250;';
-
-  previous.addEventListener('click', () => {
-    navigation.scrollBy({
-      left: -250,
-      behavior: 'smooth',
-    });
+    const heading = button.firstElementChild;
+    if (heading) {
+      moveInstrumentation(heading, null);
+    }
   });
 
-  next.addEventListener('click', () => {
-    navigation.scrollBy({
-      left: 250,
-      behavior: 'smooth',
-    });
-  });
-
-  block.append(previous);
-  block.append(next);
-}
-
-export default function decorate(block) {
-  const props = [
-    ...block.children,
-  ].map((row) => row.firstElementChild);
-
-  const tabs = getTabData(props);
-
-  if (!tabs.length) {
-    return;
-  }
-
-  const blockId = `tabs-new-${Math.random()
-    .toString(36)
-    .slice(2, 9)}`;
-
-  const tabsDOM = document.createDocumentFragment();
-
-  const navigation = document.createElement('div');
-
-  navigation.className = 'tabs-new-navigation';
-  navigation.setAttribute('role', 'tablist');
-  navigation.setAttribute('aria-label', 'Tabs');
-
-  const panels = document.createElement('div');
-
-  panels.className = 'tabs-new-panels';
-
-  tabs.forEach((tab, index) => {
-    const button = createTabButton(
-      tab.title,
-      index,
-      blockId,
-    );
-
-    const panel = createTabPanel(
-      tab.content,
-      index,
-      blockId,
-    );
-
-    navigation.append(button);
-    panels.append(panel);
-  });
-
-  tabsDOM.append(navigation);
-  tabsDOM.append(panels);
-
-  block.textContent = '';
-  block.append(tabsDOM);
-
-  setupTabs(block);
-
-  if (block.classList.contains('scrollable')) {
-    createScrollableControls(block, navigation);
-  }
+  block.prepend(tabList);
 }
