@@ -5707,6 +5707,257 @@
     ]
   },
   {
+    "id": "modal-new",
+    "fields": [
+      {
+        "component": "tab",
+        "name": "contentTab",
+        "label": "Content"
+      },
+      {
+        "component": "text",
+        "name": "triggerText",
+        "label": "Trigger Text",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "title",
+        "label": "Modal Title",
+        "valueType": "string"
+      },
+      {
+        "component": "textarea",
+        "name": "description",
+        "label": "Description",
+        "valueType": "string"
+      },
+      {
+        "component": "reference",
+        "name": "image",
+        "label": "Image",
+        "valueType": "string",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "name": "videoUrl",
+        "label": "Video URL",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "ctaText",
+        "label": "CTA Text",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "ctaUrl",
+        "label": "CTA URL",
+        "valueType": "string"
+      },
+      {
+        "component": "tab",
+        "name": "appearanceTab",
+        "label": "Appearance"
+      },
+      {
+        "component": "select",
+        "name": "variant",
+        "label": "Variant",
+        "valueType": "string",
+        "value": "default",
+        "options": [
+          {
+            "name": "Default",
+            "value": "default"
+          },
+          {
+            "name": "Fullscreen",
+            "value": "fullscreen"
+          },
+          {
+            "name": "Side Panel",
+            "value": "side-panel"
+          },
+          {
+            "name": "Image",
+            "value": "image"
+          },
+          {
+            "name": "Video",
+            "value": "video"
+          },
+          {
+            "name": "CTA",
+            "value": "cta"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "theme",
+        "label": "Theme",
+        "valueType": "string",
+        "value": "light",
+        "options": [
+          {
+            "name": "Light",
+            "value": "light"
+          },
+          {
+            "name": "Dark",
+            "value": "dark"
+          },
+          {
+            "name": "TCS Red",
+            "value": "tcs-red"
+          },
+          {
+            "name": "TCS Blue",
+            "value": "tcs-blue"
+          },
+          {
+            "name": "TCS Yellow",
+            "value": "tcs-yellow"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "modalSize",
+        "label": "Modal Size",
+        "valueType": "string",
+        "value": "medium",
+        "options": [
+          {
+            "name": "Small",
+            "value": "small"
+          },
+          {
+            "name": "Medium",
+            "value": "medium"
+          },
+          {
+            "name": "Large",
+            "value": "large"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "buttonColor",
+        "label": "Button Color",
+        "valueType": "string",
+        "value": "primary-blue",
+        "options": [
+          {
+            "name": "Primary Blue",
+            "value": "primary-blue"
+          },
+          {
+            "name": "TCS Red",
+            "value": "tcs-red"
+          },
+          {
+            "name": "TCS Blue",
+            "value": "tcs-blue"
+          },
+          {
+            "name": "TCS Yellow",
+            "value": "tcs-yellow"
+          },
+          {
+            "name": "Black",
+            "value": "black"
+          },
+          {
+            "name": "White",
+            "value": "white"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "buttonStyle",
+        "label": "Button Style",
+        "valueType": "string",
+        "value": "solid",
+        "options": [
+          {
+            "name": "Solid",
+            "value": "solid"
+          },
+          {
+            "name": "Outline",
+            "value": "outline"
+          }
+        ]
+      },
+      {
+        "component": "tab",
+        "name": "behaviorTab",
+        "label": "Behavior"
+      },
+      {
+        "component": "select",
+        "name": "triggerType",
+        "label": "Trigger Type",
+        "valueType": "string",
+        "value": "button",
+        "options": [
+          {
+            "name": "Button",
+            "value": "button"
+          },
+          {
+            "name": "Link",
+            "value": "link"
+          },
+          {
+            "name": "Image",
+            "value": "image"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "showCloseIcon",
+        "label": "Show Close Icon",
+        "valueType": "string",
+        "value": "yes",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "yes"
+          },
+          {
+            "name": "No",
+            "value": "no"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "closeOnOverlay",
+        "label": "Close On Overlay Click",
+        "valueType": "string",
+        "value": "yes",
+        "options": [
+          {
+            "name": "Yes",
+            "value": "yes"
+          },
+          {
+            "name": "No",
+            "value": "no"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "modal-v1",
     "fields": [
       {

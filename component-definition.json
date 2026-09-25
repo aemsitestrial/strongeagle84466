@@ -940,6 +940,70 @@
           }
         },
         {
+          "title": "Modal New",
+          "id": "modal-new",
+          "plugins": {
+            "da": {
+              "fields": [
+                {
+                  "name": "triggerText"
+                },
+                {
+                  "name": "title"
+                },
+                {
+                  "name": "description"
+                },
+                {
+                  "name": "image"
+                },
+                {
+                  "name": "videoUrl"
+                },
+                {
+                  "name": "ctaText"
+                },
+                {
+                  "name": "ctaUrl"
+                },
+                {
+                  "name": "variant"
+                },
+                {
+                  "name": "theme"
+                },
+                {
+                  "name": "modalSize"
+                },
+                {
+                  "name": "buttonColor"
+                },
+                {
+                  "name": "buttonStyle"
+                },
+                {
+                  "name": "triggerType"
+                },
+                {
+                  "name": "showCloseIcon"
+                },
+                {
+                  "name": "closeOnOverlay"
+                }
+              ]
+            },
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Modal New",
+                  "model": "modal-new"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Modal V1",
           "id": "modal-v1",
           "plugins": {

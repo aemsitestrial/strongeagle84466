@@ -1,0 +1,332 @@
+.modal-new-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: #005eb8;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ------------------------ */
+
+/* Overlay */
+
+/* ------------------------ */
+
+.modal-new-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 70%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-new-overlay.is-open {
+  display: flex;
+}
+
+/* ------------------------ */
+
+/* Base Modal */
+
+/* ------------------------ */
+
+.modal-new-dialog {
+  position: relative;
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 25%);
+}
+
+.modal-new-content {
+  padding: 24px;
+}
+
+.modal-new-content h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.modal-new-content img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.modal-new-content iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.modal-new-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+}
+
+/* ------------------------ */
+
+/* Sizes */
+
+/* ------------------------ */
+
+.modal-new.small .modal-new-dialog {
+  max-width: 420px;
+}
+
+.modal-new.medium .modal-new-dialog {
+  max-width: 700px;
+}
+
+.modal-new.large .modal-new-dialog {
+  max-width: 1000px;
+}
+
+/* ------------------------ */
+
+/* Default Variant */
+
+/* ------------------------ */
+
+.modal-new.default .modal-new-dialog {
+  max-width: 700px;
+}
+
+/* ------------------------ */
+
+/* Fullscreen Variant */
+
+/* ------------------------ */
+
+.modal-new.fullscreen .modal-new-dialog {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  border-radius: 0;
+}
+
+.modal-new.fullscreen .modal-new-content {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* ------------------------ */
+
+/* Side Panel Variant */
+
+/* ------------------------ */
+
+.modal-new.side-panel {
+  justify-content: flex-end;
+}
+
+.modal-new.side-panel .modal-new-dialog {
+  height: 100vh;
+  max-width: 500px;
+  border-radius: 0;
+}
+
+.modal-new.side-panel .modal-new-content {
+  overflow-y: auto;
+  height: 100%;
+}
+
+/* ------------------------ */
+
+/* Image Variant */
+
+/* ------------------------ */
+
+.modal-new.image .modal-new-content img {
+  margin-bottom: 16px;
+}
+
+/* ------------------------ */
+
+/* Video Variant */
+
+/* ------------------------ */
+
+.modal-new.video .modal-new-content iframe {
+  border-radius: 8px;
+}
+
+/* ------------------------ */
+
+/* CTA Variant */
+
+/* ------------------------ */
+
+.modal-new.cta .modal-new-content {
+  text-align: center;
+}
+
+.modal-new.cta .modal-new-content h2 {
+  font-size: 2rem;
+}
+
+/* ------------------------ */
+
+/* CTA Button */
+
+/* ------------------------ */
+
+.modal-new-cta {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* ------------------------ */
+
+/* Button Colors */
+
+/* ------------------------ */
+
+.modal-new.primary-blue .modal-new-cta {
+  background: #005eb8;
+  color: #fff;
+}
+
+.modal-new.tcs-red-button .modal-new-cta {
+  background: #d71920;
+  color: #fff;
+}
+
+.modal-new.tcs-blue-button .modal-new-cta {
+  background: #005eb8;
+  color: #fff;
+}
+
+.modal-new.tcs-yellow-button .modal-new-cta {
+  background: #f4c430;
+  color: #000;
+}
+
+.modal-new.black-button .modal-new-cta {
+  background: #000;
+  color: #fff;
+}
+
+.modal-new.white-button .modal-new-cta {
+  background: #fff;
+  color: #000;
+  border: 1px solid #d9d9d9;
+}
+
+/* ------------------------ */
+
+/* Outline Buttons */
+
+/* ------------------------ */
+
+.modal-new.outline .modal-new-cta {
+  background: transparent;
+  border: 2px solid currentcolor;
+}
+
+/* ------------------------ */
+
+/* Light Theme */
+
+/* ------------------------ */
+
+.modal-new.light .modal-new-dialog {
+  background: #fff;
+  color: #333;
+}
+
+/* ------------------------ */
+
+/* Dark Theme */
+
+/* ------------------------ */
+
+.modal-new.dark .modal-new-dialog {
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.modal-new.dark .modal-new-close {
+  color: #fff;
+}
+
+/* ------------------------ */
+
+/* TCS Red Theme */
+
+/* ------------------------ */
+
+.modal-new.tcs-red .modal-new-dialog {
+  border-top: 6px solid #d71920;
+}
+
+/* ------------------------ */
+
+/* TCS Blue Theme */
+
+/* ------------------------ */
+
+.modal-new.tcs-blue .modal-new-dialog {
+  border-top: 6px solid #005eb8;
+}
+
+/* ------------------------ */
+
+/* TCS Yellow Theme */
+
+/* ------------------------ */
+
+.modal-new.tcs-yellow .modal-new-dialog {
+  border-top: 6px solid #f4c430;
+}
+
+/* ------------------------ */
+
+/* Responsive */
+
+/* ------------------------ */
+
+@media (width <= 768px) {
+  .modal-new-dialog {
+    width: calc(100% - 32px);
+    max-width: none;
+  }
+
+  .modal-new-content {
+    padding: 16px;
+  }
+
+  .modal-new-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .modal-new.side-panel .modal-new-dialog {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .modal-new.fullscreen .modal-new-dialog {
+    width: 100%;
+  }
+}
