@@ -28,12 +28,13 @@
       "tabs",
       "tabs-new",
       "tab-component",
+      "modal-new",
+      "modal",
       "table",
       "text",
       "title",
       "teaser",
-      "video",
-      "modal-new"
+      "video"
     ]
   },
   {
