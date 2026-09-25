@@ -21,7 +21,7 @@
     ],
     "models": [
         {
-            "id": "modal",
+            "id": "form-modal",
             "fields": [
                 {
                     "component": "container",
