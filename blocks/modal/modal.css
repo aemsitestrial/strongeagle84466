@@ -2,42 +2,43 @@ body.modal-open {
   overflow: hidden;
 }
 
+/* ----------------------------------
+   Modal Backdrop
+----------------------------------- */
+
 .modal dialog::backdrop {
   background-color: rgb(19 19 19 / 75%);
 }
 
+/* ----------------------------------
+   Base Modal
+----------------------------------- */
+
 .modal dialog {
+  position: relative;
   overscroll-behavior: none;
-  overflow-y: hidden;
+  overflow: hidden;
   width: calc(100vw - 48px);
   max-width: 900px;
   max-height: calc(100dvh - (2 * var(--header-height)));
   padding: 0;
   border: 1px solid var(--dark-color);
+  background: #fff;
+  border-radius: 12px;
 }
 
 .modal dialog .modal-content {
   box-sizing: border-box;
   overflow-y: auto;
-  overscroll-behavior: none;
   width: 100%;
   max-height: calc(100dvh - (2 * var(--header-height)) - 48px);
-  padding: 24px;
-  padding-top: 0;
+  padding: 32px;
   margin-top: 44px;
 }
 
-@media (width >= 900px) {
-  .modal dialog {
-    width: calc(100vw - 64px);
-  }
-  
-  .modal dialog .modal-content {
-    max-height: calc(100dvh - (2 * var(--header-height)) - 64px);
-    padding: 32px;
-    padding-top: 0;
-  }
-}
+/* ----------------------------------
+   Close Button
+----------------------------------- */
 
 .modal .close-button {
   position: absolute;
@@ -47,11 +48,8 @@ body.modal-open {
   height: 44px;
   margin: 0;
   border: none;
-  border-radius: 0;
-  padding: 0;
-  background-color: transparent;
-  color: var(--text-color);
-  line-height: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
 .modal .close-button .icon.icon-close {
@@ -63,22 +61,191 @@ body.modal-open {
 .modal .close-button .icon.icon-close::before,
 .modal .close-button .icon.icon-close::after {
   content: '';
-  box-sizing: border-box;
-  display: block;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(45deg);
   width: 24px;
   height: 2px;
   border-radius: 2px;
   background-color: currentcolor;
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .modal .close-button .icon.icon-close::after {
-  transform: translate(-50%, -50%) rotate(-45deg)
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-.modal dialog .section {
-  padding: 0;
+/* ----------------------------------
+   Trigger Button
+----------------------------------- */
+
+.modal-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all .2s ease;
+}
+
+/* ----------------------------------
+   TCS Button Colors
+----------------------------------- */
+
+.modal-trigger.tcs-background-red {
+  background: #e31837;
+  color: #fff;
+}
+
+.modal-trigger.tcs-background-yellow {
+  background: #fc0;
+  color: #000;
+}
+
+.modal-trigger.tcs-background-blue {
+  background: #005eb8;
+  color: #fff;
+}
+
+.modal-trigger.tcs-background-beige {
+  background: #e8ddc7;
+  color: #000;
+}
+
+.modal-trigger.tcs-background-black {
+  background: #000;
+  color: #fff;
+}
+
+/* ----------------------------------
+   Theme Support
+----------------------------------- */
+
+.modal dialog.light {
+  background: #fff;
+  color: #000;
+}
+
+.modal dialog.dark {
+  background: #1c1c1c;
+  color: #fff;
+}
+
+.modal dialog.dark a {
+  color: #fff;
+}
+
+.modal dialog.dark .close-button {
+  color: #fff;
+}
+
+/* ----------------------------------
+   Image Modal
+----------------------------------- */
+
+.modal dialog.image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ----------------------------------
+   Video Modal
+----------------------------------- */
+
+.modal dialog.video iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 8px;
+}
+
+/* ----------------------------------
+   Optional Modal CTA
+----------------------------------- */
+
+.modal-content > .button {
+  margin-top: 24px;
+  display: inline-flex;
+}
+
+
+/* ----------------------------------
+   CTA Modal
+----------------------------------- */
+
+.modal dialog.cta .modal-content {
+  text-align: center;
+}
+
+.modal .modal-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.modal .modal-actions .button {
+  min-width: 180px;
+}
+
+
+/* ----------------------------------
+   Large Modal
+----------------------------------- */
+
+.modal dialog.large {
+  max-width: 1200px;
+}
+
+/* ----------------------------------
+   Fullscreen Modal
+----------------------------------- */
+
+.modal dialog.fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+}
+
+.modal dialog.fullscreen .modal-content {
+  max-height: calc(100vh - 44px);
+}
+
+/* ----------------------------------
+   Responsive
+----------------------------------- */
+
+@media (width >= 900px) {
+  .modal dialog {
+    width: calc(100vw - 64px);
+  }
+
+  .modal dialog .modal-content {
+    padding: 40px;
+    margin-top: 44px;
+  }
+}
+
+@media (width <= 768px) {
+  .modal .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal .modal-actions .button {
+    width: 100%;
+  }
+
+  .modal dialog.fullscreen .modal-content {
+    padding: 24px;
+  }
 }

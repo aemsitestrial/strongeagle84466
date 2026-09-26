@@ -4,12 +4,86 @@
       "title": "Modal",
       "id": "modal",
       "plugins": {
+        "da": {
+          "rows": 10,
+          "columns": 1,
+          "fields": [
+            {
+              "name": "modalType",
+              "selector": "div:nth-child(1)>div"
+            },
+            {
+              "name": "theme",
+              "selector": "div:nth-child(2)>div"
+            },
+            {
+              "name": "buttonText",
+              "selector": "div:nth-child(3)>div"
+            },
+            {
+              "name": "buttonColor",
+              "selector": "div:nth-child(4)>div"
+            },
+            {
+              "name": "fragmentLink",
+              "selector": "div:nth-child(5)>div>a[href]"
+            },
+            {
+              "name": "image",
+              "selector": "div:nth-child(6)>div>picture>img[src]"
+            },
+            {
+              "name": "imageAlt",
+              "selector": "div:nth-child(6)>div>picture>img[alt]"
+            },
+            {
+              "name": "videoUrl",
+              "selector": "div:nth-child(7)>div"
+            },
+            {
+              "name": "title",
+              "selector": "div:nth-child(8)>div"
+            },
+            {
+              "name": "description",
+              "selector": "div:nth-child(9)>div"
+            },
+            {
+              "name": "primaryCtaText",
+              "selector": "div:nth-child(10)>div>p>strong>a"
+            },
+            {
+              "name": "primaryCtaLink",
+              "selector": "div:nth-child(10)>div>p>strong>a[href]"
+            },
+            {
+              "name": "secondaryCtaText",
+              "selector": "div:nth-child(10)>div>p>em>a"
+            },
+            {
+              "name": "secondaryCtaLink",
+              "selector": "div:nth-child(10)>div>p>em>a[href]"
+            },
+            {
+              "name": "modalCtaText",
+              "selector": "div:nth-child(11)>div>p>a"
+            },
+            {
+              "name": "modalCtaLink",
+              "selector": "div:nth-child(11)>div>p>a[href]"
+            }
+          ]
+        },
         "xwalk": {
           "page": {
             "resourceType": "core/franklin/components/block/v1/block",
             "template": {
               "name": "Modal",
-              "model": "modal"
+              "model": "modal",
+              "modalType": "fragment",
+              "theme": "light",
+              "buttonColor": "tcs-background-blue",
+              "buttonText": "Open Modal"
             }
           }
         }
@@ -21,14 +95,170 @@
       "id": "modal",
       "fields": [
         {
-          "component": "aem-content",
-          "name": "link",
-          "label": "Link"
+          "component": "select",
+          "name": "modalType",
+          "label": "Modal Type",
+          "value": "fragment",
+          "options": [
+            {
+              "name": "Fragment Modal",
+              "value": "fragment"
+            },
+            {
+              "name": "Image Modal",
+              "value": "image"
+            },
+            {
+              "name": "Video Modal",
+              "value": "video"
+            },
+            {
+              "name": "CTA Modal",
+              "value": "cta"
+            },
+            {
+              "name": "Large Modal",
+              "value": "large"
+            },
+            {
+              "name": "Fullscreen Modal",
+              "value": "fullscreen"
+            }
+          ]
+        },
+        {
+          "component": "select",
+          "name": "theme",
+          "label": "Theme",
+          "value": "light",
+          "options": [
+            {
+              "name": "Light",
+              "value": "light"
+            },
+            {
+              "name": "Dark",
+              "value": "dark"
+            }
+          ]
         },
         {
           "component": "text",
-          "name": "linkText",
-          "label": "Text"
+          "valueType": "string",
+          "name": "buttonText",
+          "label": "Trigger Button Text"
+        },
+        {
+          "component": "select",
+          "name": "buttonColor",
+          "label": "Button Color",
+          "value": "tcs-background-blue",
+          "options": [
+            {
+              "name": "TCS Red",
+              "value": "tcs-background-red"
+            },
+            {
+              "name": "TCS Yellow",
+              "value": "tcs-background-yellow"
+            },
+            {
+              "name": "TCS Blue",
+              "value": "tcs-background-blue"
+            },
+            {
+              "name": "TCS Beige",
+              "value": "tcs-background-beige"
+            },
+            {
+              "name": "TCS Black",
+              "value": "tcs-background-black"
+            }
+          ]
+        },
+
+        {
+          "component": "aem-content",
+          "name": "fragmentLink",
+          "label": "Fragment Link",
+          "description": "Applicable for Fragment, Large and Fullscreen Modal."
+        },
+
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "image",
+          "label": "Image",
+          "description": "Applicable for Image Modal.",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "imageAlt",
+          "label": "Image Alt Text"
+        },
+
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "videoUrl",
+          "label": "Video URL",
+          "description": "Applicable for Video Modal."
+        },
+
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "title",
+          "label": "Title",
+          "description": "Applicable for CTA Modal."
+        },
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "description",
+          "label": "Description"
+        },
+
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "primaryCtaText",
+          "label": "Primary CTA Text"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "primaryCtaLink",
+          "label": "Primary CTA Link"
+        },
+
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "secondaryCtaText",
+          "label": "Secondary CTA Text"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "secondaryCtaLink",
+          "label": "Secondary CTA Link"
+        },
+
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "modalCtaText",
+          "label": "Modal CTA Text (Optional)",
+          "description": "Applicable for Fragment, Image, Video, Large and Fullscreen Modal."
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "modalCtaLink",
+          "label": "Modal CTA Link (Optional)"
         }
       ]
     }

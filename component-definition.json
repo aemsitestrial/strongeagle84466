@@ -1096,12 +1096,86 @@
           "title": "Modal",
           "id": "modal",
           "plugins": {
+            "da": {
+              "rows": 10,
+              "columns": 1,
+              "fields": [
+                {
+                  "name": "modalType",
+                  "selector": "div:nth-child(1)>div"
+                },
+                {
+                  "name": "theme",
+                  "selector": "div:nth-child(2)>div"
+                },
+                {
+                  "name": "buttonText",
+                  "selector": "div:nth-child(3)>div"
+                },
+                {
+                  "name": "buttonColor",
+                  "selector": "div:nth-child(4)>div"
+                },
+                {
+                  "name": "fragmentLink",
+                  "selector": "div:nth-child(5)>div>a[href]"
+                },
+                {
+                  "name": "image",
+                  "selector": "div:nth-child(6)>div>picture>img[src]"
+                },
+                {
+                  "name": "imageAlt",
+                  "selector": "div:nth-child(6)>div>picture>img[alt]"
+                },
+                {
+                  "name": "videoUrl",
+                  "selector": "div:nth-child(7)>div"
+                },
+                {
+                  "name": "title",
+                  "selector": "div:nth-child(8)>div"
+                },
+                {
+                  "name": "description",
+                  "selector": "div:nth-child(9)>div"
+                },
+                {
+                  "name": "primaryCtaText",
+                  "selector": "div:nth-child(10)>div>p>strong>a"
+                },
+                {
+                  "name": "primaryCtaLink",
+                  "selector": "div:nth-child(10)>div>p>strong>a[href]"
+                },
+                {
+                  "name": "secondaryCtaText",
+                  "selector": "div:nth-child(10)>div>p>em>a"
+                },
+                {
+                  "name": "secondaryCtaLink",
+                  "selector": "div:nth-child(10)>div>p>em>a[href]"
+                },
+                {
+                  "name": "modalCtaText",
+                  "selector": "div:nth-child(11)>div>p>a"
+                },
+                {
+                  "name": "modalCtaLink",
+                  "selector": "div:nth-child(11)>div>p>a[href]"
+                }
+              ]
+            },
             "xwalk": {
               "page": {
                 "resourceType": "core/franklin/components/block/v1/block",
                 "template": {
                   "name": "Modal",
-                  "model": "modal"
+                  "model": "modal",
+                  "modalType": "fragment",
+                  "theme": "light",
+                  "buttonColor": "tcs-background-blue",
+                  "buttonText": "Open Modal"
                 }
               }
             }
