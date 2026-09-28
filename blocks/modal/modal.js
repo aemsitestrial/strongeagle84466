@@ -124,16 +124,21 @@ function createImageModal(data) {
 function createVideoModal(data) {
   const wrapper = document.createElement('div');
 
-  const src = toEmbedUrl(data.videoUrl);
-
-  if (src) {
-    const iframe = document.createElement('iframe');
-    iframe.src = src;
-    iframe.allowFullscreen = true;
-    iframe.loading = 'lazy';
-    iframe.title = data.title || 'Video';
-
-    wrapper.append(iframe);
+  if (data.videoUrl) {
+    if (/\.(mp4|webm|ogv|ogg)(\?|#|$)/i.test(data.videoUrl)) {
+      const video = document.createElement('video');
+      video.controls = true;
+      video.src = data.videoUrl;
+      video.preload = 'metadata';
+      wrapper.append(video);
+    } else {
+      const iframe = document.createElement('iframe');
+      iframe.src = toEmbedUrl(data.videoUrl);
+      iframe.allowFullscreen = true;
+      iframe.loading = 'lazy';
+      iframe.title = data.title || 'Video';
+      wrapper.append(iframe);
+    }
   }
 
   appendModalCta(wrapper, data);
