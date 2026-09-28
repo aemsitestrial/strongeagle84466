@@ -6,6 +6,87 @@ import {
   loadCSS,
 } from '../../scripts/aem.js';
 
+const FRAGMENT_TYPES = ['fragment', 'large', 'fullscreen'];
+
+/* Row order must match the field order of the `modal` model in _modal.json. */
+const FIELD_ROWS = [
+  'modalType',
+  'theme',
+  'buttonText',
+  'buttonColor',
+  'fragmentLink',
+  'image',
+  'imageAlt',
+  'videoUrl',
+  'title',
+  'description',
+  'primaryCtaText',
+  'primaryCtaLink',
+  'secondaryCtaText',
+  'secondaryCtaLink',
+  'modalCtaText',
+  'modalCtaLink',
+];
+
+/* A row is either a single value cell or a label/value pair. */
+function getValueCell(row) {
+  if (!row) return null;
+  return row.children.length > 1 ? row.children[1] : row.firstElementChild || row;
+}
+
+function getText(row) {
+  const cell = getValueCell(row);
+  return cell ? cell.textContent.trim() : '';
+}
+
+function getLink(row) {
+  const cell = getValueCell(row);
+  if (!cell) return '';
+  const anchor = cell.querySelector('a[href]');
+  return anchor ? anchor.getAttribute('href') : cell.textContent.trim();
+}
+
+function getHtml(row) {
+  const cell = getValueCell(row);
+  return cell ? cell.innerHTML.trim() : '';
+}
+
+function getPicture(row) {
+  const cell = getValueCell(row);
+  if (!cell) return null;
+  const picture = cell.querySelector('picture');
+  if (picture) return picture.cloneNode(true);
+  const img = cell.querySelector('img[src]');
+  if (img) return img.cloneNode(true);
+  const src = cell.textContent.trim();
+  if (!src) return null;
+  const image = document.createElement('img');
+  image.src = src;
+  return image;
+}
+
+/* Turn shareable YouTube/Vimeo URLs into their embeddable equivalent. */
+function toEmbedUrl(url) {
+  if (!url) return '';
+  try {
+    const parsed = new URL(url, window.location.href);
+    const host = parsed.hostname.replace('www.', '');
+    if (host === 'youtu.be') {
+      return `https://www.youtube.com/embed${parsed.pathname}`;
+    }
+    if (host.endsWith('youtube.com')) {
+      const id = parsed.searchParams.get('v');
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+    if (host === 'vimeo.com') {
+      return `https://player.vimeo.com/video${parsed.pathname}`;
+    }
+    return parsed.href;
+  } catch (e) {
+    return url;
+  }
+}
+
 function createButton(text, href, className = 'button primary') {
   if (!text || !href) return null;
 
@@ -17,20 +98,25 @@ function createButton(text, href, className = 'button primary') {
   return link;
 }
 
+function appendModalCta(wrapper, data) {
+  const cta = createButton(data.modalCtaText, data.modalCtaLink, 'button primary modal-cta');
+  if (cta) wrapper.append(cta);
+}
+
 function createImageModal(data) {
   const wrapper = document.createElement('div');
 
-  const image = document.createElement('img');
-  image.src = data.image;
-  image.alt = data.imageAlt || '';
+  if (data.image) {
+    const media = data.image.cloneNode(true);
 
-  wrapper.append(image);
+    const image = media.tagName === 'IMG' ? media : media.querySelector('img');
 
-  const cta = createButton(data.modalCtaText, data.modalCtaLink);
+    if (image) image.alt = data.imageAlt || image.alt || '';
 
-  if (cta) {
-    wrapper.append(cta);
+    wrapper.append(media);
   }
+
+  appendModalCta(wrapper, data);
 
   return wrapper;
 }
@@ -38,18 +124,19 @@ function createImageModal(data) {
 function createVideoModal(data) {
   const wrapper = document.createElement('div');
 
-  const iframe = document.createElement('iframe');
-  iframe.src = data.videoUrl;
-  iframe.allowFullscreen = true;
-  iframe.loading = 'lazy';
+  const src = toEmbedUrl(data.videoUrl);
 
-  wrapper.append(iframe);
+  if (src) {
+    const iframe = document.createElement('iframe');
+    iframe.src = src;
+    iframe.allowFullscreen = true;
+    iframe.loading = 'lazy';
+    iframe.title = data.title || 'Video';
 
-  const cta = createButton(data.modalCtaText, data.modalCtaLink);
-
-  if (cta) {
-    wrapper.append(cta);
+    wrapper.append(iframe);
   }
+
+  appendModalCta(wrapper, data);
 
   return wrapper;
 }
@@ -87,7 +174,9 @@ function createCtaModal(data) {
   if (primary) actions.append(primary);
   if (secondary) actions.append(secondary);
 
-  wrapper.append(actions);
+  if (actions.childElementCount) wrapper.append(actions);
+
+  appendModalCta(wrapper, data);
 
   return wrapper;
 }
@@ -176,46 +265,38 @@ export async function createModal(contentNodes = [], options = {}) {
   };
 }
 
+async function createFragmentModal(data) {
+  if (!data.fragmentLink) return [];
+
+  const path = data.fragmentLink.startsWith('http')
+    ? new URL(data.fragmentLink, window.location.href).pathname
+    : data.fragmentLink;
+
+  const fragment = await loadFragment(path);
+
+  if (!fragment) return [];
+
+  const nodes = [...fragment.childNodes];
+
+  const cta = createButton(data.modalCtaText, data.modalCtaLink, 'button primary modal-cta');
+  if (cta) nodes.push(cta);
+
+  return nodes;
+}
+
 export async function openModal(data) {
-  const {
-    modalType,
-  } = data;
+  const { modalType } = data;
 
-  let content;
+  let content = [];
 
-  if (
-    modalType === 'fragment'
-    || modalType === 'large'
-    || modalType === 'fullscreen'
-  ) {
-    const path = data.fragmentLink.startsWith('http')
-      ? new URL(
-        data.fragmentLink,
-        window.location,
-      ).pathname
-      : data.fragmentLink;
-
-    const fragment = await loadFragment(path);
-
-    content = [...fragment.childNodes];
-  }
-
-  if (modalType === 'image') {
-    content = [
-      createImageModal(data),
-    ];
-  }
-
-  if (modalType === 'video') {
-    content = [
-      createVideoModal(data),
-    ];
-  }
-
-  if (modalType === 'cta') {
-    content = [
-      createCtaModal(data),
-    ];
+  if (FRAGMENT_TYPES.includes(modalType)) {
+    content = await createFragmentModal(data);
+  } else if (modalType === 'image') {
+    content = [createImageModal(data)];
+  } else if (modalType === 'video') {
+    content = [createVideoModal(data)];
+  } else if (modalType === 'cta') {
+    content = [createCtaModal(data)];
   }
 
   const { showModal } = await createModal(
@@ -231,18 +312,25 @@ export async function openModal(data) {
 
 export default function decorate(block) {
   const rows = [...block.children];
+  const row = (name) => rows[FIELD_ROWS.indexOf(name)];
 
   const data = {
-    modalType:
-      rows[0]?.textContent?.trim() || 'fragment',
-    theme:
-      rows[1]?.textContent?.trim() || 'light',
-    buttonText:
-      rows[2]?.textContent?.trim(),
-    buttonColor:
-      rows[3]?.textContent?.trim(),
-    fragmentLink:
-      rows[4]?.querySelector('a')?.href || '',
+    modalType: getText(row('modalType')) || 'fragment',
+    theme: getText(row('theme')) || 'light',
+    buttonText: getText(row('buttonText')),
+    buttonColor: getText(row('buttonColor')),
+    fragmentLink: getLink(row('fragmentLink')),
+    image: getPicture(row('image')),
+    imageAlt: getText(row('imageAlt')),
+    videoUrl: getLink(row('videoUrl')),
+    title: getText(row('title')),
+    description: getHtml(row('description')),
+    primaryCtaText: getText(row('primaryCtaText')),
+    primaryCtaLink: getLink(row('primaryCtaLink')),
+    secondaryCtaText: getText(row('secondaryCtaText')),
+    secondaryCtaLink: getLink(row('secondaryCtaLink')),
+    modalCtaText: getText(row('modalCtaText')),
+    modalCtaLink: getLink(row('modalCtaLink')),
   };
 
   const trigger = document.createElement('button');

@@ -5,7 +5,7 @@
       "id": "modal",
       "plugins": {
         "da": {
-          "rows": 10,
+          "rows": 16,
           "columns": 1,
           "fields": [
             {
@@ -34,43 +34,43 @@
             },
             {
               "name": "imageAlt",
-              "selector": "div:nth-child(6)>div>picture>img[alt]"
-            },
-            {
-              "name": "videoUrl",
               "selector": "div:nth-child(7)>div"
             },
             {
-              "name": "title",
+              "name": "videoUrl",
               "selector": "div:nth-child(8)>div"
             },
             {
-              "name": "description",
+              "name": "title",
               "selector": "div:nth-child(9)>div"
             },
             {
+              "name": "description",
+              "selector": "div:nth-child(10)>div"
+            },
+            {
               "name": "primaryCtaText",
-              "selector": "div:nth-child(10)>div>p>strong>a"
+              "selector": "div:nth-child(11)>div"
             },
             {
               "name": "primaryCtaLink",
-              "selector": "div:nth-child(10)>div>p>strong>a[href]"
+              "selector": "div:nth-child(12)>div"
             },
             {
               "name": "secondaryCtaText",
-              "selector": "div:nth-child(10)>div>p>em>a"
+              "selector": "div:nth-child(13)>div"
             },
             {
               "name": "secondaryCtaLink",
-              "selector": "div:nth-child(10)>div>p>em>a[href]"
+              "selector": "div:nth-child(14)>div"
             },
             {
               "name": "modalCtaText",
-              "selector": "div:nth-child(11)>div>p>a"
+              "selector": "div:nth-child(15)>div"
             },
             {
               "name": "modalCtaLink",
-              "selector": "div:nth-child(11)>div>p>a[href]"
+              "selector": "div:nth-child(16)>div"
             }
           ]
         },

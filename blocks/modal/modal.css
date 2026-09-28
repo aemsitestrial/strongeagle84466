@@ -140,6 +140,10 @@ body.modal-open {
   color: #fff;
 }
 
+.modal dialog.light .close-button {
+  color: #000;
+}
+
 .modal dialog.dark .close-button {
   color: #fff;
 }
@@ -170,7 +174,7 @@ body.modal-open {
    Optional Modal CTA
 ----------------------------------- */
 
-.modal-content > .button {
+.modal .modal-cta {
   margin-top: 24px;
   display: inline-flex;
 }
