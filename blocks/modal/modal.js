@@ -6,27 +6,29 @@ import {
   loadCSS,
 } from '../../scripts/aem.js';
 
+const MODAL_TYPES = ['fragment', 'image', 'video', 'cta', 'large', 'fullscreen'];
+const THEMES = ['light', 'dark'];
 const FRAGMENT_TYPES = ['fragment', 'large', 'fullscreen'];
 
-/* Row order must match the field order of the `modal` model in _modal.json. */
-const FIELD_ROWS = [
-  'modalType',
-  'theme',
-  'buttonText',
-  'buttonColor',
-  'fragmentLink',
-  'image',
-  'imageAlt',
-  'videoUrl',
-  'title',
-  'description',
-  'primaryCtaText',
-  'primaryCtaLink',
-  'secondaryCtaText',
-  'secondaryCtaLink',
-  'modalCtaText',
-  'modalCtaLink',
-];
+/* Text-valued fields the author can fill, per modal type, in model order. */
+const TEXT_FIELDS = {
+  fragment: ['buttonText', 'modalCtaText'],
+  large: ['buttonText', 'modalCtaText'],
+  fullscreen: ['buttonText', 'modalCtaText'],
+  image: ['buttonText', 'imageAlt', 'modalCtaText'],
+  video: ['buttonText', 'modalCtaText'],
+  cta: ['buttonText', 'title', 'primaryCtaText', 'secondaryCtaText'],
+};
+
+/* URL-valued fields the author can fill, per modal type, in model order. */
+const LINK_FIELDS = {
+  fragment: ['fragmentLink', 'modalCtaLink'],
+  large: ['fragmentLink', 'modalCtaLink'],
+  fullscreen: ['fragmentLink', 'modalCtaLink'],
+  image: ['modalCtaLink'],
+  video: ['videoUrl', 'modalCtaLink'],
+  cta: ['primaryCtaLink', 'secondaryCtaLink'],
+};
 
 /* A row is either a single value cell or a label/value pair. */
 function getValueCell(row) {
@@ -34,57 +36,120 @@ function getValueCell(row) {
   return row.children.length > 1 ? row.children[1] : row.firstElementChild || row;
 }
 
-function getText(row) {
-  const cell = getValueCell(row);
+function cellText(cell) {
   return cell ? cell.textContent.trim() : '';
 }
 
-function getLink(row) {
-  const cell = getValueCell(row);
+function cellLink(cell) {
   if (!cell) return '';
   const anchor = cell.querySelector('a[href]');
-  return anchor ? anchor.getAttribute('href') : cell.textContent.trim();
+  return anchor ? anchor.getAttribute('href') : cellText(cell);
 }
 
-function getHtml(row) {
-  const cell = getValueCell(row);
-  return cell ? cell.innerHTML.trim() : '';
+function cellPicture(cell) {
+  const media = cell ? cell.querySelector('picture, img[src]') : null;
+  return media ? media.cloneNode(true) : null;
 }
 
-function getPicture(row) {
-  const cell = getValueCell(row);
-  if (!cell) return null;
-  const picture = cell.querySelector('picture');
-  if (picture) return picture.cloneNode(true);
-  const img = cell.querySelector('img[src]');
-  if (img) return img.cloneNode(true);
-  const src = cell.textContent.trim();
-  if (!src) return null;
-  const image = document.createElement('img');
-  image.src = src;
-  return image;
+function looksLikeLink(cell) {
+  if (cell.querySelector('a[href]')) return true;
+  return /^(https?:\/\/|www\.|\/|#|mailto:|tel:)/i.test(cellText(cell));
 }
 
-/* Turn shareable YouTube/Vimeo URLs into their embeddable equivalent. */
-function toEmbedUrl(url) {
-  if (!url) return '';
-  try {
-    const parsed = new URL(url, window.location.href);
-    const host = parsed.hostname.replace('www.', '');
-    if (host === 'youtu.be') {
-      return `https://www.youtube.com/embed${parsed.pathname}`;
+function looksRich(cell) {
+  return !!cell.querySelector('p, ul, ol, h1, h2, h3, h4, h5, h6, br, strong, em');
+}
+
+/*
+ * The xwalk renderer may omit rows for unauthored fields, so a fixed row index
+ * is not reliable. Rows are classified by shape, then assigned to the fields
+ * valid for the detected modal type, in model order.
+ */
+function readFields(rows) {
+  const fields = {};
+  const rest = [];
+
+  rows.map(getValueCell).filter(Boolean).forEach((cell) => {
+    const value = cellText(cell).toLowerCase();
+
+    if (!fields.modalType && MODAL_TYPES.includes(value)) {
+      fields.modalType = value;
+    } else if (!fields.theme && THEMES.includes(value)) {
+      fields.theme = value;
+    } else if (!fields.buttonColor && value.startsWith('tcs-background-')) {
+      fields.buttonColor = value;
+    } else if (!fields.image && cell.querySelector('picture, img[src]')) {
+      fields.image = cellPicture(cell);
+    } else {
+      rest.push(cell);
     }
-    if (host.endsWith('youtube.com')) {
-      const id = parsed.searchParams.get('v');
-      if (id) return `https://www.youtube.com/embed/${id}`;
+  });
+
+  const type = fields.modalType || 'fragment';
+  const links = rest.filter(looksLikeLink);
+  const texts = rest.filter((cell) => !looksLikeLink(cell) && cellText(cell));
+
+  if (type === 'cta') {
+    const richIndex = texts.findIndex(looksRich);
+    if (richIndex > -1) {
+      fields.description = texts.splice(richIndex, 1)[0].innerHTML.trim();
     }
-    if (host === 'vimeo.com') {
-      return `https://player.vimeo.com/video${parsed.pathname}`;
-    }
-    return parsed.href;
-  } catch (e) {
-    return url;
   }
+
+  TEXT_FIELDS[type].forEach((name, i) => {
+    if (texts[i]) fields[name] = cellText(texts[i]);
+  });
+
+  LINK_FIELDS[type].forEach((name, i) => {
+    if (links[i]) fields[name] = cellLink(links[i]);
+  });
+
+  fields.modalType = type;
+  fields.theme = fields.theme || 'light';
+
+  return fields;
+}
+
+function createPlaceholder(message) {
+  const notice = document.createElement('p');
+  notice.classList.add('modal-placeholder');
+  notice.textContent = message;
+  return notice;
+}
+
+/* Returns { type: 'file' | 'embed', src } or null when unusable. */
+function resolveVideoSource(url) {
+  if (!url) return null;
+
+  let parsed;
+  try {
+    parsed = new URL(url, window.location.href);
+  } catch (e) {
+    return null;
+  }
+
+  if (/\.(mp4|webm|ogv|ogg|m4v)$/i.test(parsed.pathname)) {
+    return { type: 'file', src: parsed.href };
+  }
+
+  const host = parsed.hostname.replace(/^www\./, '');
+
+  if (host === 'youtu.be' && parsed.pathname.length > 1) {
+    return { type: 'embed', src: `https://www.youtube.com/embed${parsed.pathname}` };
+  }
+
+  if (host.endsWith('youtube.com')) {
+    const id = parsed.searchParams.get('v');
+    if (id) return { type: 'embed', src: `https://www.youtube.com/embed/${id}` };
+    return parsed.pathname.startsWith('/embed/') ? { type: 'embed', src: parsed.href } : null;
+  }
+
+  if (host === 'vimeo.com') {
+    const id = parsed.pathname.split('/').filter(Boolean).pop();
+    return id ? { type: 'embed', src: `https://player.vimeo.com/video/${id}` } : null;
+  }
+
+  return { type: 'embed', src: parsed.href };
 }
 
 function createButton(text, href, className = 'button primary') {
@@ -114,6 +179,8 @@ function createImageModal(data) {
     if (image) image.alt = data.imageAlt || image.alt || '';
 
     wrapper.append(media);
+  } else {
+    wrapper.append(createPlaceholder('No image configured.'));
   }
 
   appendModalCta(wrapper, data);
@@ -123,22 +190,25 @@ function createImageModal(data) {
 
 function createVideoModal(data) {
   const wrapper = document.createElement('div');
+  const source = resolveVideoSource(data.videoUrl);
 
-  if (data.videoUrl) {
-    if (/\.(mp4|webm|ogv|ogg)(\?|#|$)/i.test(data.videoUrl)) {
-      const video = document.createElement('video');
-      video.controls = true;
-      video.src = data.videoUrl;
-      video.preload = 'metadata';
-      wrapper.append(video);
-    } else {
-      const iframe = document.createElement('iframe');
-      iframe.src = toEmbedUrl(data.videoUrl);
-      iframe.allowFullscreen = true;
-      iframe.loading = 'lazy';
-      iframe.title = data.title || 'Video';
-      wrapper.append(iframe);
-    }
+  if (!source) {
+    wrapper.append(createPlaceholder('No video configured.'));
+  } else if (source.type === 'file') {
+    const video = document.createElement('video');
+    video.src = source.src;
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    wrapper.append(video);
+  } else {
+    const iframe = document.createElement('iframe');
+    iframe.src = source.src;
+    iframe.title = data.title || 'Video';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    iframe.loading = 'lazy';
+    wrapper.append(iframe);
   }
 
   appendModalCta(wrapper, data);
@@ -157,6 +227,7 @@ function createCtaModal(data) {
 
   if (data.description) {
     const description = document.createElement('div');
+    description.classList.add('modal-description');
     description.innerHTML = data.description;
     wrapper.append(description);
   }
@@ -180,8 +251,6 @@ function createCtaModal(data) {
   if (secondary) actions.append(secondary);
 
   if (actions.childElementCount) wrapper.append(actions);
-
-  appendModalCta(wrapper, data);
 
   return wrapper;
 }
@@ -211,7 +280,7 @@ export async function createModal(contentNodes = [], options = {}) {
 
   closeButton.classList.add('close-button');
   closeButton.type = 'button';
-  closeButton.ariaLabel = 'Close';
+  closeButton.setAttribute('aria-label', 'Close');
 
   closeButton.innerHTML = '<span class="icon icon-close"></span>';
 
@@ -266,22 +335,28 @@ export async function createModal(contentNodes = [], options = {}) {
       }, 0);
 
       document.body.classList.add('modal-open');
+      closeButton.focus();
     },
   };
 }
 
 async function createFragmentModal(data) {
-  if (!data.fragmentLink) return [];
+  const nodes = [];
 
-  const path = data.fragmentLink.startsWith('http')
-    ? new URL(data.fragmentLink, window.location.href).pathname
-    : data.fragmentLink;
+  let fragment = null;
 
-  const fragment = await loadFragment(path);
+  if (data.fragmentLink) {
+    const path = data.fragmentLink.startsWith('http')
+      ? new URL(data.fragmentLink, window.location.href).pathname
+      : data.fragmentLink;
+    fragment = await loadFragment(path);
+  }
 
-  if (!fragment) return [];
-
-  const nodes = [...fragment.childNodes];
+  if (fragment && fragment.childNodes.length) {
+    nodes.push(...fragment.childNodes);
+  } else {
+    nodes.push(createPlaceholder('Fragment content unavailable.'));
+  }
 
   const cta = createButton(data.modalCtaText, data.modalCtaLink, 'button primary modal-cta');
   if (cta) nodes.push(cta);
@@ -292,16 +367,18 @@ async function createFragmentModal(data) {
 export async function openModal(data) {
   const { modalType } = data;
 
-  let content = [];
+  let content;
 
-  if (FRAGMENT_TYPES.includes(modalType)) {
-    content = await createFragmentModal(data);
-  } else if (modalType === 'image') {
+  if (modalType === 'image') {
     content = [createImageModal(data)];
   } else if (modalType === 'video') {
     content = [createVideoModal(data)];
   } else if (modalType === 'cta') {
     content = [createCtaModal(data)];
+  } else if (FRAGMENT_TYPES.includes(modalType)) {
+    content = await createFragmentModal(data);
+  } else {
+    content = [createPlaceholder('Fragment content unavailable.')];
   }
 
   const { showModal } = await createModal(
@@ -317,29 +394,15 @@ export async function openModal(data) {
 
 export default function decorate(block) {
   const rows = [...block.children];
-  const row = (name) => rows[FIELD_ROWS.indexOf(name)];
 
-  const data = {
-    modalType: getText(row('modalType')) || 'fragment',
-    theme: getText(row('theme')) || 'light',
-    buttonText: getText(row('buttonText')),
-    buttonColor: getText(row('buttonColor')),
-    fragmentLink: getLink(row('fragmentLink')),
-    image: getPicture(row('image')),
-    imageAlt: getText(row('imageAlt')),
-    videoUrl: getLink(row('videoUrl')),
-    title: getText(row('title')),
-    description: getHtml(row('description')),
-    primaryCtaText: getText(row('primaryCtaText')),
-    primaryCtaLink: getLink(row('primaryCtaLink')),
-    secondaryCtaText: getText(row('secondaryCtaText')),
-    secondaryCtaLink: getLink(row('secondaryCtaLink')),
-    modalCtaText: getText(row('modalCtaText')),
-    modalCtaLink: getLink(row('modalCtaLink')),
-  };
+  // createModal() appends an empty placeholder block that must not be decorated.
+  if (!rows.length) return;
+
+  const data = readFields(rows);
 
   const trigger = document.createElement('button');
 
+  trigger.type = 'button';
   trigger.classList.add('modal-trigger');
 
   if (data.buttonColor) {
