@@ -6011,6 +6011,52 @@
         ]
       },
       {
+        "component": "select",
+        "name": "theme",
+        "label": "Theme",
+        "valueType": "string",
+        "value": "light",
+        "options": [
+          {
+            "name": "Light",
+            "value": "light"
+          },
+          {
+            "name": "Dark",
+            "value": "dark"
+          }
+        ]
+      },
+      {
+        "component": "select",
+        "name": "buttonColor",
+        "label": "Trigger Button Color",
+        "valueType": "string",
+        "value": "tcs-background-blue",
+        "options": [
+          {
+            "name": "TCS Red",
+            "value": "tcs-background-red"
+          },
+          {
+            "name": "TCS Yellow",
+            "value": "tcs-background-yellow"
+          },
+          {
+            "name": "TCS Blue",
+            "value": "tcs-background-blue"
+          },
+          {
+            "name": "TCS Beige",
+            "value": "tcs-background-beige"
+          },
+          {
+            "name": "TCS Black",
+            "value": "tcs-background-black"
+          }
+        ]
+      },
+      {
         "component": "reference",
         "name": "image",
         "label": "Image",
