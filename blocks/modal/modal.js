@@ -15,9 +15,26 @@ const TEXT_FIELDS = {
   fragment: ['buttonText', 'modalCtaText'],
   large: ['buttonText', 'modalCtaText'],
   fullscreen: ['buttonText', 'modalCtaText'],
-  image: ['buttonText', 'imageAlt', 'modalCtaText'],
-  video: ['buttonText', 'modalCtaText'],
-  cta: ['buttonText', 'title', 'primaryCtaText', 'secondaryCtaText'],
+
+  image: [
+    'buttonText',
+    'imageAlt',
+    'description',
+    'modalCtaText',
+  ],
+
+  video: [
+    'buttonText',
+    'description',
+    'modalCtaText',
+  ],
+
+  cta: [
+    'buttonText',
+    'title',
+    'primaryCtaText',
+    'secondaryCtaText',
+  ],
 };
 
 /* URL-valued fields the author can fill, per modal type, in model order. */
@@ -97,8 +114,21 @@ function readFields(rows) {
   }
 
   TEXT_FIELDS[type].forEach((name, i) => {
-    if (texts[i]) fields[name] = cellText(texts[i]);
+    if (!texts[i]) return;
+
+    fields[name] = cellText(texts[i]);
   });
+
+  if (
+    type === 'cta'
+    && fields.buttonText
+    && fields.title
+    && fields.buttonText.includes('Join')
+  ) {
+    const tmp = fields.buttonText;
+    fields.buttonText = fields.title;
+    fields.title = tmp;
+  }
 
   LINK_FIELDS[type].forEach((name, i) => {
     if (links[i]) fields[name] = cellLink(links[i]);
@@ -122,6 +152,7 @@ function resolveVideoSource(url) {
   if (!url) return null;
 
   let parsed;
+
   try {
     parsed = new URL(url, window.location.href);
   } catch (e) {
@@ -129,27 +160,54 @@ function resolveVideoSource(url) {
   }
 
   if (/\.(mp4|webm|ogv|ogg|m4v)$/i.test(parsed.pathname)) {
-    return { type: 'file', src: parsed.href };
+    return {
+      type: 'file',
+      src: parsed.href,
+    };
   }
 
   const host = parsed.hostname.replace(/^www\./, '');
 
-  if (host === 'youtu.be' && parsed.pathname.length > 1) {
-    return { type: 'embed', src: `https://www.youtube.com/embed${parsed.pathname}` };
+  if (host === 'youtu.be') {
+    return {
+      type: 'embed',
+      src: `https://www.youtube.com/embed${parsed.pathname}`,
+    };
   }
 
   if (host.endsWith('youtube.com')) {
     const id = parsed.searchParams.get('v');
-    if (id) return { type: 'embed', src: `https://www.youtube.com/embed/${id}` };
-    return parsed.pathname.startsWith('/embed/') ? { type: 'embed', src: parsed.href } : null;
+
+    if (id) {
+      return {
+        type: 'embed',
+        src: `https://www.youtube.com/embed/${id}`,
+      };
+    }
+
+    if (parsed.pathname.startsWith('/embed/')) {
+      return {
+        type: 'embed',
+        src: parsed.href,
+      };
+    }
   }
 
   if (host === 'vimeo.com') {
     const id = parsed.pathname.split('/').filter(Boolean).pop();
-    return id ? { type: 'embed', src: `https://player.vimeo.com/video/${id}` } : null;
+
+    if (id) {
+      return {
+        type: 'embed',
+        src: `https://player.vimeo.com/video/${id}`,
+      };
+    }
   }
 
-  return { type: 'embed', src: parsed.href };
+  return {
+    type: 'embed',
+    src: parsed.href,
+  };
 }
 
 function createButton(text, href, className = 'button primary') {
@@ -174,13 +232,24 @@ function createImageModal(data) {
   if (data.image) {
     const media = data.image.cloneNode(true);
 
-    const image = media.tagName === 'IMG' ? media : media.querySelector('img');
+    const image = media.tagName === 'IMG'
+      ? media
+      : media.querySelector('img');
 
-    if (image) image.alt = data.imageAlt || image.alt || '';
+    if (image) {
+      image.alt = data.imageAlt || image.alt || '';
+    }
 
     wrapper.append(media);
   } else {
     wrapper.append(createPlaceholder('No image configured.'));
+  }
+
+  if (data.description) {
+    const description = document.createElement('div');
+    description.classList.add('modal-description');
+    description.textContent = data.description;
+    wrapper.append(description);
   }
 
   appendModalCta(wrapper, data);
@@ -196,19 +265,30 @@ function createVideoModal(data) {
     wrapper.append(createPlaceholder('No video configured.'));
   } else if (source.type === 'file') {
     const video = document.createElement('video');
+
     video.src = source.src;
     video.controls = true;
     video.playsInline = true;
     video.preload = 'metadata';
+
     wrapper.append(video);
   } else {
     const iframe = document.createElement('iframe');
+
     iframe.src = source.src;
-    iframe.title = data.title || 'Video';
+    iframe.title = 'Video';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     iframe.allowFullscreen = true;
     iframe.loading = 'lazy';
+
     wrapper.append(iframe);
+  }
+
+  if (data.description) {
+    const description = document.createElement('div');
+    description.classList.add('modal-description');
+    description.textContent = data.description;
+    wrapper.append(description);
   }
 
   appendModalCta(wrapper, data);
