@@ -37,31 +37,6 @@
   outline-offset: 3px;
 }
 
-.modal-v1-trigger.tcs-background-red {
-  background: #e31837;
-  color: #fff;
-}
-
-.modal-v1-trigger.tcs-background-yellow {
-  background: #fc0;
-  color: #000;
-}
-
-.modal-v1-trigger.tcs-background-blue {
-  background: #005eb8;
-  color: #fff;
-}
-
-.modal-v1-trigger.tcs-background-beige {
-  background: #e8ddc7;
-  color: #000;
-}
-
-.modal-v1-trigger.tcs-background-black {
-  background: #000;
-  color: #fff;
-}
-
 .modal-v1-open {
   overflow: hidden;
 }
@@ -399,7 +374,7 @@
 
 /* Responsive */
 
-@media (width <=768px) {
+@media (width <= 768px) {
   .modal-v1-overlay {
     padding: 16px;
   }
@@ -449,7 +424,7 @@
   }
 }
 
-@media (width <=480px) {
+@media (width <= 480px) {
   .modal-v1-overlay {
     padding: 0;
   }
@@ -494,36 +469,4 @@
   .modal-v1-button {
     transition: none;
   }
-}
-
-.modal-v1-dialog.light {
-  background: #fff;
-  color: #111;
-}
-
-.modal-v1-dialog.dark {
-  background: #1c1c1c;
-  color: #fff;
-}
-
-.modal-v1-dialog.dark .modal-v1-title {
-  color: #fff;
-}
-
-.modal-v1-dialog.dark .modal-v1-content {
-  color: rgb(255 255 255 / 80%);
-}
-
-.modal-v1-dialog.dark .modal-v1-eyebrow {
-  color: rgb(255 255 255 / 70%);
-}
-
-.modal-v1-dialog.dark .modal-v1-close {
-  color: #fff;
-}
-
-.modal-v1-dialog.dark .modal-v1-button-secondary {
-  background: transparent;
-  color: #fff;
-  border-color: #fff;
 }

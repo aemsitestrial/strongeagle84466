@@ -45,7 +45,8 @@ function createButton(text, href, secondary = false) {
     button.type = 'button';
   }
 
-  button.className = `${CLASS_PREFIX}-button${secondary ? ` ${CLASS_PREFIX}-button-secondary` : ''
+  button.className = `${CLASS_PREFIX}-button${
+    secondary ? ` ${CLASS_PREFIX}-button-secondary` : ''
   }`;
 
   button.textContent = text;
@@ -129,7 +130,6 @@ function createVideo(video) {
 function createModalDOM(data) {
   const {
     variant,
-    theme,
     image,
     imageAlt,
     eyebrow,
@@ -152,10 +152,8 @@ function createModalDOM(data) {
 
   const variantClass = getVariantClass(variant);
 
-  dialog.className = `${CLASS_PREFIX}-dialog ${theme || 'light'
-  }${variantClass
-    ? ` ${variantClass}`
-    : ''
+  dialog.className = `${CLASS_PREFIX}-dialog${
+    variantClass ? ` ${variantClass}` : ''
   }`;
 
   dialog.setAttribute('role', 'dialog');
@@ -400,18 +398,9 @@ export default function decorate(block) {
 
   const variantElement = rows[0]?.querySelector(':scope > div');
 
-  const themeElement = rows[1]?.querySelector(':scope > div');
-
-  const buttonColorElement = rows[2]?.querySelector(':scope > div');
-
   const imageElement = rows[1]?.querySelector(
     ':scope > div picture img',
   );
-
-  const theme = getText(themeElement) || 'light';
-
-  const buttonColor = getText(buttonColorElement)
-    || 'tcs-background-blue';
 
   const imageAltElement = rows[1]?.querySelector(
     ':scope > div picture img[alt]',
@@ -476,8 +465,6 @@ export default function decorate(block) {
     cta2Text,
     cta2,
     closeLabel,
-    theme,
-    buttonColor,
   };
 
   const triggerWrapper = document.createElement('div');

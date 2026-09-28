@@ -1008,20 +1008,12 @@
           "id": "modal-v1",
           "plugins": {
             "da": {
-              "rows": 15,
+              "rows": 13,
               "columns": 1,
               "fields": [
                 {
                   "name": "variant",
                   "selector": "div:nth-child(1)>div"
-                },
-                {
-                  "name": "theme",
-                  "selector": "div:nth-child(2)>div"
-                },
-                {
-                  "name": "buttonColor",
-                  "selector": "div:nth-child(3)>div"
                 },
                 {
                   "name": "image",
