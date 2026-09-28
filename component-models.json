@@ -6215,13 +6215,14 @@
         "valueType": "string",
         "name": "title",
         "label": "Title",
-        "description": "Applicable for CTA Modal."
+        "description": "Applicable for Image, Video and CTA Modal."
       },
       {
         "component": "richtext",
         "valueType": "string",
         "name": "description",
-        "label": "Description"
+        "label": "Description",
+        "description": "Applicable for Image, Video and CTA Modal."
       },
       {
         "component": "text",

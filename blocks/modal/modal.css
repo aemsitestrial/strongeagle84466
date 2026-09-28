@@ -2,83 +2,101 @@ body.modal-open {
   overflow: hidden;
 }
 
-/* ----------------------------------
-   Modal Backdrop
------------------------------------ */
+/* ----------------------------
+   Backdrop
+----------------------------- */
 
 .modal dialog::backdrop {
-  background-color: rgb(19 19 19 / 75%);
+  background: rgb(0 0 0 / 70%);
 }
 
-/* ----------------------------------
-   Base Modal
------------------------------------ */
+/* ----------------------------
+   Base Dialog
+----------------------------- */
 
 .modal dialog {
   position: relative;
-  overscroll-behavior: none;
-  overflow: hidden;
-  width: calc(100vw - 48px);
-  max-width: 900px;
-  max-height: calc(100dvh - (2 * var(--header-height)));
+  width: min(1000px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
   padding: 0;
-  border: 1px solid var(--dark-color);
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 20%);
+}
+
+.modal dialog.light {
   background: #fff;
-  border-radius: 12px;
+  color: #000;
 }
 
-.modal dialog .modal-content {
-  box-sizing: border-box;
+.modal dialog.dark {
+  background: #1c1c1c;
+  color: #fff;
+}
+
+.modal dialog.dark a {
+  color: #fff;
+}
+
+/* ----------------------------
+   Content
+----------------------------- */
+
+.modal .modal-content {
   overflow-y: auto;
-  width: 100%;
-  max-height: calc(100dvh - (2 * var(--header-height)) - 48px);
-  padding: 32px;
-  margin-top: 44px;
+  max-height: calc(100vh - 48px);
+  padding: 48px;
 }
 
-/* ----------------------------------
+/* ----------------------------
    Close Button
------------------------------------ */
+----------------------------- */
 
 .modal .close-button {
   position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
   width: 44px;
   height: 44px;
-  margin: 0;
   border: none;
-  background: transparent;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 10%);
   cursor: pointer;
 }
 
-.modal .close-button .icon.icon-close {
-  content: '';
-  width: 24px;
-  height: 24px;
+.modal dialog.dark .close-button {
+  background: rgb(255 255 255 / 10%);
 }
 
-.modal .close-button .icon.icon-close::before,
-.modal .close-button .icon.icon-close::after {
+.modal .icon-close {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: auto;
+}
+
+.modal .icon-close::before,
+.modal .icon-close::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 24px;
+  width: 20px;
   height: 2px;
-  border-radius: 2px;
-  background-color: currentcolor;
+  background: currentcolor;
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
-.modal .close-button .icon.icon-close::after {
+.modal .icon-close::after {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-/* ----------------------------------
+/* ----------------------------
    Trigger Button
------------------------------------ */
+----------------------------- */
 
 .modal-trigger {
   display: inline-flex;
@@ -86,17 +104,15 @@ body.modal-open {
   justify-content: center;
   min-height: 44px;
   padding: 12px 24px;
-  border: 0;
+  border: none;
   border-radius: 6px;
-  cursor: pointer;
   font-weight: 600;
-  text-decoration: none;
-  transition: all .2s ease;
+  cursor: pointer;
 }
 
-/* ----------------------------------
-   TCS Button Colors
------------------------------------ */
+/* ----------------------------
+   TCS Colors
+----------------------------- */
 
 .modal-trigger.tcs-background-red {
   background: #e31837;
@@ -123,166 +139,136 @@ body.modal-open {
   color: #fff;
 }
 
-/* ----------------------------------
-   Theme Support
------------------------------------ */
+/* ----------------------------
+   Typography
+----------------------------- */
 
-.modal dialog.light {
-  background: #fff;
-  color: #000;
-}
-
-.modal dialog.dark {
-  background: #1c1c1c;
-  color: #fff;
-}
-
-.modal dialog.dark a {
-  color: #fff;
-}
-
-.modal dialog.light .close-button {
-  color: #000;
-}
-
-.modal dialog.dark .close-button {
-  color: #fff;
-}
-
-/* ----------------------------------
-   Image Modal
------------------------------------ */
-
-.modal dialog.image img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-/* ----------------------------------
-   Video Modal
------------------------------------ */
-
-.modal dialog.video iframe,
-.modal dialog.video video {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border: 0;
-  border-radius: 8px;
-  background: #000;
-}
-
-/* ----------------------------------
-   Modal Buttons
------------------------------------ */
-
-.modal dialog .modal-content .button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  min-height: 44px;
-  padding: 12px 24px;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  font-weight: 600;
+.modal-title {
+  margin: 0 0 16px;
+  font-size: 36px;
+  font-weight: 700;
   line-height: 1.2;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity .2s ease;
 }
 
-.modal dialog .modal-content .button:hover {
-  opacity: .85;
+.modal-description {
+  margin-bottom: 32px;
+  font-size: 18px;
+  line-height: 1.6;
 }
 
-.modal dialog .modal-content .button.primary {
-  background: #005eb8;
-  color: #fff;
+.modal dialog.dark .modal-description {
+  color: rgb(255 255 255 / 80%);
 }
 
-.modal dialog .modal-content .button.secondary {
-  background: transparent;
-  border-color: currentcolor;
-}
+/* ----------------------------
+   Placeholder
+----------------------------- */
 
-.modal dialog.light .modal-content .button.secondary {
-  color: #005eb8;
-}
-
-.modal dialog.dark .modal-content .button.secondary,
-.modal dialog.dark .modal-content .button.secondary:link,
-.modal dialog.dark .modal-content .button.secondary:visited {
-  color: #fff;
-}
-
-.modal dialog.dark .modal-content .button.primary,
-.modal dialog.dark .modal-content .button.primary:link,
-.modal dialog.dark .modal-content .button.primary:visited {
-  color: #fff;
-}
-
-/* ----------------------------------
-   Defensive Placeholders
------------------------------------ */
-
-.modal .modal-placeholder {
-  margin: 0;
+.modal-placeholder {
   padding: 24px;
   border: 1px dashed currentcolor;
   border-radius: 8px;
   text-align: center;
-  opacity: .7;
 }
 
-/* ----------------------------------
-   Optional Modal CTA
------------------------------------ */
+/* ----------------------------
+   Buttons
+----------------------------- */
 
-.modal .modal-cta {
+.modal .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.modal .button.primary {
+  background: #005eb8;
+  color: #fff;
+}
+
+.modal .button.secondary {
+  border: 1px solid currentcolor;
+  background: transparent;
+}
+
+.modal-cta {
   margin-top: 24px;
 }
 
-
-/* ----------------------------------
+/* ----------------------------
    CTA Modal
------------------------------------ */
+----------------------------- */
 
-.modal dialog.cta .modal-content {
+.modal-cta-layout {
   text-align: center;
 }
 
-.modal .modal-description {
-  margin-top: 8px;
-}
-
-.modal .modal-actions {
-  margin-top: 24px;
+.modal-actions {
   display: flex;
-  gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 32px;
 }
 
-.modal dialog .modal-content .modal-actions .button {
-  min-width: 180px;
+/* ----------------------------
+   Image Modal
+----------------------------- */
+
+.modal-image-layout picture,
+.modal-image-layout img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
 }
 
+.modal-image-layout img {
+  object-fit: cover;
+}
 
-/* ----------------------------------
+/* ----------------------------
+   Video Modal
+----------------------------- */
+
+.modal-video-layout iframe,
+.modal-video-layout video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  border-radius: 12px;
+  background: #000;
+}
+
+.modal-video-layout iframe {
+  min-height: 500px;
+}
+
+/* ----------------------------
+   Fragment CTA
+----------------------------- */
+
+.modal-content .modal-cta {
+  display: inline-flex;
+}
+
+/* ----------------------------
    Large Modal
------------------------------------ */
+----------------------------- */
 
 .modal dialog.large {
-  max-width: 1200px;
+  width: min(1200px, calc(100vw - 48px));
 }
 
-/* ----------------------------------
+/* ----------------------------
    Fullscreen Modal
------------------------------------ */
+----------------------------- */
 
 .modal dialog.fullscreen {
   width: 100vw;
@@ -293,34 +279,31 @@ body.modal-open {
 }
 
 .modal dialog.fullscreen .modal-content {
-  max-height: calc(100vh - 44px);
+  max-height: 100vh;
 }
 
-/* ----------------------------------
+/* ----------------------------
    Responsive
------------------------------------ */
-
-@media (width >= 900px) {
-  .modal dialog {
-    width: calc(100vw - 64px);
-  }
-
-  .modal dialog .modal-content {
-    padding: 40px;
-    margin-top: 44px;
-  }
-}
+----------------------------- */
 
 @media (width <= 768px) {
-  .modal .modal-actions {
+  .modal .modal-content {
+    padding: 24px;
+  }
+
+  .modal-title {
+    font-size: 28px;
+  }
+
+  .modal-actions {
     flex-direction: column;
   }
 
-  .modal dialog .modal-content .modal-actions .button {
+  .modal-actions .button {
     width: 100%;
   }
 
-  .modal dialog.fullscreen .modal-content {
-    padding: 24px;
+  .modal-video-layout iframe {
+    min-height: 250px;
   }
 }

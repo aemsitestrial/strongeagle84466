@@ -176,14 +176,12 @@
             }
           ]
         },
-
         {
           "component": "aem-content",
           "name": "fragmentLink",
           "label": "Fragment Link",
           "description": "Applicable for Fragment, Large and Fullscreen Modal."
         },
-
         {
           "component": "reference",
           "valueType": "string",
@@ -198,7 +196,6 @@
           "name": "imageAlt",
           "label": "Image Alt Text"
         },
-
         {
           "component": "text",
           "valueType": "string",
@@ -206,21 +203,21 @@
           "label": "Video URL",
           "description": "Applicable for Video Modal."
         },
-
         {
           "component": "text",
           "valueType": "string",
           "name": "title",
           "label": "Title",
-          "description": "Applicable for CTA Modal."
+          "description": "Applicable for Image, Video and CTA Modal."
         },
         {
           "component": "richtext",
           "valueType": "string",
           "name": "description",
-          "label": "Description"
+          "label": "Description",
+          "description": "Applicable for Image, Video and CTA Modal."
         },
-
+        
         {
           "component": "text",
           "valueType": "string",
@@ -233,7 +230,6 @@
           "name": "primaryCtaLink",
           "label": "Primary CTA Link"
         },
-
         {
           "component": "text",
           "valueType": "string",
@@ -246,7 +242,6 @@
           "name": "secondaryCtaLink",
           "label": "Secondary CTA Link"
         },
-
         {
           "component": "text",
           "valueType": "string",

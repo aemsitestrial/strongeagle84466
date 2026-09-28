@@ -6,148 +6,101 @@ import {
   loadCSS,
 } from '../../scripts/aem.js';
 
-const MODAL_TYPES = ['fragment', 'image', 'video', 'cta', 'large', 'fullscreen'];
-const THEMES = ['light', 'dark'];
 const FRAGMENT_TYPES = ['fragment', 'large', 'fullscreen'];
 
-/* Text-valued fields the author can fill, per modal type, in model order. */
-const TEXT_FIELDS = {
-  fragment: ['buttonText', 'modalCtaText'],
-  large: ['buttonText', 'modalCtaText'],
-  fullscreen: ['buttonText', 'modalCtaText'],
+/* -----------------------------
+   Utilities
+------------------------------ */
 
-  image: [
-    'buttonText',
-    'imageAlt',
-    'description',
-    'modalCtaText',
-  ],
-
-  video: [
-    'buttonText',
-    'description',
-    'modalCtaText',
-  ],
-
-  cta: [
-    'buttonText',
-    'title',
-    'primaryCtaText',
-    'secondaryCtaText',
-  ],
-};
-
-/* URL-valued fields the author can fill, per modal type, in model order. */
-const LINK_FIELDS = {
-  fragment: ['fragmentLink', 'modalCtaLink'],
-  large: ['fragmentLink', 'modalCtaLink'],
-  fullscreen: ['fragmentLink', 'modalCtaLink'],
-  image: ['modalCtaLink'],
-  video: ['videoUrl', 'modalCtaLink'],
-  cta: ['primaryCtaLink', 'secondaryCtaLink'],
-};
-
-/* A row is either a single value cell or a label/value pair. */
 function getValueCell(row) {
   if (!row) return null;
-  return row.children.length > 1 ? row.children[1] : row.firstElementChild || row;
+
+  return row.children.length > 1
+    ? row.children[1]
+    : row.firstElementChild || row;
 }
 
 function cellText(cell) {
   return cell ? cell.textContent.trim() : '';
 }
 
+function cellHtml(cell) {
+  return cell ? cell.innerHTML.trim() : '';
+}
+
 function cellLink(cell) {
   if (!cell) return '';
-  const anchor = cell.querySelector('a[href]');
-  return anchor ? anchor.getAttribute('href') : cellText(cell);
+
+  const link = cell.querySelector('a[href]');
+
+  return link
+    ? link.getAttribute('href')
+    : cellText(cell);
 }
 
 function cellPicture(cell) {
-  const media = cell ? cell.querySelector('picture, img[src]') : null;
-  return media ? media.cloneNode(true) : null;
+  const media = cell
+    ? cell.querySelector('picture, img')
+    : null;
+
+  return media
+    ? media.cloneNode(true)
+    : null;
 }
 
-function looksLikeLink(cell) {
-  if (cell.querySelector('a[href]')) return true;
-  return /^(https?:\/\/|www\.|\/|#|mailto:|tel:)/i.test(cellText(cell));
-}
+/* -----------------------------
+   Read Fields
+------------------------------ */
 
-function looksRich(cell) {
-  return !!cell.querySelector('p, ul, ol, h1, h2, h3, h4, h5, h6, br, strong, em');
-}
-
-/*
- * The xwalk renderer may omit rows for unauthored fields, so a fixed row index
- * is not reliable. Rows are classified by shape, then assigned to the fields
- * valid for the detected modal type, in model order.
- */
 function readFields(rows) {
-  const fields = {};
-  const rest = [];
+  const get = (index) => getValueCell(rows[index]);
 
-  rows.map(getValueCell).filter(Boolean).forEach((cell) => {
-    const value = cellText(cell).toLowerCase();
+  return {
+    modalType: cellText(get(0)).toLowerCase() || 'fragment',
+    theme: cellText(get(1)).toLowerCase() || 'light',
 
-    if (!fields.modalType && MODAL_TYPES.includes(value)) {
-      fields.modalType = value;
-    } else if (!fields.theme && THEMES.includes(value)) {
-      fields.theme = value;
-    } else if (!fields.buttonColor && value.startsWith('tcs-background-')) {
-      fields.buttonColor = value;
-    } else if (!fields.image && cell.querySelector('picture, img[src]')) {
-      fields.image = cellPicture(cell);
-    } else {
-      rest.push(cell);
-    }
-  });
+    buttonText: cellText(get(2)) || 'Open Modal',
+    buttonColor: cellText(get(3)),
 
-  const type = fields.modalType || 'fragment';
-  const links = rest.filter(looksLikeLink);
-  const texts = rest.filter((cell) => !looksLikeLink(cell) && cellText(cell));
+    fragmentLink: cellLink(get(4)),
 
-  if (type === 'cta') {
-    const richIndex = texts.findIndex(looksRich);
-    if (richIndex > -1) {
-      fields.description = texts.splice(richIndex, 1)[0].innerHTML.trim();
-    }
-  }
+    image: cellPicture(get(5)),
+    imageAlt: cellText(get(6)),
 
-  TEXT_FIELDS[type].forEach((name, i) => {
-    if (!texts[i]) return;
+    videoUrl: cellText(get(7)),
 
-    fields[name] = cellText(texts[i]);
-  });
+    title: cellText(get(8)),
 
-  if (
-    type === 'cta'
-    && fields.buttonText
-    && fields.title
-    && fields.buttonText.includes('Join')
-  ) {
-    const tmp = fields.buttonText;
-    fields.buttonText = fields.title;
-    fields.title = tmp;
-  }
+    description: cellHtml(get(9)),
 
-  LINK_FIELDS[type].forEach((name, i) => {
-    if (links[i]) fields[name] = cellLink(links[i]);
-  });
+    primaryCtaText: cellText(get(10)),
+    primaryCtaLink: cellLink(get(11)),
 
-  fields.modalType = type;
-  fields.theme = fields.theme || 'light';
+    secondaryCtaText: cellText(get(12)),
+    secondaryCtaLink: cellLink(get(13)),
 
-  return fields;
+    modalCtaText: cellText(get(14)),
+    modalCtaLink: cellLink(get(15)),
+  };
 }
+
+/* -----------------------------
+   Placeholder
+------------------------------ */
 
 function createPlaceholder(message) {
-  const notice = document.createElement('p');
-  notice.classList.add('modal-placeholder');
-  notice.textContent = message;
-  return notice;
+  const element = document.createElement('p');
+
+  element.classList.add('modal-placeholder');
+  element.textContent = message;
+
+  return element;
 }
 
-/* Returns { type: 'file' | 'embed', src } or null when unusable. */
+/* -----------------------------
+   Video Resolver
+------------------------------ */
+
 function resolveVideoSource(url) {
   if (!url) return null;
 
@@ -155,11 +108,11 @@ function resolveVideoSource(url) {
 
   try {
     parsed = new URL(url, window.location.href);
-  } catch (e) {
+  } catch {
     return null;
   }
 
-  if (/\.(mp4|webm|ogv|ogg|m4v)$/i.test(parsed.pathname)) {
+  if (/\.(mp4|webm|ogg|ogv|m4v)$/i.test(parsed.pathname)) {
     return {
       type: 'file',
       src: parsed.href,
@@ -175,7 +128,7 @@ function resolveVideoSource(url) {
     };
   }
 
-  if (host.endsWith('youtube.com')) {
+  if (host.includes('youtube.com')) {
     const id = parsed.searchParams.get('v');
 
     if (id) {
@@ -194,7 +147,10 @@ function resolveVideoSource(url) {
   }
 
   if (host === 'vimeo.com') {
-    const id = parsed.pathname.split('/').filter(Boolean).pop();
+    const id = parsed.pathname
+      .split('/')
+      .filter(Boolean)
+      .pop();
 
     if (id) {
       return {
@@ -210,10 +166,21 @@ function resolveVideoSource(url) {
   };
 }
 
-function createButton(text, href, className = 'button primary') {
-  if (!text || !href) return null;
+/* -----------------------------
+   Buttons
+------------------------------ */
+
+function createButton(
+  text,
+  href,
+  className = 'button primary',
+) {
+  if (!text || !href) {
+    return null;
+  }
 
   const link = document.createElement('a');
+
   link.href = href;
   link.textContent = text;
   link.className = className;
@@ -222,34 +189,106 @@ function createButton(text, href, className = 'button primary') {
 }
 
 function appendModalCta(wrapper, data) {
-  const cta = createButton(data.modalCtaText, data.modalCtaLink, 'button primary modal-cta');
-  if (cta) wrapper.append(cta);
+  const cta = createButton(
+    data.modalCtaText,
+    data.modalCtaLink,
+    'button primary modal-cta',
+  );
+
+  if (cta) {
+    wrapper.append(cta);
+  }
 }
 
-function createImageModal(data) {
-  const wrapper = document.createElement('div');
+/* -----------------------------
+   Shared Content
+------------------------------ */
 
-  if (data.image) {
-    const media = data.image.cloneNode(true);
+function appendTitleAndDescription(wrapper, data) {
+  if (data.title) {
+    const title = document.createElement('h2');
 
-    const image = media.tagName === 'IMG'
-      ? media
-      : media.querySelector('img');
+    title.classList.add('modal-title');
+    title.textContent = data.title;
 
-    if (image) {
-      image.alt = data.imageAlt || image.alt || '';
-    }
-
-    wrapper.append(media);
-  } else {
-    wrapper.append(createPlaceholder('No image configured.'));
+    wrapper.append(title);
   }
 
   if (data.description) {
     const description = document.createElement('div');
+
     description.classList.add('modal-description');
-    description.textContent = data.description;
+    description.innerHTML = data.description;
+
     wrapper.append(description);
+  }
+}
+
+/* -----------------------------
+   Fragment Modal
+------------------------------ */
+
+async function createFragmentModal(data) {
+  const nodes = [];
+
+  let fragment = null;
+
+  if (data.fragmentLink) {
+    const path = data.fragmentLink.startsWith('http')
+      ? new URL(data.fragmentLink, window.location.href).pathname
+      : data.fragmentLink;
+
+    fragment = await loadFragment(path);
+  }
+
+  if (fragment && fragment.childNodes.length) {
+    nodes.push(...fragment.childNodes);
+  } else {
+    nodes.push(
+      createPlaceholder('Fragment content unavailable.'),
+    );
+  }
+
+  const cta = createButton(
+    data.modalCtaText,
+    data.modalCtaLink,
+    'button primary modal-cta',
+  );
+
+  if (cta) {
+    nodes.push(cta);
+  }
+
+  return nodes;
+}
+
+/* -----------------------------
+   Image Modal
+------------------------------ */
+
+function createImageModal(data) {
+  const wrapper = document.createElement('div');
+
+  wrapper.classList.add('modal-image-layout');
+
+  appendTitleAndDescription(wrapper, data);
+
+  if (data.image) {
+    const media = data.image.cloneNode(true);
+
+    const img = media.tagName === 'IMG'
+      ? media
+      : media.querySelector('img');
+
+    if (img) {
+      img.alt = data.imageAlt || img.alt || '';
+    }
+
+    wrapper.append(media);
+  } else {
+    wrapper.append(
+      createPlaceholder('No image configured.'),
+    );
   }
 
   appendModalCta(wrapper, data);
@@ -257,12 +296,23 @@ function createImageModal(data) {
   return wrapper;
 }
 
+/* -----------------------------
+   Video Modal
+------------------------------ */
+
 function createVideoModal(data) {
   const wrapper = document.createElement('div');
+
+  wrapper.classList.add('modal-video-layout');
+
+  appendTitleAndDescription(wrapper, data);
+
   const source = resolveVideoSource(data.videoUrl);
 
   if (!source) {
-    wrapper.append(createPlaceholder('No video configured.'));
+    wrapper.append(
+      createPlaceholder('No video configured.'),
+    );
   } else if (source.type === 'file') {
     const video = document.createElement('video');
 
@@ -276,19 +326,14 @@ function createVideoModal(data) {
     const iframe = document.createElement('iframe');
 
     iframe.src = source.src;
-    iframe.title = 'Video';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    iframe.allowFullscreen = true;
     iframe.loading = 'lazy';
+    iframe.allowFullscreen = true;
+
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+
+    iframe.title = data.title || 'Video';
 
     wrapper.append(iframe);
-  }
-
-  if (data.description) {
-    const description = document.createElement('div');
-    description.classList.add('modal-description');
-    description.textContent = data.description;
-    wrapper.append(description);
   }
 
   appendModalCta(wrapper, data);
@@ -296,23 +341,19 @@ function createVideoModal(data) {
   return wrapper;
 }
 
+/* -----------------------------
+   CTA Modal
+------------------------------ */
+
 function createCtaModal(data) {
   const wrapper = document.createElement('div');
 
-  if (data.title) {
-    const title = document.createElement('h2');
-    title.textContent = data.title;
-    wrapper.append(title);
-  }
+  wrapper.classList.add('modal-cta-layout');
 
-  if (data.description) {
-    const description = document.createElement('div');
-    description.classList.add('modal-description');
-    description.innerHTML = data.description;
-    wrapper.append(description);
-  }
+  appendTitleAndDescription(wrapper, data);
 
   const actions = document.createElement('div');
+
   actions.classList.add('modal-actions');
 
   const primary = createButton(
@@ -327,40 +368,57 @@ function createCtaModal(data) {
     'button secondary',
   );
 
-  if (primary) actions.append(primary);
-  if (secondary) actions.append(secondary);
+  if (primary) {
+    actions.append(primary);
+  }
 
-  if (actions.childElementCount) wrapper.append(actions);
+  if (secondary) {
+    actions.append(secondary);
+  }
+
+  if (actions.childElementCount) {
+    wrapper.append(actions);
+  }
 
   return wrapper;
 }
 
-export async function createModal(contentNodes = [], options = {}) {
+/* -----------------------------
+   Modal Shell
+------------------------------ */
+
+export async function createModal(content, options = {}) {
   await loadCSS(
     `${window.hlx.codeBasePath}/blocks/modal/modal.css`,
   );
 
-  const {
-    variant = 'fragment',
-    theme = 'light',
-  } = options;
-
   const dialog = document.createElement('dialog');
-  dialog.classList.add(theme);
-  dialog.classList.add(variant);
 
-  const dialogContent = document.createElement('div');
-  dialogContent.classList.add('modal-content');
+  dialog.classList.add(
+    options.theme || 'light',
+  );
 
-  dialogContent.append(...contentNodes);
+  dialog.classList.add(
+    options.variant || 'fragment',
+  );
 
-  dialog.append(dialogContent);
+  const contentWrapper = document.createElement('div');
+
+  contentWrapper.classList.add('modal-content');
+
+  contentWrapper.append(...content);
+
+  dialog.append(contentWrapper);
 
   const closeButton = document.createElement('button');
 
-  closeButton.classList.add('close-button');
   closeButton.type = 'button';
-  closeButton.setAttribute('aria-label', 'Close');
+  closeButton.classList.add('close-button');
+
+  closeButton.setAttribute(
+    'aria-label',
+    'Close',
+  );
 
   closeButton.innerHTML = '<span class="icon icon-close"></span>';
 
@@ -377,94 +435,62 @@ export async function createModal(contentNodes = [], options = {}) {
   decorateBlock(block);
   await loadBlock(block);
 
-  dialog.addEventListener('click', (e) => {
-    const {
-      left,
-      right,
-      top,
-      bottom,
-    } = dialog.getBoundingClientRect();
-
-    const { clientX, clientY } = e;
-
-    if (
-      clientX < left
-      || clientX > right
-      || clientY < top
-      || clientY > bottom
-    ) {
-      dialog.close();
-    }
-  });
+  block.textContent = '';
+  block.append(dialog);
 
   dialog.addEventListener('close', () => {
     document.body.classList.remove('modal-open');
     block.remove();
   });
 
-  block.textContent = '';
-  block.append(dialog);
-
   return {
     block,
     showModal() {
       dialog.showModal();
 
-      setTimeout(() => {
-        dialogContent.scrollTop = 0;
-      }, 0);
-
       document.body.classList.add('modal-open');
+
       closeButton.focus();
     },
   };
 }
 
-async function createFragmentModal(data) {
-  const nodes = [];
-
-  let fragment = null;
-
-  if (data.fragmentLink) {
-    const path = data.fragmentLink.startsWith('http')
-      ? new URL(data.fragmentLink, window.location.href).pathname
-      : data.fragmentLink;
-    fragment = await loadFragment(path);
-  }
-
-  if (fragment && fragment.childNodes.length) {
-    nodes.push(...fragment.childNodes);
-  } else {
-    nodes.push(createPlaceholder('Fragment content unavailable.'));
-  }
-
-  const cta = createButton(data.modalCtaText, data.modalCtaLink, 'button primary modal-cta');
-  if (cta) nodes.push(cta);
-
-  return nodes;
-}
+/* -----------------------------
+   Open Modal
+------------------------------ */
 
 export async function openModal(data) {
-  const { modalType } = data;
-
   let content;
 
-  if (modalType === 'image') {
-    content = [createImageModal(data)];
-  } else if (modalType === 'video') {
-    content = [createVideoModal(data)];
-  } else if (modalType === 'cta') {
-    content = [createCtaModal(data)];
-  } else if (FRAGMENT_TYPES.includes(modalType)) {
-    content = await createFragmentModal(data);
-  } else {
-    content = [createPlaceholder('Fragment content unavailable.')];
+  switch (data.modalType) {
+    case 'image':
+      content = [createImageModal(data)];
+      break;
+
+    case 'video':
+      content = [createVideoModal(data)];
+      break;
+
+    case 'cta':
+      content = [createCtaModal(data)];
+      break;
+
+    default:
+      if (FRAGMENT_TYPES.includes(data.modalType)) {
+        content = await createFragmentModal(data);
+      } else {
+        content = [
+          createPlaceholder(
+            'Modal configuration invalid.',
+          ),
+        ];
+      }
   }
 
   const { showModal } = await createModal(
     content,
     {
-      variant: modalType,
+      variant: data.modalType,
       theme: data.theme,
     },
   );
@@ -472,17 +498,23 @@ export async function openModal(data) {
   showModal();
 }
 
+/* -----------------------------
+   Decorate
+------------------------------ */
+
 export default function decorate(block) {
   const rows = [...block.children];
 
-  // createModal() appends an empty placeholder block that must not be decorated.
-  if (!rows.length) return;
+  if (!rows.length) {
+    return;
+  }
 
   const data = readFields(rows);
 
   const trigger = document.createElement('button');
 
   trigger.type = 'button';
+
   trigger.classList.add('modal-trigger');
 
   if (data.buttonColor) {
@@ -496,5 +528,6 @@ export default function decorate(block) {
   });
 
   block.textContent = '';
+
   block.append(trigger);
 }
