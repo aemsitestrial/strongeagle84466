@@ -236,7 +236,7 @@
     ]
   },
   {
-    "id": "card",
+    "id": "cards-item",
     "fields": [
       {
         "component": "reference",
