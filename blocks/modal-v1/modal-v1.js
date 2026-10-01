@@ -45,8 +45,7 @@ function createButton(text, href, secondary = false) {
     button.type = 'button';
   }
 
-  button.className = `${CLASS_PREFIX}-button${
-    secondary ? ` ${CLASS_PREFIX}-button-secondary` : ''
+  button.className = `${CLASS_PREFIX}-button${secondary ? ` ${CLASS_PREFIX}-button-secondary` : ''
   }`;
 
   button.textContent = text;
@@ -152,8 +151,7 @@ function createModalDOM(data) {
 
   const variantClass = getVariantClass(variant);
 
-  dialog.className = `${CLASS_PREFIX}-dialog${
-    variantClass ? ` ${variantClass}` : ''
+  dialog.className = `${CLASS_PREFIX}-dialog${variantClass ? ` ${variantClass}` : ''
   }`;
 
   dialog.setAttribute('role', 'dialog');
