@@ -163,20 +163,12 @@
           "id": "cards-v1",
           "plugins": {
             "da": {
-              "rows": 3,
-              "columns": 1,
               "fields": [
                 {
-                  "name": "sectionTitle",
-                  "selector": "div:nth-child(1)>div"
+                  "name": "sectionTitle"
                 },
                 {
-                  "name": "classes",
-                  "selector": "div:nth-child(2)>div>ul"
-                },
-                {
-                  "name": "cards",
-                  "selector": "div:nth-child(3)>div"
+                  "name": "classes"
                 }
               ]
             },
@@ -189,8 +181,24 @@
                   "sectionTitle": "Intelligence at work",
                   "classes": [
                     "light"
-                  ],
-                  "cards": []
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Card",
+          "id": "card",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block/item",
+                "template": {
+                  "name": "Card",
+                  "model": "card",
+                  "title": "Card Title",
+                  "imageRatio": "ratio-16-9"
                 }
               }
             }

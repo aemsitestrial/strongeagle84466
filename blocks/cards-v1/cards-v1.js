@@ -1,147 +1,144 @@
+// eslint-disable-next-line import/no-unresolved
+import { moveInstrumentation } from '../../scripts/scripts.js';
+
+let cardsBlockCount = 0;
+
 function createMetadata(card) {
-  const items = [];
+  const metadata = document.createElement('div');
+  metadata.className = 'cards-v1-metadata';
 
   if (card.primaryTag) {
-    items.push(
-      `<span class="cards-v1-tag">${card.primaryTag}</span>`,
-    );
+    const tag = document.createElement('span');
+    tag.className = 'cards-v1-tag';
+    tag.textContent = card.primaryTag;
+    metadata.append(tag);
   }
 
   if (card.secondaryTag) {
-    items.push(
-      `<span class="cards-v1-tag">${card.secondaryTag}</span>`,
-    );
+    const tag = document.createElement('span');
+    tag.className = 'cards-v1-tag';
+    tag.textContent = card.secondaryTag;
+    metadata.append(tag);
   }
 
   if (card.readTime) {
-    items.push(
-      `<span class="cards-v1-read-time">${card.readTime}</span>`,
-    );
+    const readTime = document.createElement('span');
+    readTime.className = 'cards-v1-read-time';
+    readTime.textContent = card.readTime;
+    metadata.append(readTime);
   }
 
-  if (!items.length) {
-    return '';
-  }
-
-  return `
-    <div class="cards-v1-metadata">
-      ${items.join('')}
-    </div>
-  `;
-}
-
-function createCTA(label, link) {
-  if (!label || !link) {
-    return '';
-  }
-
-  return `
-    <a
-      class="cards-v1-cta"
-      href="${link}"
-      aria-label="${label}"
-    >
-      ${label}
-    </a>
-  `;
+  return metadata.childElementCount ? metadata : null;
 }
 
 function createCard(card) {
   const article = document.createElement('article');
   article.className = 'cards-v1-card';
 
-  const imageMarkup = card.image
-    ? `
-<div class="cards-v1-image-container ${card.imageRatio}">
-${card.image}
-</div>
-`
-    : '';
-  const metadataMarkup = createMetadata(card);
+  if (card.picture) {
+    const imageContainer = document.createElement('div');
+    imageContainer.className = `cards-v1-image-container ${card.imageRatio}`;
 
-  const overlineMarkup = card.overline
-    ? `
-      <div class="cards-v1-overline">
-        ${card.overline}
-      </div>
-    `
-    : '';
+    imageContainer.append(card.picture);
+    article.append(imageContainer);
+  }
 
-  const titleMarkup = card.title
-    ? `
-      <h3 class="cards-v1-title">
-        ${card.title}
-      </h3>
-    `
-    : '';
+  const content = document.createElement('div');
+  content.className = 'cards-v1-content-container';
 
-  const descriptionMarkup = card.description
-    ? `
-      <div class="cards-v1-description">
-        ${card.description}
-      </div>
-    `
-    : '';
+  const metadata = createMetadata(card);
 
-  const ctaMarkup = createCTA(card.ctaLabel, card.ctaLink);
+  if (metadata) {
+    content.append(metadata);
+  }
 
-  article.innerHTML = `
-    ${imageMarkup}
+  if (card.overline) {
+    const overline = document.createElement('div');
+    overline.className = 'cards-v1-overline';
+    overline.textContent = card.overline;
+    content.append(overline);
+  }
 
-    <div class="cards-v1-content-container">
-      ${metadataMarkup}
-      ${overlineMarkup}
-      ${titleMarkup}
-      ${descriptionMarkup}
-      ${ctaMarkup}
-    </div>
-  `;
+  if (card.title) {
+    const title = document.createElement('h3');
+    title.className = 'cards-v1-title';
+    title.textContent = card.title;
+    content.append(title);
+  }
+
+  if (card.description) {
+    const description = document.createElement('div');
+    description.className = 'cards-v1-description';
+    description.innerHTML = card.description;
+    content.append(description);
+  }
+
+  if (card.ctaLabel && card.ctaLink) {
+    const cta = document.createElement('a');
+    cta.className = 'cards-v1-cta';
+    cta.href = card.ctaLink;
+    cta.textContent = card.ctaLabel;
+    cta.setAttribute('aria-label', card.ctaLabel);
+
+    content.append(cta);
+  }
+
+  article.append(content);
 
   return article;
 }
 
-export default function decorate(block) {
+export default async function decorate(block) {
+  cardsBlockCount += 1;
+
   const rows = [...block.children];
 
-  if (!rows.length) {
+  if (rows.length < 2) {
     return;
   }
 
-  // Row 1 - Section Title
-  const sectionTitle = rows[0]?.textContent?.trim() || '';
+  const firstRow = rows[0];
 
-  // Row 2 - Theme Classes
+  const sectionTitleElement = firstRow.querySelector(
+    'h1, h2, h3, h4, h5, h6, p',
+  );
+
+  const sectionTitle = sectionTitleElement
+    ? sectionTitleElement.textContent.trim()
+    : '';
+
   const classRow = rows[1];
 
-  const classes = classRow
-    ? [...classRow.querySelectorAll('li')]
+  if (classRow) {
+    const classes = [...classRow.querySelectorAll('li')]
       .map((item) => item.textContent.trim().toLowerCase())
-      .filter(Boolean)
-    : ['light'];
+      .filter(Boolean);
 
-  // Remaining rows are cards
-  const cardRows = rows.slice(2);
-
-  block.innerHTML = '';
-
-  block.classList.add(...classes);
+    block.classList.add(...classes);
+  }
 
   const container = document.createElement('div');
   container.className = 'cards-v1-container';
-
-  const header = document.createElement('div');
-  header.className = 'cards-v1-header';
+  container.id = `cards-v1-${cardsBlockCount}`;
 
   if (sectionTitle) {
-    header.innerHTML = `
-      <h2 class="cards-v1-section-title">
-        ${sectionTitle}
-      </h2>
-    `;
+    const header = document.createElement('div');
+    header.className = 'cards-v1-header';
+
+    const heading = document.createElement('h2');
+    heading.className = 'cards-v1-section-title';
+    heading.textContent = sectionTitle;
+
+    header.append(heading);
+    container.append(header);
+
+    moveInstrumentation(heading, null);
   }
 
   const grid = document.createElement('div');
   grid.className = 'cards-v1-grid';
+
+  const cardRows = rows.slice(2);
 
   cardRows.forEach((row) => {
     const cols = [...row.children];
@@ -150,40 +147,23 @@ export default function decorate(block) {
     const picture = imageCell?.querySelector('picture');
 
     const card = {
-      image: picture ? picture.outerHTML : '',
-      imageRatio:
-                cols[2]?.textContent?.trim() || 'ratio-16-9',
-
-      primaryTag:
-                cols[3]?.textContent?.trim() || '',
-
-      secondaryTag:
-                cols[4]?.textContent?.trim() || '',
-
-      readTime:
-                cols[5]?.textContent?.trim() || '',
-
-      overline:
-                cols[6]?.textContent?.trim() || '',
-
-      title:
-                cols[7]?.textContent?.trim() || '',
-
-      description:
-                cols[8]?.innerHTML || '',
-
-      ctaLabel:
-                cols[9]?.textContent?.trim() || '',
-
-      ctaLink:
-                cols[10]?.textContent?.trim() || '',
+      picture: picture ? picture.cloneNode(true) : null,
+      imageRatio: cols[2]?.textContent?.trim() || 'ratio-16-9',
+      primaryTag: cols[3]?.textContent?.trim() || '',
+      secondaryTag: cols[4]?.textContent?.trim() || '',
+      readTime: cols[5]?.textContent?.trim() || '',
+      overline: cols[6]?.textContent?.trim() || '',
+      title: cols[7]?.textContent?.trim() || '',
+      description: cols[8]?.innerHTML || '',
+      ctaLabel: cols[9]?.textContent?.trim() || '',
+      ctaLink: cols[10]?.textContent?.trim() || '',
     };
 
     grid.append(createCard(card));
   });
 
-  container.append(header);
   container.append(grid);
 
+  block.textContent = '';
   block.append(container);
 }

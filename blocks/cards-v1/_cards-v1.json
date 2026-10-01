@@ -5,20 +5,12 @@
       "id": "cards-v1",
       "plugins": {
         "da": {
-          "rows": 3,
-          "columns": 1,
           "fields": [
             {
-              "name": "sectionTitle",
-              "selector": "div:nth-child(1)>div"
+              "name": "sectionTitle"
             },
             {
-              "name": "classes",
-              "selector": "div:nth-child(2)>div>ul"
-            },
-            {
-              "name": "cards",
-              "selector": "div:nth-child(3)>div"
+              "name": "classes"
             }
           ]
         },
@@ -31,8 +23,24 @@
               "sectionTitle": "Intelligence at work",
               "classes": [
                 "light"
-              ],
-              "cards": []
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Card",
+      "id": "card",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Card",
+              "model": "card",
+              "title": "Card Title",
+              "imageRatio": "ratio-16-9"
             }
           }
         }
@@ -45,18 +53,16 @@
       "fields": [
         {
           "component": "text",
-          "valueType": "string",
           "name": "sectionTitle",
           "label": "Section Title",
-          "description": "Heading displayed above the cards grid."
+          "valueType": "string"
         },
         {
           "component": "multiselect",
           "name": "classes",
           "label": "Style",
           "valueType": "string",
-          "required": true,
-          "maxSize": 10,
+          "maxSize": 1,
           "options": [
             {
               "name": "Theme",
@@ -72,104 +78,97 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "card",
+      "fields": [
+        {
+          "component": "reference",
+          "name": "fileReference",
+          "label": "Image",
+          "valueType": "string"
         },
         {
-          "component": "container",
-          "name": "cards",
-          "label": "Cards",
-          "multi": true,
-          "fields": [
+          "component": "text",
+          "name": "fileReferenceAlt",
+          "label": "Image Description",
+          "valueType": "string"
+        },
+        {
+          "component": "select",
+          "name": "imageRatio",
+          "label": "Image Ratio",
+          "valueType": "string",
+          "options": [
             {
-              "component": "reference",
-              "valueType": "string",
-              "name": "fileReference",
-              "label": "Image",
-              "description": "Select the card image."
+              "name": "1:1",
+              "value": "ratio-1-1"
             },
             {
-              "component": "text",
-              "valueType": "string",
-              "name": "fileReferenceAlt",
-              "label": "Image Description",
-              "description": "Alternative text used for accessibility."
-            },
-            {
-              "component": "select",
-              "valueType": "string",
-              "name": "imageRatio",
-              "label": "Image Ratio",
-              "value": "ratio-16-9",
-              "options": [
-                {
-                  "name": "1:1",
-                  "value": "ratio-1-1"
-                },
-                {
-                  "name": "16:9",
-                  "value": "ratio-16-9"
-                }
-              ]
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "primaryTag",
-              "label": "Primary Tag",
-              "description": "Primary metadata tag displayed above the title."
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "secondaryTag",
-              "label": "Secondary Tag",
-              "description": "Secondary metadata tag displayed above the title."
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "readTime",
-              "label": "Read Time",
-              "description": "Optional read time text, for example: 14 min read."
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "overline",
-              "label": "Overline",
-              "description": "Optional label displayed above the card title."
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "title",
-              "label": "Title",
-              "description": "Main card heading."
-            },
-            {
-              "component": "richtext",
-              "valueType": "string",
-              "name": "description",
-              "label": "Description",
-              "description": "Optional supporting text displayed below the title."
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "ctaLabel",
-              "label": "CTA Label",
-              "description": "Text displayed for the call-to-action link."
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "ctaLink",
-              "label": "CTA Link",
-              "description": "Destination URL for the call-to-action."
+              "name": "16:9",
+              "value": "ratio-16-9"
             }
           ]
+        },
+        {
+          "component": "text",
+          "name": "primaryTag",
+          "label": "Primary Tag",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "name": "secondaryTag",
+          "label": "Secondary Tag",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "name": "readTime",
+          "label": "Read Time",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "name": "overline",
+          "label": "Overline",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "name": "title",
+          "label": "Title",
+          "valueType": "string"
+        },
+        {
+          "component": "richtext",
+          "name": "description",
+          "label": "Description",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "name": "ctaLabel",
+          "label": "CTA Label",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "name": "ctaLink",
+          "label": "CTA Link",
+          "valueType": "string"
         }
       ]
     }
   ],
-  "filters": []
+  "filters": [
+    {
+      "id": "cards-v1",
+      "components": [
+        "card"
+      ]
+    }
+  ]
 }
