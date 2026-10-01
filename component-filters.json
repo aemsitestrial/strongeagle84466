@@ -47,7 +47,7 @@
   {
     "id": "cards-v1",
     "components": [
-      "card"
+      "cards-v1-card"
     ]
   },
   {

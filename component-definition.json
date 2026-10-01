@@ -190,14 +190,14 @@
         },
         {
           "title": "Card",
-          "id": "card",
+          "id": "cards-v1-card",
           "plugins": {
             "xwalk": {
               "page": {
                 "resourceType": "core/franklin/components/block/v1/block/item",
                 "template": {
                   "name": "Card",
-                  "model": "card",
+                  "model": "cards-v1-card",
                   "title": "Card Title",
                   "imageRatio": "ratio-16-9"
                 }
