@@ -20,6 +20,7 @@
             "template": {
               "name": "Cards V1",
               "model": "cards-v1",
+              "filter": "cards-v1",
               "sectionTitle": "Intelligence at work",
               "classes": [
                 "light"
@@ -53,9 +54,9 @@
       "fields": [
         {
           "component": "text",
+          "valueType": "string",
           "name": "sectionTitle",
-          "label": "Section Title",
-          "valueType": "string"
+          "label": "Section Title"
         },
         {
           "component": "multiselect",
@@ -86,21 +87,23 @@
       "fields": [
         {
           "component": "reference",
+          "valueType": "string",
           "name": "fileReference",
           "label": "Image",
-          "valueType": "string"
+          "multi": false
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "fileReferenceAlt",
-          "label": "Image Description",
-          "valueType": "string"
+          "label": "Image Description"
         },
         {
           "component": "select",
+          "valueType": "string",
           "name": "imageRatio",
           "label": "Image Ratio",
-          "valueType": "string",
+          "value": "ratio-16-9",
           "options": [
             {
               "name": "1:1",
@@ -114,51 +117,51 @@
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "primaryTag",
-          "label": "Primary Tag",
-          "valueType": "string"
+          "label": "Primary Tag"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "secondaryTag",
-          "label": "Secondary Tag",
-          "valueType": "string"
+          "label": "Secondary Tag"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "readTime",
-          "label": "Read Time",
-          "valueType": "string"
+          "label": "Read Time"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "overline",
-          "label": "Overline",
-          "valueType": "string"
+          "label": "Overline"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "title",
-          "label": "Title",
-          "valueType": "string"
+          "label": "Title"
         },
         {
           "component": "richtext",
+          "valueType": "string",
           "name": "description",
-          "label": "Description",
-          "valueType": "string"
+          "label": "Description"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "ctaLabel",
-          "label": "CTA Label",
-          "valueType": "string"
+          "label": "CTA Label"
         },
         {
           "component": "text",
+          "valueType": "string",
           "name": "ctaLink",
-          "label": "CTA Link",
-          "valueType": "string"
+          "label": "CTA Link"
         }
       ]
     }

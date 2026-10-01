@@ -178,6 +178,7 @@
                 "template": {
                   "name": "Cards V1",
                   "model": "cards-v1",
+                  "filter": "cards-v1",
                   "sectionTitle": "Intelligence at work",
                   "classes": [
                     "light"
