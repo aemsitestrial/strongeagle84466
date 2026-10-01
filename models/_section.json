@@ -70,7 +70,8 @@
         "title",
         "teaser",
         "video",
-        "cards-v1"
+        "cards-v1",
+        "card"
       ]
     }
   ]

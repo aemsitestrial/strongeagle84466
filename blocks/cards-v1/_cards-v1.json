@@ -32,14 +32,14 @@
     },
     {
       "title": "Card",
-      "id": "cards-v1-card",
+      "id": "card",
       "plugins": {
         "xwalk": {
           "page": {
             "resourceType": "core/franklin/components/block/v1/block/item",
             "template": {
               "name": "Card",
-              "model": "cards-v1-card",
+              "model": "card",
               "title": "Card Title",
               "imageRatio": "ratio-16-9"
             }
@@ -83,7 +83,7 @@
       ]
     },
     {
-      "id": "cards-v1-card",
+      "id": "card",
       "fields": [
         {
           "component": "reference",
@@ -170,7 +170,7 @@
     {
       "id": "cards-v1",
       "components": [
-        "cards-v1-card"
+        "card"
       ]
     }
   ]

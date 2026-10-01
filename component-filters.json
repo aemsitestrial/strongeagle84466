@@ -35,7 +35,8 @@
       "title",
       "teaser",
       "video",
-      "cards-v1"
+      "cards-v1",
+      "card"
     ]
   },
   {
@@ -47,7 +48,7 @@
   {
     "id": "cards-v1",
     "components": [
-      "cards-v1-card"
+      "card"
     ]
   },
   {
