@@ -5,20 +5,12 @@
       "id": "cards-v1",
       "plugins": {
         "da": {
-          "rows": 3,
-          "columns": 1,
           "fields": [
             {
-              "name": "sectionTitle",
-              "selector": "div:nth-child(1)>div"
+              "name": "sectionTitle"
             },
             {
-              "name": "classes",
-              "selector": "div:nth-child(2)>div>ul"
-            },
-            {
-              "name": "cards",
-              "selector": "div:nth-child(3)>div"
+              "name": "classes"
             }
           ]
         },
@@ -28,11 +20,28 @@
             "template": {
               "name": "Cards V1",
               "model": "cards-v1",
+              "filter": "cards-v1",
               "sectionTitle": "Intelligence at work",
               "classes": [
                 "light"
-              ],
-              "cards": []
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Cards Item",
+      "id": "cards-item",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Card",
+              "model": "cards-item",
+              "title": "Card Title",
+              "imageRatio": "ratio-16-9"
             }
           }
         }
@@ -47,15 +56,13 @@
           "component": "text",
           "valueType": "string",
           "name": "sectionTitle",
-          "label": "Section Title",
-          "description": "Heading displayed above the cards grid."
+          "label": "Section Title"
         },
         {
           "component": "multiselect",
           "name": "classes",
           "label": "Style",
           "valueType": "string",
-          "required": true,
           "maxSize": 1,
           "options": [
             {
@@ -72,95 +79,98 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "cards-item",
+      "fields": [
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "fileReference",
+          "label": "Image"
         },
         {
-          "component": "container",
-          "name": "cards",
-          "label": "Cards",
-          "multi": true,
-          "fields": [
+          "component": "text",
+          "valueType": "string",
+          "name": "fileReferenceAlt",
+          "label": "Image Description"
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "imageRatio",
+          "label": "Image Ratio",
+          "value": "ratio-16-9",
+          "options": [
             {
-              "component": "reference",
-              "valueType": "string",
-              "name": "fileReference",
-              "label": "Image",
-              "description": "Select the card image."
+              "name": "1:1",
+              "value": "ratio-1-1"
             },
             {
-              "component": "text",
-              "valueType": "string",
-              "name": "fileReferenceAlt",
-              "label": "Image Description"
-            },
-            {
-              "component": "select",
-              "valueType": "string",
-              "name": "imageRatio",
-              "label": "Image Ratio",
-              "value": "ratio-16-9",
-              "options": [
-                {
-                  "name": "1:1",
-                  "value": "ratio-1-1"
-                },
-                {
-                  "name": "16:9",
-                  "value": "ratio-16-9"
-                }
-              ]
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "primaryTag",
-              "label": "Primary Tag"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "secondaryTag",
-              "label": "Secondary Tag"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "readTime",
-              "label": "Read Time"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "overline",
-              "label": "Overline"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "title",
-              "label": "Title"
-            },
-            {
-              "component": "richtext",
-              "valueType": "string",
-              "name": "description",
-              "label": "Description"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "ctaLabel",
-              "label": "CTA Label"
-            },
-            {
-              "component": "text",
-              "valueType": "string",
-              "name": "ctaLink",
-              "label": "CTA Link"
+              "name": "16:9",
+              "value": "ratio-16-9"
             }
           ]
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "primaryTag",
+          "label": "Primary Tag"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "secondaryTag",
+          "label": "Secondary Tag"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "readTime",
+          "label": "Read Time"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "overline",
+          "label": "Overline"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "title",
+          "label": "Title"
+        },
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "description",
+          "label": "Description"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "ctaLabel",
+          "label": "CTA Label"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "ctaLink",
+          "label": "CTA Link"
         }
       ]
     }
   ],
-  "filters": []
+  "filters": [
+    {
+      "id": "cards-v1",
+      "components": [
+        "cards-item"
+      ]
+    }
+  ]
 }

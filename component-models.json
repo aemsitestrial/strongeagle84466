@@ -209,15 +209,13 @@
         "component": "text",
         "valueType": "string",
         "name": "sectionTitle",
-        "label": "Section Title",
-        "description": "Heading displayed above the cards grid."
+        "label": "Section Title"
       },
       {
         "component": "multiselect",
         "name": "classes",
         "label": "Style",
         "valueType": "string",
-        "required": true,
         "maxSize": 1,
         "options": [
           {
@@ -234,92 +232,88 @@
             ]
           }
         ]
+      }
+    ]
+  },
+  {
+    "id": "cards-item",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "fileReference",
+        "label": "Image"
       },
       {
-        "component": "container",
-        "name": "cards",
-        "label": "Cards",
-        "multi": true,
-        "fields": [
+        "component": "text",
+        "valueType": "string",
+        "name": "fileReferenceAlt",
+        "label": "Image Description"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "imageRatio",
+        "label": "Image Ratio",
+        "value": "ratio-16-9",
+        "options": [
           {
-            "component": "reference",
-            "valueType": "string",
-            "name": "fileReference",
-            "label": "Image",
-            "description": "Select the card image."
+            "name": "1:1",
+            "value": "ratio-1-1"
           },
           {
-            "component": "text",
-            "valueType": "string",
-            "name": "fileReferenceAlt",
-            "label": "Image Description"
-          },
-          {
-            "component": "select",
-            "valueType": "string",
-            "name": "imageRatio",
-            "label": "Image Ratio",
-            "value": "ratio-16-9",
-            "options": [
-              {
-                "name": "1:1",
-                "value": "ratio-1-1"
-              },
-              {
-                "name": "16:9",
-                "value": "ratio-16-9"
-              }
-            ]
-          },
-          {
-            "component": "text",
-            "valueType": "string",
-            "name": "primaryTag",
-            "label": "Primary Tag"
-          },
-          {
-            "component": "text",
-            "valueType": "string",
-            "name": "secondaryTag",
-            "label": "Secondary Tag"
-          },
-          {
-            "component": "text",
-            "valueType": "string",
-            "name": "readTime",
-            "label": "Read Time"
-          },
-          {
-            "component": "text",
-            "valueType": "string",
-            "name": "overline",
-            "label": "Overline"
-          },
-          {
-            "component": "text",
-            "valueType": "string",
-            "name": "title",
-            "label": "Title"
-          },
-          {
-            "component": "richtext",
-            "valueType": "string",
-            "name": "description",
-            "label": "Description"
-          },
-          {
-            "component": "text",
-            "valueType": "string",
-            "name": "ctaLabel",
-            "label": "CTA Label"
-          },
-          {
-            "component": "text",
-            "valueType": "string",
-            "name": "ctaLink",
-            "label": "CTA Link"
+            "name": "16:9",
+            "value": "ratio-16-9"
           }
         ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "primaryTag",
+        "label": "Primary Tag"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "secondaryTag",
+        "label": "Secondary Tag"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "readTime",
+        "label": "Read Time"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "overline",
+        "label": "Overline"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Title"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "description",
+        "label": "Description"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaLabel",
+        "label": "CTA Label"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "ctaLink",
+        "label": "CTA Link"
       }
     ]
   },
