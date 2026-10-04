@@ -56,7 +56,6 @@ function createCard(card) {
     const overline = document.createElement('div');
     overline.className = 'cards-v1-overline';
     overline.textContent = card.overline;
-
     content.append(overline);
   }
 
@@ -64,7 +63,6 @@ function createCard(card) {
     const title = document.createElement('h3');
     title.className = 'cards-v1-title';
     title.textContent = card.title;
-
     content.append(title);
   }
 
@@ -72,7 +70,6 @@ function createCard(card) {
     const description = document.createElement('div');
     description.className = 'cards-v1-description';
     description.innerHTML = card.description;
-
     content.append(description);
   }
 
@@ -96,9 +93,6 @@ export default async function decorate(block) {
 
   const rows = [...block.children];
 
-  // if (rows.length < 3) {
-  //   return;
-  // }
   if (!rows.length) {
     return;
   }
@@ -136,17 +130,19 @@ export default async function decorate(block) {
   const grid = document.createElement('div');
   grid.className = 'cards-v1-grid';
 
-  // const cardsContainer = rows[2];
   const cardsContainer = rows[rows.length - 1];
 
   if (cardsContainer) {
-    // const cardRows = [...cardsContainer.children];
     const cardRows = [
       ...cardsContainer.querySelectorAll(':scope > div > div'),
     ];
 
     cardRows.forEach((cardRow) => {
       const cols = [...cardRow.children];
+
+      if (cols.length < 10) {
+        return;
+      }
 
       const imageCell = cols[0];
       const picture = imageCell?.querySelector('picture');
