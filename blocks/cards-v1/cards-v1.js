@@ -96,7 +96,10 @@ export default async function decorate(block) {
 
   const rows = [...block.children];
 
-  if (rows.length < 3) {
+  // if (rows.length < 3) {
+  //   return;
+  // }
+  if (!rows.length) {
     return;
   }
 
@@ -133,10 +136,14 @@ export default async function decorate(block) {
   const grid = document.createElement('div');
   grid.className = 'cards-v1-grid';
 
-  const cardsContainer = rows[2];
+  // const cardsContainer = rows[2];
+  const cardsContainer = rows[rows.length - 1];
 
   if (cardsContainer) {
-    const cardRows = [...cardsContainer.children];
+    // const cardRows = [...cardsContainer.children];
+    const cardRows = [
+      ...cardsContainer.querySelectorAll(':scope > div > div'),
+    ];
 
     cardRows.forEach((cardRow) => {
       const cols = [...cardRow.children];
