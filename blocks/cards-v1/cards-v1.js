@@ -3,6 +3,42 @@ import { moveInstrumentation } from '../../scripts/scripts.js';
 
 let cardsBlockCount = 0;
 
+function createCard(cardItem) {
+  const card = document.createElement('article');
+  card.className = 'cards-v1-card';
+
+  const cells = [...cardItem.children];
+
+  const picture = cardItem.querySelector('picture');
+
+  const imageRatio = cells[0]?.textContent?.trim() || 'ratio-16-9';
+  const title = cells[cells.length - 1]?.textContent?.trim() || '';
+
+  if (picture) {
+    const imageContainer = document.createElement('div');
+    imageContainer.className = `cards-v1-image-container ${imageRatio}`;
+
+    imageContainer.append(picture.cloneNode(true));
+
+    card.append(imageContainer);
+  }
+
+  const content = document.createElement('div');
+  content.className = 'cards-v1-content-container';
+
+  if (title) {
+    const heading = document.createElement('h3');
+    heading.className = 'cards-v1-title';
+    heading.textContent = title;
+
+    content.append(heading);
+  }
+
+  card.append(content);
+
+  return card;
+}
+
 export default async function decorate(block) {
   cardsBlockCount += 1;
 
@@ -43,9 +79,8 @@ export default async function decorate(block) {
   const grid = document.createElement('div');
   grid.className = 'cards-v1-grid';
 
-  cardItems.forEach((card) => {
-    card.classList.add('cards-v1-card');
-    grid.append(card);
+  cardItems.forEach((cardItem) => {
+    grid.append(createCard(cardItem));
   });
 
   container.append(grid);
