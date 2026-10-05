@@ -7,9 +7,6 @@
         "da": {
           "fields": [
             {
-              "name": "sectionTitle"
-            },
-            {
               "name": "classes"
             }
           ]
@@ -21,7 +18,6 @@
               "name": "Cards V1",
               "model": "cards-v1",
               "filter": "cards-v1",
-              "sectionTitle": "Intelligence at work",
               "classes": [
                 "light"
               ]
@@ -51,12 +47,6 @@
     {
       "id": "cards-v1",
       "fields": [
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "sectionTitle",
-          "label": "Section Title"
-        },
         {
           "component": "multiselect",
           "name": "classes",
