@@ -206,6 +206,13 @@
     "id": "cards-v1",
     "fields": [
       {
+        "component": "text",
+        "valueType": "string",
+        "name": "sectionTitle",
+        "value": "",
+        "label": "Section Title"
+      },
+      {
         "component": "multiselect",
         "name": "classes",
         "label": "Style",
@@ -233,23 +240,32 @@
     "id": "cards-item",
     "fields": [
       {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "value": "",
+        "label": "Title"
+      },
+      {
         "component": "reference",
         "valueType": "string",
         "name": "fileReference",
-        "label": "Image"
+        "label": "Image",
+        "multi": false
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "fileReferenceAlt",
+        "value": "",
         "label": "Image Description"
       },
       {
         "component": "select",
         "valueType": "string",
         "name": "imageRatio",
-        "label": "Image Ratio",
         "value": "ratio-16-9",
+        "label": "Image Ratio",
         "options": [
           {
             "name": "1:1",
@@ -265,48 +281,49 @@
         "component": "text",
         "valueType": "string",
         "name": "primaryTag",
+        "value": "",
         "label": "Primary Tag"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "secondaryTag",
+        "value": "",
         "label": "Secondary Tag"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "readTime",
+        "value": "",
         "label": "Read Time"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "overline",
+        "value": "",
         "label": "Overline"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "title",
-        "label": "Title"
       },
       {
         "component": "richtext",
         "valueType": "string",
         "name": "description",
+        "value": "",
         "label": "Description"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "ctaLabel",
+        "value": "",
         "label": "CTA Label"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "ctaLink",
+        "value": "",
         "label": "CTA Link"
       }
     ]

@@ -165,6 +165,9 @@
             "da": {
               "fields": [
                 {
+                  "name": "sectionTitle"
+                },
+                {
                   "name": "classes"
                 }
               ]
@@ -176,6 +179,7 @@
                   "name": "Cards V1",
                   "model": "cards-v1",
                   "filter": "cards-v1",
+                  "sectionTitle": "Intelligence at work",
                   "classes": [
                     "light"
                   ]
@@ -194,7 +198,14 @@
                 "template": {
                   "name": "Card",
                   "model": "cards-item",
-                  "title": "Card Title"
+                  "title": "Card Title",
+                  "primaryTag": "",
+                  "secondaryTag": "",
+                  "readTime": "",
+                  "overline": "",
+                  "description": "",
+                  "ctaLabel": "",
+                  "ctaLink": ""
                 }
               }
             }
