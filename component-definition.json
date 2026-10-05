@@ -198,8 +198,7 @@
                 "template": {
                   "name": "Card",
                   "model": "cards-item",
-                  "title": "Card Title",
-                  "imageRatio": "ratio-16-9"
+                  "title": "Card Title"
                 }
               }
             }
