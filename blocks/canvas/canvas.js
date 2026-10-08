@@ -83,7 +83,7 @@ function extractData(block) {
     const rawKey = cells[0]?.textContent?.trim() || '';
     const normalizedKey = normalizeFieldKey(rawKey);
     const explicitKey = FIELD_ALIASES[normalizedKey]
-      || (CANVAS_FIELD_ORDER.includes(rawKey) ? rawKey : '');
+            || (CANVAS_FIELD_ORDER.includes(rawKey) ? rawKey : '');
 
     if (explicitKey && cells.length > 1) {
       data[explicitKey] = extractCellValue(cells[1]);
@@ -299,8 +299,8 @@ async function fetchNavigationData(rootPath, depth = 3) {
       if (!text) return [];
 
       if (contentType.includes('application/json')
-        || text.trim().startsWith('{')
-        || text.trim().startsWith('[')) {
+                || text.trim().startsWith('{')
+                || text.trim().startsWith('[')) {
         try {
           const payload = JSON.parse(text);
           const items = extractNavItemsFromJson(payload);
@@ -470,7 +470,23 @@ function renderSearchCanvas(block, data) {
   block.appendChild(search);
 }
 
-function renderIntentCanvas(block, data, optionList = []) {
+async function fetchIntentOptions(maxOptions = 5) {
+  try {
+    const response = await fetch('/blocks/canvas/dummy.json');
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+
+    return (data.options || []).slice(0, maxOptions);
+  } catch (error) {
+    return [];
+  }
+}
+
+async function renderIntentCanvas(block, data) {
   const section = document.createElement('section');
   section.className = 'canvas-intent';
 
@@ -520,39 +536,22 @@ function renderIntentCanvas(block, data, optionList = []) {
   const optionsContainer = document.createElement('div');
   optionsContainer.className = 'canvas-options';
 
-  const maxOptions = Math.max(0, toPositiveInt(data.maximumOptions || data.maximumoptions, 5));
-  const optionsToRender = optionList.slice(0, maxOptions || optionList.length);
+  const maxOptions = Math.max(
+    0,
+    toPositiveInt(data.maximumOptions || data.maximumoptions, 5),
+  );
 
-  if (optionsToRender.length) {
-    optionsToRender.forEach((item) => {
-      const label = item.dataset?.optionlabel
-        || item.dataset?.optionLabel
-        || item.querySelector('h1,h2,h3,h4,h5,h6,p,a,span')?.textContent?.trim()
-        || item.textContent?.trim()
-        || 'Option';
+  const options = await fetchIntentOptions(maxOptions);
 
-      const href = item.dataset?.optionlink
-        || item.dataset?.optionLink
-        || item.querySelector('a')?.href
-        || '#';
+  options.forEach((item) => {
+    const option = document.createElement('a');
 
-      const option = document.createElement('a');
-      option.className = 'canvas-option-pill';
-      option.href = href;
-      option.textContent = label;
-      optionsContainer.appendChild(option);
-    });
-  } else {
-    Array.from({ length: maxOptions }, (_, index) => {
-      const option = document.createElement('button');
-      option.type = 'button';
-      option.className = 'canvas-option-pill';
-      option.textContent = `Option ${index + 1}`;
-      return option;
-    }).forEach((option) => {
-      optionsContainer.appendChild(option);
-    });
-  }
+    option.className = 'canvas-option-pill';
+    option.href = item.url || '#';
+    option.textContent = item.label || '';
+
+    optionsContainer.appendChild(option);
+  });
 
   content.appendChild(optionsContainer);
   section.appendChild(content);
