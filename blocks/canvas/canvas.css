@@ -1,0 +1,277 @@
+.canvas {
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================
+   SEARCH CANVAS
+   ========================= */
+
+.canvas-search,
+.canvas-intent-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.canvas-floating-sticky {
+  position: sticky;
+  top: 16px;
+  z-index: 1000;
+}
+
+.canvas-menu-btn {
+  width: 59px;
+  height: 59px;
+  border-radius: 151px;
+  border: 2px solid #494c4d;
+  background: rgb(255 255 255 / 60%);
+  backdrop-filter: blur(13.7px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.canvas-menu-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.canvas-search-container {
+  width: 530px;
+  height: 72px;
+  border: 2px solid #494c4d;
+  border-radius: 58px;
+  background: rgb(255 255 255 / 60%);
+  backdrop-filter: blur(40px);
+  box-sizing: border-box;
+  padding: 12px;
+}
+
+.canvas-search-input {
+  height: 48px;
+  padding: 4px 12px 4px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.canvas-placeholder {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: -0.005em;
+  color: #b2b2b2;
+}
+
+.canvas-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.canvas-mic-btn {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.canvas-mic-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+.canvas-submit-btn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 9999px;
+  background: #4673db;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* =========================
+   INTENT CANVAS
+   ========================= */
+
+.canvas-intent {
+  position: relative;
+  width: 100%;
+  min-height: 755px;
+  padding: 160px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  overflow: hidden;
+}
+
+.canvas-intent-content {
+  width: 1280px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================
+   GLOWS
+   ========================= */
+
+.canvas-glow {
+  position: absolute;
+  pointer-events: none;
+}
+
+.canvas-glow-yellow {
+  width: 451px;
+  height: 322px;
+  left: 93px;
+  bottom: -50px;
+  background: #e8b931;
+  opacity: 0.4;
+  filter: blur(222px);
+}
+
+.canvas-glow-blue {
+  width: 538px;
+  height: 384px;
+  right: 100px;
+  bottom: -50px;
+  background: #4673db;
+  opacity: 0.4;
+  filter: blur(222px);
+}
+
+/* =========================
+   TITLE
+   ========================= */
+
+.canvas-title {
+  margin: 0;
+  max-width: 1120px;
+  font-family: Inter, sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: -0.025em;
+  text-align: center;
+  color: #0c0c0d;
+}
+
+.canvas-description {
+  max-width: 812px;
+  font-family: Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 160%;
+  letter-spacing: -0.005em;
+  text-align: center;
+  color: #0c0c0d;
+}
+
+/* =========================
+   PILLS
+   ========================= */
+
+.canvas-options {
+  width: 900px;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  place-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.canvas-option-pill {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 53px;
+  padding: 12px 32px;
+  border-radius: 9999px;
+  border: 1px solid #e6e6e6;
+  background: #fff;
+  font-family: Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 160%;
+  letter-spacing: -0.005em;
+  color: #0c0c0d;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.canvas-option-pill:hover {
+  background: #f4f6fb;
+  border-color: #4673db;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (width <= 1024px) {
+  .canvas-intent {
+    padding: 80px 24px;
+  }
+
+  .canvas-search-container {
+    width: 100%;
+  }
+
+  .canvas-search,
+  .canvas-intent-search {
+    width: 100%;
+  }
+
+  .canvas-title {
+    font-size: 32px;
+  }
+
+  .canvas-options {
+    width: 100%;
+  }
+}
+
+@media (width <= 768px) {
+  .canvas-menu-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  .canvas-search-container {
+    height: auto;
+  }
+
+  .canvas-title {
+    font-size: 28px;
+  }
+
+  .canvas-description {
+    font-size: 16px;
+  }
+
+  .canvas-option-pill {
+    width: 100%;
+  }
+}

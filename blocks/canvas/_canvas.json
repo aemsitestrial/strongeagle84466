@@ -1,0 +1,251 @@
+{
+  "definitions": [
+    {
+      "title": "Canvas",
+      "id": "canvas",
+      "plugins": {
+        "da": {
+          "fields": [
+            {
+              "name": "classes"
+            }
+          ]
+        },
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Canvas",
+              "model": "canvas",
+              "filter": "canvas",
+              "classes": [
+                "search",
+                "intent",
+                "default",
+                "floating-sticky"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Intent Option",
+      "id": "canvas-option",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Intent Option",
+              "model": "canvas-option",
+              "optionLabel": "Option Label",
+              "optionLink": "/"
+            }
+          }
+        }
+      }
+    }
+  ],
+
+  "models": [
+    {
+      "id": "canvas",
+      "fields": [
+        {
+          "component": "select",
+          "name": "canvasType",
+          "label": "Canvas Type",
+          "value": "search",
+          "options": [
+            {
+              "name": "Search Canvas",
+              "value": "search"
+            },
+            {
+              "name": "Intent Canvas",
+              "value": "intent"
+            }
+          ]
+        },
+
+        {
+          "component": "multiselect",
+          "name": "classes",
+          "label": "Canvas Style",
+          "valueType": "string",
+          "maxSize": 2,
+          "options": [
+            {
+              "name": "Layout",
+              "children": [
+                {
+                  "name": "Search",
+                  "value": "search"
+                },
+                {
+                  "name": "Intent",
+                  "value": "intent"
+                }
+              ]
+            },
+            {
+              "name": "Behavior",
+              "children": [
+                {
+                  "name": "Default",
+                  "value": "default"
+                },
+                {
+                  "name": "Floating Sticky",
+                  "value": "floating-sticky"
+                }
+              ]
+            }
+          ]
+        },
+
+        {
+          "component": "text",
+          "name": "searchWatermark",
+          "label": "Canvas Search Watermark"
+        },
+
+        {
+          "component": "reference",
+          "name": "searchIcon",
+          "label": "Canvas Search Icon"
+        },
+
+        {
+          "component": "reference",
+          "name": "menuIcon",
+          "label": "Canvas Menu Icon"
+        },
+
+        {
+          "component": "select",
+          "name": "motionType",
+          "label": "Motion Type",
+          "value": "none",
+          "options": [
+            {
+              "name": "None",
+              "value": "none"
+            },
+            {
+              "name": "Fade",
+              "value": "fade"
+            },
+            {
+              "name": "Slide Up",
+              "value": "slide-up"
+            }
+          ]
+        },
+
+        {
+          "component": "checkbox",
+          "name": "showNavigation",
+          "label": "Show Navigation",
+          "value": true
+        },
+
+        {
+          "component": "checkbox",
+          "name": "showMicrophone",
+          "label": "Show Microphone",
+          "value": true
+        },
+
+        {
+          "component": "checkbox",
+          "name": "enableSearch",
+          "label": "Enable Search",
+          "value": true
+        },
+
+        {
+          "component": "text",
+          "name": "canvasTitle",
+          "label": "Canvas Title"
+        },
+
+        {
+          "component": "richtext",
+          "name": "canvasDescription",
+          "label": "Canvas Description"
+        },
+
+        {
+          "component": "aem-content",
+          "name": "canvasNavRootPath",
+          "label": "Canvas Nav Root Path"
+        },
+
+        {
+          "component": "number",
+          "name": "canvasNavDepth",
+          "label": "Canvas Nav Depth",
+          "value": 3
+        },
+
+        {
+          "component": "number",
+          "name": "maximumOptions",
+          "label": "Maximum Options",
+          "value": 5
+        },
+
+        {
+          "component": "select",
+          "name": "optionsType",
+          "label": "Options Type",
+          "value": "default",
+          "options": [
+            {
+              "name": "Default",
+              "value": "default"
+            },
+            {
+              "name": "Navigation",
+              "value": "navigation"
+            },
+            {
+              "name": "Personalisation",
+              "value": "personalisation"
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "canvas-option",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "optionLabel",
+          "value": "",
+          "label": "Option Label"
+        },
+        {
+          "component": "aem-content",
+          "valueType": "string",
+          "name": "optionLink",
+          "label": "Option Link"
+        }
+      ]
+    }
+  ],
+
+  "filters": [
+    {
+      "id": "canvas",
+      "components": [
+        "canvas-option"
+      ]
+    }
+  ]
+}

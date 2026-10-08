@@ -12,6 +12,7 @@
       "article",
       "blog-list",
       "button",
+      "canvas",
       "cards",
       "carousel",
       "columns",
@@ -43,6 +44,12 @@
     "id": "accordion",
     "components": [
       "accordion-item"
+    ]
+  },
+  {
+    "id": "canvas",
+    "components": [
+      "canvas-option"
     ]
   },
   {
