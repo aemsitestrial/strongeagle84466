@@ -222,41 +222,6 @@
         ]
       },
       {
-        "component": "multiselect",
-        "name": "classes",
-        "label": "Canvas Style",
-        "valueType": "string",
-        "maxSize": 2,
-        "options": [
-          {
-            "name": "Layout",
-            "children": [
-              {
-                "name": "Search",
-                "value": "search"
-              },
-              {
-                "name": "Intent",
-                "value": "intent"
-              }
-            ]
-          },
-          {
-            "name": "Behavior",
-            "children": [
-              {
-                "name": "Default",
-                "value": "default"
-              },
-              {
-                "name": "Floating Sticky",
-                "value": "floating-sticky"
-              }
-            ]
-          }
-        ]
-      },
-      {
         "component": "text",
         "name": "searchWatermark",
         "label": "Canvas Search Watermark"
@@ -292,6 +257,22 @@
         ]
       },
       {
+        "component": "select",
+        "name": "canvasStyle",
+        "label": "Canvas Style",
+        "value": "default",
+        "options": [
+          {
+            "name": "Default",
+            "value": "default"
+          },
+          {
+            "name": "Floating Sticky",
+            "value": "floating-sticky"
+          }
+        ]
+      },
+      {
         "component": "checkbox",
         "name": "showNavigation",
         "label": "Show Navigation",
@@ -301,12 +282,6 @@
         "component": "checkbox",
         "name": "showMicrophone",
         "label": "Show Microphone",
-        "value": true
-      },
-      {
-        "component": "checkbox",
-        "name": "enableSearch",
-        "label": "Enable Search",
         "value": true
       },
       {
@@ -331,6 +306,12 @@
         "value": 3
       },
       {
+        "component": "checkbox",
+        "name": "enableSearch",
+        "label": "Enable Search",
+        "value": true
+      },
+      {
         "component": "number",
         "name": "maximumOptions",
         "label": "Maximum Options",
@@ -345,34 +326,8 @@
           {
             "name": "Default",
             "value": "default"
-          },
-          {
-            "name": "Navigation",
-            "value": "navigation"
-          },
-          {
-            "name": "Personalisation",
-            "value": "personalisation"
           }
         ]
-      }
-    ]
-  },
-  {
-    "id": "canvas-option",
-    "fields": [
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "optionLabel",
-        "value": "",
-        "label": "Option Label"
-      },
-      {
-        "component": "aem-content",
-        "valueType": "string",
-        "name": "optionLink",
-        "label": "Option Link"
       }
     ]
   },

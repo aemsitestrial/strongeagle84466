@@ -1,198 +1,198 @@
-function renderSearchCanvas(
-  block,
-  data,
-  showNavigation,
-  showMicrophone,
-) {
+/**
+ * Escape HTML.
+ * @param {string} value
+ * @returns {string}
+ */
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Extract authored block data.
+ * @param {HTMLElement} block
+ * @returns {Object}
+ */
+function extractData(block) {
+  const data = {};
+
+  [...block.children].forEach((row) => {
+    const cells = [...row.children];
+
+    if (cells.length < 2) return;
+
+    const key = cells[0].textContent
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '');
+
+    const value = cells[1].textContent.trim();
+
+    data[key] = value;
+  });
+
+  return data;
+}
+
+/**
+ * Creates search area.
+ * @param {Object} config
+ * @returns {HTMLElement}
+ */
+function createSearch(config) {
   const wrapper = document.createElement('div');
   wrapper.className = 'canvas-search';
 
   wrapper.innerHTML = `
-    ${
-  showNavigation
-    ? `
-      <button class="canvas-menu-btn" aria-label="Navigation Menu">
-        ${
-  data.menuicon
-    ? `${data.menuicon}`
-    : '☰'
-}
+    ${config.showNavigation ? `
+      <button
+        type="button"
+        class="canvas-menu-btn"
+        aria-label="Menu">
+        ☰
       </button>
-    `
-    : ''
-}
+    ` : ''}
 
     <div class="canvas-search-container">
+
       <div class="canvas-search-input">
+
         <span class="canvas-placeholder">
-          ${data.searchwatermark || 'Ask TCS...'}
+          ${escapeHtml(config.watermark)}
         </span>
 
         <div class="canvas-controls">
-          ${
-  showMicrophone
-    ? `
-            <button class="canvas-mic-btn" aria-label="Microphone">
+
+          ${config.showMicrophone ? `
+            <button
+              type="button"
+              class="canvas-mic-btn"
+              aria-label="Microphone">
               🎤
             </button>
-          `
-    : ''
-}
+          ` : ''}
 
-          <button class="canvas-submit-btn" aria-label="Submit">
+          <button
+            type="button"
+            class="canvas-submit-btn"
+            aria-label="Submit">
             →
           </button>
+
         </div>
+
       </div>
+
     </div>
   `;
 
-  block.append(wrapper);
+  return wrapper;
 }
 
-function renderIntentCanvas(
-  block,
-  data,
-  showNavigation,
-  showMicrophone,
-  enableSearch,
-) {
-  const wrapper = document.createElement('section');
-  wrapper.className = 'canvas-intent';
+/**
+ * Render Search Canvas.
+ */
+function renderSearchCanvas(block, data) {
+  const search = createSearch({
+    watermark: data.canvassearchwatermark || 'Ask TCS...',
+    showNavigation: data.shownavigation !== 'false',
+    showMicrophone: data.showmicrophone !== 'false',
+  });
 
-  wrapper.innerHTML = `
+  block.append(search);
+}
+
+/**
+ * Render Intent Canvas.
+ */
+function renderIntentCanvas(block, data) {
+  const section = document.createElement('section');
+  section.className = 'canvas-intent';
+
+  section.innerHTML = `
     <div class="canvas-glow canvas-glow-yellow"></div>
     <div class="canvas-glow canvas-glow-blue"></div>
 
     <div class="canvas-intent-content">
 
-      ${
-  data.canvastitle
-    ? `
-        <h2 class="canvas-title">
-          ${data.canvastitle}
-        </h2>
-      `
-    : ''
-}
+      <h2 class="canvas-title">
+        ${escapeHtml(data.canvastitle || '')}
+      </h2>
 
-      ${
-  data.canvasdescription
-    ? `
-        <div class="canvas-description">
-          ${data.canvasdescription}
-        </div>
-      `
-    : ''
-}
+      <div class="canvas-description">
+        ${escapeHtml(data.canvasdescription || '')}
+      </div>
 
-      ${
-  enableSearch
-    ? `
-        <div class="canvas-intent-search">
-          ${
-  showNavigation
-    ? `
-            <button class="canvas-menu-btn">
-              ${data.menuicon ? `${data.menuicon}` : '☰'}
-            </button>
-          `
-    : ''
-}
-
-          <div class="canvas-search-container">
-            <div class="canvas-search-input">
-              <span class="canvas-placeholder">
-                ${data.searchwatermark || 'Ask TCS...'}
-              </span>
-
-              <div class="canvas-controls">
-
-                ${
-  showMicrophone
-    ? `
-                  <button class="canvas-mic-btn">
-                    🎤
-                  </button>
-                `
-    : ''
-}
-
-                <button class="canvas-submit-btn">
-                  →
-                </button>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      `
-    : ''
-}
+      <div class="canvas-search-placeholder"></div>
 
       <div class="canvas-options"></div>
 
     </div>
   `;
 
-  block.append(wrapper);
+  block.append(section);
 
-  const optionsContainer = wrapper.querySelector('.canvas-options');
+  if (data.enablesearch !== 'false') {
+    const searchContainer = section.querySelector(
+      '.canvas-search-placeholder',
+    );
 
-  [...block.querySelectorAll('.canvas-option')].forEach((item) => {
-    const label = item.dataset.optionlabel
-      || item.querySelector('h1,h2,h3,h4,h5,h6,p')?.textContent
-      || item.textContent;
+    searchContainer.append(
+      createSearch({
+        watermark:
+          data.canvassearchwatermark || 'Ask TCS...',
+        showNavigation:
+          data.shownavigation !== 'false',
+        showMicrophone:
+          data.showmicrophone !== 'false',
+      }),
+    );
+  }
 
-    const link = item.dataset.optionlink || '#';
+  const optionsContainer = section.querySelector('.canvas-options');
 
-    const option = document.createElement('a');
-
-    option.className = 'canvas-option-pill';
-    option.href = link;
-    option.textContent = label;
-
-    optionsContainer.append(option);
-  });
-}
-
-export default async function decorate(block) {
-  const data = Object.fromEntries(
-    [...block.children].map((row) => {
-      const cells = [...row.children];
-      return [
-        cells[0]?.textContent?.trim(),
-        cells[1]?.textContent?.trim(),
-      ];
-    }),
+  const maximumOptions = Number(
+    data.maximumoptions || 5,
   );
 
-  const canvasType = data.canvastype || 'search';
-  const showNavigation = data.shownavigation !== 'false';
-  const showMicrophone = data.showmicrophone !== 'false';
-  const enableSearch = data.enablesearch !== 'false';
-  const canvasStyle = data.canvasstyle || 'default';
+  for (let i = 1; i <= maximumOptions; i += 1) {
+    const pill = document.createElement('button');
 
-  block.innerHTML = '';
+    pill.type = 'button';
+    pill.className = 'canvas-option-pill';
 
-  block.classList.add(`canvas-${canvasType}`);
+    pill.textContent = `Option ${i}`;
+
+    optionsContainer.append(pill);
+  }
+}
+
+/**
+ * Main Decorator.
+ */
+export default function decorate(block) {
+  const data = extractData(block);
+
+  const canvasType = data.canvastype?.toLowerCase() || 'search';
+
+  block.textContent = '';
+
+  block.classList.add('canvas');
+
+  const canvasStyle = data.canvasstyle?.toLowerCase()
+    ?.replace(/\s+/g, '-')
+      || 'default';
+
   block.classList.add(`canvas-${canvasStyle}`);
 
-  if (canvasType === 'search') {
-    renderSearchCanvas(
-      block,
-      data,
-      showNavigation,
-      showMicrophone,
-    );
+  if (canvasType.includes('intent')) {
+    renderIntentCanvas(block, data);
     return;
   }
 
-  renderIntentCanvas(
-    block,
-    data,
-    showNavigation,
-    showMicrophone,
-    enableSearch,
-  );
+  renderSearchCanvas(block, data);
 }

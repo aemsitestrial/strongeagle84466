@@ -1,73 +1,63 @@
+/* ==========================================
+   CANVAS
+========================================== */
+
 .canvas {
   position: relative;
-  overflow: hidden;
+  width: 100%;
 }
 
-/* =========================
-   SEARCH CANVAS
-   ========================= */
+/* ==========================================
+   SEARCH SHARED
+========================================== */
 
-.canvas-search,
-.canvas-intent-search {
+.canvas-search {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  width: fit-content;
-  margin: 0 auto;
-}
-
-.canvas-floating-sticky {
-  position: sticky;
-  top: 16px;
-  z-index: 1000;
+  width: 100%;
 }
 
 .canvas-menu-btn {
   width: 59px;
   height: 59px;
-  border-radius: 151px;
-  border: 2px solid #494c4d;
-  background: rgb(255 255 255 / 60%);
-  backdrop-filter: blur(13.7px);
+  min-width: 59px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 999px;
+  border: 2px solid #494c4d;
+  background: rgb(255 255 255 / 60%);
+  backdrop-filter: blur(13.7px);
   cursor: pointer;
-  flex-shrink: 0;
-}
-
-.canvas-menu-btn img {
-  width: 20px;
-  height: 20px;
+  font-size: 20px;
 }
 
 .canvas-search-container {
   width: 530px;
+  max-width: 100%;
   height: 72px;
-  border: 2px solid #494c4d;
   border-radius: 58px;
+  border: 2px solid #494c4d;
   background: rgb(255 255 255 / 60%);
   backdrop-filter: blur(40px);
+  padding: 12px 16px;
   box-sizing: border-box;
-  padding: 12px;
 }
 
 .canvas-search-input {
-  height: 48px;
-  padding: 4px 12px 4px 16px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .canvas-placeholder {
-  font-family: Inter, sans-serif;
+  color: #8b8b8b;
   font-size: 16px;
   font-weight: 500;
-  line-height: 140%;
-  letter-spacing: -0.005em;
-  color: #b2b2b2;
+  line-height: 1.4;
 }
 
 .canvas-controls {
@@ -85,18 +75,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-
-.canvas-mic-btn img {
-  width: 24px;
-  height: 24px;
+  font-size: 20px;
 }
 
 .canvas-submit-btn {
   width: 36px;
   height: 36px;
   border: 0;
-  border-radius: 9999px;
+  border-radius: 999px;
   background: #4673db;
   color: #fff;
   display: flex;
@@ -105,20 +91,28 @@
   cursor: pointer;
 }
 
-/* =========================
+/* ==========================================
+   CANVAS STYLE
+========================================== */
+
+.canvas-floating-sticky {
+  position: sticky;
+  top: 16px;
+  z-index: 10;
+}
+
+/* ==========================================
    INTENT CANVAS
-   ========================= */
+========================================== */
 
 .canvas-intent {
   position: relative;
-  width: 100%;
   min-height: 755px;
-  padding: 160px 80px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
-  overflow: hidden;
+  padding: 120px 24px;
 }
 
 .canvas-intent-content {
@@ -132,9 +126,9 @@
   z-index: 2;
 }
 
-/* =========================
-   GLOWS
-   ========================= */
+/* ==========================================
+   GLOW EFFECTS
+========================================== */
 
 .canvas-glow {
   position: absolute;
@@ -144,7 +138,7 @@
 .canvas-glow-yellow {
   width: 451px;
   height: 322px;
-  left: 93px;
+  left: 80px;
   bottom: -50px;
   background: #e8b931;
   opacity: 0.4;
@@ -154,124 +148,138 @@
 .canvas-glow-blue {
   width: 538px;
   height: 384px;
-  right: 100px;
+  right: 80px;
   bottom: -50px;
   background: #4673db;
   opacity: 0.4;
   filter: blur(222px);
 }
 
-/* =========================
+/* ==========================================
    TITLE
-   ========================= */
+========================================== */
 
 .canvas-title {
   margin: 0;
   max-width: 1120px;
-  font-family: Inter, sans-serif;
+  color: #0c0c0d;
+  text-align: center;
   font-size: 40px;
   font-weight: 500;
-  line-height: 140%;
-  letter-spacing: -0.025em;
-  text-align: center;
-  color: #0c0c0d;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
 }
 
 .canvas-description {
   max-width: 812px;
-  font-family: Inter, sans-serif;
+  color: #0c0c0d;
+  text-align: center;
   font-size: 18px;
   font-weight: 500;
-  line-height: 160%;
-  letter-spacing: -0.005em;
-  text-align: center;
-  color: #0c0c0d;
+  line-height: 1.6;
 }
 
-/* =========================
-   PILLS
-   ========================= */
+/* ==========================================
+   INTENT SEARCH WRAPPER
+========================================== */
+
+.canvas-intent-search {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* ==========================================
+   OPTIONS
+========================================== */
 
 .canvas-options {
-  width: 900px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 920px;
   display: flex;
   flex-wrap: wrap;
-  place-content: center;
-  align-items: center;
+  justify-content: center;
   gap: 12px;
 }
 
 .canvas-option-pill {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 53px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 32px;
-  border-radius: 9999px;
-  border: 1px solid #e6e6e6;
+  border-radius: 999px;
+  border: 1px solid #d9d9d9;
   background: #fff;
-  font-family: Inter, sans-serif;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 160%;
-  letter-spacing: -0.005em;
   color: #0c0c0d;
   text-decoration: none;
-  transition: all 0.2s ease;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.6;
+  transition: all 0.25s ease;
 }
 
 .canvas-option-pill:hover {
-  background: #f4f6fb;
   border-color: #4673db;
+  background: #f5f8ff;
 }
 
-/* =========================
+/* ==========================================
+   SEARCH VARIANTS
+========================================== */
+
+.canvas-search .canvas-menu-btn:empty {
+  display: none;
+}
+
+/* ==========================================
    RESPONSIVE
-   ========================= */
+========================================== */
 
 @media (width <= 1024px) {
-  .canvas-intent {
-    padding: 80px 24px;
-  }
-
-  .canvas-search-container {
-    width: 100%;
-  }
-
-  .canvas-search,
-  .canvas-intent-search {
-    width: 100%;
-  }
-
   .canvas-title {
     font-size: 32px;
-  }
-
-  .canvas-options {
-    width: 100%;
-  }
-}
-
-@media (width <= 768px) {
-  .canvas-menu-btn {
-    width: 48px;
-    height: 48px;
-  }
-
-  .canvas-search-container {
-    height: auto;
-  }
-
-  .canvas-title {
-    font-size: 28px;
   }
 
   .canvas-description {
     font-size: 16px;
   }
 
+  .canvas-intent {
+    padding: 80px 20px;
+  }
+
+  .canvas-glow-yellow,
+  .canvas-glow-blue {
+    transform: scale(0.8);
+  }
+}
+
+@media (width <= 768px) {
+  .canvas-search {
+    gap: 12px;
+  }
+
+  .canvas-menu-btn {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .canvas-search-container {
+    height: 60px;
+  }
+
+  .canvas-title {
+    font-size: 28px;
+  }
+
   .canvas-option-pill {
     width: 100%;
+  }
+
+  .canvas-glow-yellow,
+  .canvas-glow-blue {
+    display: none;
   }
 }
