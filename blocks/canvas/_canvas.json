@@ -43,21 +43,25 @@
             }
           ]
         },
+
         {
           "component": "text",
           "name": "searchWatermark",
           "label": "Canvas Search Watermark"
         },
+
         {
           "component": "reference",
           "name": "searchIcon",
           "label": "Canvas Search Icon"
         },
+
         {
           "component": "reference",
           "name": "menuIcon",
           "label": "Canvas Menu Icon"
         },
+
         {
           "component": "select",
           "name": "motionType",
@@ -78,6 +82,7 @@
             }
           ]
         },
+
         {
           "component": "select",
           "name": "canvasStyle",
@@ -94,51 +99,60 @@
             }
           ]
         },
+
+        {
+          "component": "text",
+          "name": "canvasTitle",
+          "label": "Canvas Title"
+        },
+
+        {
+          "component": "richtext",
+          "name": "canvasDescription",
+          "label": "Canvas Description"
+        },
+
         {
           "component": "checkbox",
           "name": "showNavigation",
           "label": "Show Navigation",
           "value": true
         },
+
         {
           "component": "checkbox",
           "name": "showMicrophone",
           "label": "Show Microphone",
           "value": true
         },
-        {
-          "component": "text",
-          "name": "canvasTitle",
-          "label": "Canvas Title"
-        },
-        {
-          "component": "richtext",
-          "name": "canvasDescription",
-          "label": "Canvas Description"
-        },
+
         {
           "component": "aem-content",
           "name": "canvasNavRootPath",
           "label": "Canvas Nav Root Path"
         },
+
         {
           "component": "number",
           "name": "canvasNavDepth",
           "label": "Canvas Nav Depth",
           "value": 3
         },
+
         {
           "component": "checkbox",
           "name": "enableSearch",
           "label": "Enable Search",
           "value": true
         },
+
         {
           "component": "number",
           "name": "maximumOptions",
           "label": "Maximum Options",
           "value": 5
         },
+
         {
           "component": "select",
           "name": "optionsType",

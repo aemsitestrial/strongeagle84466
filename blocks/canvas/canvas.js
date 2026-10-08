@@ -1,7 +1,5 @@
 /**
- * Escape HTML.
- * @param {string} value
- * @returns {string}
+ * Escape author entered content.
  */
 function escapeHtml(value = '') {
   return String(value)
@@ -13,9 +11,7 @@ function escapeHtml(value = '') {
 }
 
 /**
- * Extract authored block data.
- * @param {HTMLElement} block
- * @returns {Object}
+ * Extract block data.
  */
 function extractData(block) {
   const data = {};
@@ -30,25 +26,26 @@ function extractData(block) {
       .toLowerCase()
       .replace(/\s+/g, '');
 
-    const value = cells[1].textContent.trim();
-
-    data[key] = value;
+    data[key] = cells[1].textContent.trim();
   });
 
   return data;
 }
 
 /**
- * Creates search area.
- * @param {Object} config
- * @returns {HTMLElement}
+ * Shared search bar.
  */
-function createSearch(config) {
+function createSearchBar({
+  watermark,
+  showNavigation,
+  showMicrophone,
+}) {
   const wrapper = document.createElement('div');
+
   wrapper.className = 'canvas-search';
 
   wrapper.innerHTML = `
-    ${config.showNavigation ? `
+    ${showNavigation ? `
       <button
         type="button"
         class="canvas-menu-btn"
@@ -58,16 +55,15 @@ function createSearch(config) {
     ` : ''}
 
     <div class="canvas-search-container">
-
       <div class="canvas-search-input">
 
         <span class="canvas-placeholder">
-          ${escapeHtml(config.watermark)}
+          ${escapeHtml(watermark)}
         </span>
 
         <div class="canvas-controls">
 
-          ${config.showMicrophone ? `
+          ${showMicrophone ? `
             <button
               type="button"
               class="canvas-mic-btn"
@@ -84,9 +80,7 @@ function createSearch(config) {
           </button>
 
         </div>
-
       </div>
-
     </div>
   `;
 
@@ -94,23 +88,27 @@ function createSearch(config) {
 }
 
 /**
- * Render Search Canvas.
+ * Search Canvas
  */
 function renderSearchCanvas(block, data) {
-  const search = createSearch({
-    watermark: data.canvassearchwatermark || 'Ask TCS...',
-    showNavigation: data.shownavigation !== 'false',
-    showMicrophone: data.showmicrophone !== 'false',
+  const search = createSearchBar({
+    watermark:
+      data.canvassearchwatermark || 'Ask Deloitte...',
+    showNavigation:
+      data.shownavigation !== 'false',
+    showMicrophone:
+      data.showmicrophone !== 'false',
   });
 
   block.append(search);
 }
 
 /**
- * Render Intent Canvas.
+ * Intent Canvas
  */
 function renderIntentCanvas(block, data) {
   const section = document.createElement('section');
+
   section.className = 'canvas-intent';
 
   section.innerHTML = `
@@ -127,7 +125,7 @@ function renderIntentCanvas(block, data) {
         ${escapeHtml(data.canvasdescription || '')}
       </div>
 
-      <div class="canvas-search-placeholder"></div>
+      <div class="canvas-search-slot"></div>
 
       <div class="canvas-options"></div>
 
@@ -136,15 +134,18 @@ function renderIntentCanvas(block, data) {
 
   block.append(section);
 
-  if (data.enablesearch !== 'false') {
-    const searchContainer = section.querySelector(
-      '.canvas-search-placeholder',
+  const enableSearch = data.enablesearch !== 'false';
+
+  if (enableSearch) {
+    const searchSlot = section.querySelector(
+      '.canvas-search-slot',
     );
 
-    searchContainer.append(
-      createSearch({
+    searchSlot.append(
+      createSearchBar({
         watermark:
-          data.canvassearchwatermark || 'Ask TCS...',
+          data.canvassearchwatermark
+          || 'Ask Deloitte...',
         showNavigation:
           data.shownavigation !== 'false',
         showMicrophone:
@@ -155,15 +156,15 @@ function renderIntentCanvas(block, data) {
 
   const optionsContainer = section.querySelector('.canvas-options');
 
-  const maximumOptions = Number(
+  const maxOptions = Number(
     data.maximumoptions || 5,
   );
 
-  for (let i = 1; i <= maximumOptions; i += 1) {
+  for (let i = 1; i <= maxOptions; i += 1) {
     const pill = document.createElement('button');
 
-    pill.type = 'button';
     pill.className = 'canvas-option-pill';
+    pill.type = 'button';
 
     pill.textContent = `Option ${i}`;
 
@@ -172,24 +173,23 @@ function renderIntentCanvas(block, data) {
 }
 
 /**
- * Main Decorator.
+ * Main decorator.
  */
 export default function decorate(block) {
   const data = extractData(block);
 
-  const canvasType = data.canvastype?.toLowerCase() || 'search';
-
   block.textContent = '';
 
+  const canvasType = data.canvastype || 'search';
+
+  const canvasStyle = (data.canvasstyle || 'default')
+    .toLowerCase()
+    .replace(/\s+/g, '-');
+
   block.classList.add('canvas');
-
-  const canvasStyle = data.canvasstyle?.toLowerCase()
-    ?.replace(/\s+/g, '-')
-      || 'default';
-
   block.classList.add(`canvas-${canvasStyle}`);
 
-  if (canvasType.includes('intent')) {
+  if (canvasType === 'intent') {
     renderIntentCanvas(block, data);
     return;
   }

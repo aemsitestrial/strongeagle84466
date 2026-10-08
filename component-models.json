@@ -273,6 +273,16 @@
         ]
       },
       {
+        "component": "text",
+        "name": "canvasTitle",
+        "label": "Canvas Title"
+      },
+      {
+        "component": "richtext",
+        "name": "canvasDescription",
+        "label": "Canvas Description"
+      },
+      {
         "component": "checkbox",
         "name": "showNavigation",
         "label": "Show Navigation",
@@ -283,16 +293,6 @@
         "name": "showMicrophone",
         "label": "Show Microphone",
         "value": true
-      },
-      {
-        "component": "text",
-        "name": "canvasTitle",
-        "label": "Canvas Title"
-      },
-      {
-        "component": "richtext",
-        "name": "canvasDescription",
-        "label": "Canvas Description"
       },
       {
         "component": "aem-content",
