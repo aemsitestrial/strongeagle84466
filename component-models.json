@@ -223,17 +223,17 @@
       },
       {
         "component": "text",
-        "name": "searchWatermark",
+        "name": "canvasSearchWatermark",
         "label": "Canvas Search Watermark"
       },
       {
         "component": "reference",
-        "name": "searchIcon",
-        "label": "Canvas Search Icon"
+        "name": "canvasMicrophoneIcon",
+        "label": "Canvas Microphone Icon"
       },
       {
         "component": "reference",
-        "name": "menuIcon",
+        "name": "canvasMenuIcon",
         "label": "Canvas Menu Icon"
       },
       {

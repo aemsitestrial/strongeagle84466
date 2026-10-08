@@ -1,13 +1,15 @@
-const DEFAULT_SEARCH_WATERMARK = 'Ask a question...';
+const DEFAULT_SEARCH_WATERMARK = 'Search';
 
 const FIELD_ALIASES = {
   canvastype: 'canvasType',
-  canvassearchwatermark: 'searchWatermark',
-  searchwatermark: 'searchWatermark',
-  searchicon: 'searchIcon',
-  canvassearchicon: 'searchIcon',
-  menuicon: 'menuIcon',
-  canvasmenuicon: 'menuIcon',
+  canvassearchwatermark: 'canvasSearchWatermark',
+  searchwatermark: 'canvasSearchWatermark',
+  canvasmicrophoneicon: 'canvasMicrophoneIcon',
+  microphoneicon: 'canvasMicrophoneIcon',
+  searchicon: 'canvasMicrophoneIcon',
+  canvasmenuicon: 'canvasMenuIcon',
+  menuicon: 'canvasMenuIcon',
+  motiontype: 'motionType',
   canvasstyle: 'canvasStyle',
   canvastitle: 'canvasTitle',
   canvasdescription: 'canvasDescription',
@@ -15,7 +17,6 @@ const FIELD_ALIASES = {
   showmicrophone: 'showMicrophone',
   enablesearch: 'enableSearch',
   maximumoptions: 'maximumOptions',
-  options: 'optionsType',
   optionstype: 'optionsType',
   canvasnavrootpath: 'canvasNavRootPath',
   navrootpath: 'canvasNavRootPath',
@@ -56,21 +57,17 @@ function extractData(block) {
 
   [...block.children].forEach((row) => {
     const cells = [...row.children];
-
     if (cells.length < 2) return;
 
     const rawKey = cells[0]?.textContent?.trim() || '';
-    const rawValue = extractCellValue(cells[1]);
-    const normalizedKey = normalizeFieldKey(rawKey);
-    const canonicalKey = FIELD_ALIASES[normalizedKey] || normalizedKey;
-
-    data[canonicalKey] = rawValue;
+    const canonicalKey = FIELD_ALIASES[normalizeFieldKey(rawKey)] || normalizeFieldKey(rawKey);
+    data[canonicalKey] = extractCellValue(cells[1]);
   });
 
   return data;
 }
 
-function toBoolean(value, fallback = true) {
+function asBoolean(value, fallback = true) {
   if (value === undefined || value === null || value === '') {
     return fallback;
   }
@@ -320,8 +317,8 @@ async function renderNavigationMenu(menuButton, data) {
   const list = document.createElement('ul');
   list.className = 'canvas-nav-list';
 
-  const rootPath = normalizeNavigationPath(data.canvasNavRootPath || '/');
-  const depth = toPositiveInt(data.canvasNavDepth, 3);
+  const rootPath = normalizeNavigationPath(data.canvasNavRootPath || data.canvasnavrootpath || '/');
+  const depth = toPositiveInt(data.canvasNavDepth || data.canvasnavdepth, 3);
   const items = await fetchNavigationData(rootPath, depth);
 
   if (!items.length) {
@@ -361,7 +358,7 @@ function createSearchBar({
   showNavigation,
   showMicrophone,
   menuIcon,
-  searchIcon,
+  microphoneIcon,
   data,
 }) {
   const wrapper = document.createElement('div');
@@ -403,7 +400,7 @@ function createSearchBar({
       createIconButton({
         className: 'canvas-mic-btn',
         label: 'Use microphone',
-        iconSource: searchIcon,
+        iconSource: microphoneIcon,
         fallbackText: 'Mic',
       }),
     );
@@ -422,9 +419,8 @@ function createSearchBar({
 
   document.addEventListener('click', (event) => {
     const navPanel = wrapper.querySelector('.canvas-nav-panel');
-    if (!navPanel || !wrapper.contains(event.target)) {
-      navPanel?.classList.remove('is-open');
-    }
+    if (!navPanel || wrapper.contains(event.target)) return;
+    navPanel.classList.remove('is-open');
   });
 
   return wrapper;
@@ -432,11 +428,11 @@ function createSearchBar({
 
 function renderSearchCanvas(block, data) {
   const search = createSearchBar({
-    watermark: data.searchWatermark || DEFAULT_SEARCH_WATERMARK,
-    showNavigation: toBoolean(data.showNavigation, true),
-    showMicrophone: toBoolean(data.showMicrophone, true),
-    menuIcon: data.menuIcon,
-    searchIcon: data.searchIcon,
+    watermark: data.canvasSearchWatermark || data.searchWatermark || '',
+    showNavigation: asBoolean(data.showNavigation, true),
+    showMicrophone: asBoolean(data.showMicrophone, true),
+    menuIcon: data.canvasMenuIcon || data.menuIcon,
+    microphoneIcon: data.canvasMicrophoneIcon || data.microphoneIcon || data.searchIcon,
     data,
   });
 
@@ -456,33 +452,33 @@ function renderIntentCanvas(block, data, optionList = []) {
   const content = document.createElement('div');
   content.className = 'canvas-intent-content';
 
-  const title = data.canvasTitle || '';
-  if (title) {
-    const titleEl = document.createElement('h2');
-    titleEl.className = 'canvas-title';
-    titleEl.textContent = title;
-    content.appendChild(titleEl);
+  const titleText = data.canvasTitle || data.canvastitle || '';
+  if (titleText) {
+    const title = document.createElement('h2');
+    title.className = 'canvas-title';
+    title.textContent = titleText;
+    content.appendChild(title);
   }
 
-  const description = data.canvasDescription || '';
-  if (description) {
-    const descriptionEl = document.createElement('div');
-    descriptionEl.className = 'canvas-description';
-    descriptionEl.innerHTML = description;
-    content.appendChild(descriptionEl);
+  const descriptionText = data.canvasDescription || data.canvasdescription || '';
+  if (descriptionText) {
+    const description = document.createElement('div');
+    description.className = 'canvas-description';
+    description.innerHTML = descriptionText;
+    content.appendChild(description);
   }
 
   const searchSlot = document.createElement('div');
   searchSlot.className = 'canvas-search-slot';
 
-  if (toBoolean(data.enableSearch, true)) {
+  if (asBoolean(data.enableSearch, true)) {
     searchSlot.append(
       createSearchBar({
-        watermark: data.searchWatermark || DEFAULT_SEARCH_WATERMARK,
-        showNavigation: toBoolean(data.showNavigation, true),
-        showMicrophone: toBoolean(data.showMicrophone, true),
-        menuIcon: data.menuIcon,
-        searchIcon: data.searchIcon,
+        watermark: data.canvasSearchWatermark || data.searchWatermark || '',
+        showNavigation: asBoolean(data.showNavigation, true),
+        showMicrophone: asBoolean(data.showMicrophone, true),
+        menuIcon: data.canvasMenuIcon || data.menuIcon,
+        microphoneIcon: data.canvasMicrophoneIcon || data.microphoneIcon || data.searchIcon,
         data,
       }),
     );
@@ -493,7 +489,7 @@ function renderIntentCanvas(block, data, optionList = []) {
   const optionsContainer = document.createElement('div');
   optionsContainer.className = 'canvas-options';
 
-  const maxOptions = Math.max(0, toPositiveInt(data.maximumOptions, 5));
+  const maxOptions = Math.max(0, toPositiveInt(data.maximumOptions || data.maximumoptions, 5));
   const optionsToRender = optionList.slice(0, maxOptions || optionList.length);
 
   if (optionsToRender.length) {
@@ -504,7 +500,11 @@ function renderIntentCanvas(block, data, optionList = []) {
         || item.textContent?.trim()
         || 'Option';
 
-      const href = item.dataset?.optionlink || item.dataset?.optionLink || item.querySelector('a')?.href || '#';
+      const href = item.dataset?.optionlink
+        || item.dataset?.optionLink
+        || item.querySelector('a')?.href
+        || '#';
+
       const option = document.createElement('a');
       option.className = 'canvas-option-pill';
       option.href = href;
@@ -529,23 +529,23 @@ function renderIntentCanvas(block, data, optionList = []) {
 }
 
 export default function decorate(block) {
-  const rawBlockHtml = block.innerHTML;
   const data = extractData(block);
   const optionList = [...block.querySelectorAll('.canvas-option')];
 
-  console.group('Canvas');
-  console.log('Raw Block', rawBlockHtml);
+  console.group('Canvas Debug');
+  console.log('Raw Block HTML', block.innerHTML);
+  console.log('Block Children', [...block.children]);
   console.log('Extracted Data', data);
   console.groupEnd();
 
   block.innerHTML = '';
 
-  const canvasType = String(data.canvasType || 'search').trim().toLowerCase();
-  const normalizedCanvasType = canvasType === 'intent' ? 'intent' : 'search';
-  const canvasStyle = String(data.canvasStyle || 'default').trim().toLowerCase();
+  const canvasType = String(data.canvasType || data.canvastype || 'search').trim().toLowerCase();
+  const normalizedType = canvasType === 'intent' ? 'intent' : 'search';
+  const canvasStyle = String(data.canvasStyle || data.canvasstyle || 'default').trim().toLowerCase();
 
   block.classList.add('canvas');
-  block.classList.add(`canvas-${normalizedCanvasType}`);
+  block.classList.add(`canvas-${normalizedType}`);
 
   if (canvasStyle === 'floating-sticky' || canvasStyle === 'floatingsticky') {
     block.classList.add('canvas-floating-sticky');
@@ -553,7 +553,7 @@ export default function decorate(block) {
     block.classList.add('canvas-default');
   }
 
-  if (normalizedCanvasType === 'intent') {
+  if (normalizedType === 'intent') {
     renderIntentCanvas(block, data, optionList);
     return;
   }
