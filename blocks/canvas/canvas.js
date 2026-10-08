@@ -1,5 +1,23 @@
 const DEFAULT_SEARCH_WATERMARK = 'Search';
 
+const CANVAS_FIELD_ORDER = [
+  'canvasType',
+  'canvasSearchWatermark',
+  'canvasMicrophoneIcon',
+  'canvasMenuIcon',
+  'motionType',
+  'canvasStyle',
+  'canvasTitle',
+  'canvasDescription',
+  'showNavigation',
+  'showMicrophone',
+  'canvasNavRootPath',
+  'canvasNavDepth',
+  'enableSearch',
+  'maximumOptions',
+  'optionsType',
+];
+
 const FIELD_ALIASES = {
   canvastype: 'canvasType',
   canvassearchwatermark: 'canvasSearchWatermark',
@@ -54,14 +72,27 @@ function extractCellValue(cell) {
 
 function extractData(block) {
   const data = {};
+  let fieldIndex = 0;
 
   [...block.children].forEach((row) => {
+    if (row.classList.contains('canvas-option')) return;
+
     const cells = [...row.children];
-    if (cells.length < 2) return;
+    if (!cells.length) return;
 
     const rawKey = cells[0]?.textContent?.trim() || '';
-    const canonicalKey = FIELD_ALIASES[normalizeFieldKey(rawKey)] || normalizeFieldKey(rawKey);
-    data[canonicalKey] = extractCellValue(cells[1]);
+    const normalizedKey = normalizeFieldKey(rawKey);
+    const explicitKey = FIELD_ALIASES[normalizedKey]
+      || (CANVAS_FIELD_ORDER.includes(rawKey) ? rawKey : '');
+
+    if (explicitKey && cells.length > 1) {
+      data[explicitKey] = extractCellValue(cells[1]);
+      return;
+    }
+
+    const fieldName = CANVAS_FIELD_ORDER[fieldIndex];
+    fieldIndex += 1;
+    if (fieldName) data[fieldName] = extractCellValue(cells[0]);
   });
 
   return data;
