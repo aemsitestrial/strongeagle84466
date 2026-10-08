@@ -12,11 +12,58 @@
 ======================================= */
 
 .canvas-search {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
   width: 100%;
+}
+
+.canvas-nav-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  z-index: 30;
+  width: min(320px, 80vw);
+  background: rgb(255 255 255 / 95%);
+  border: 1px solid #d9d9d9;
+  border-radius: 16px;
+  box-shadow: 0 18px 30px rgb(20 32 52 / 12%);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+}
+
+.canvas-nav-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.canvas-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+}
+
+.canvas-nav-item {
+  margin: 0;
+}
+
+.canvas-nav-item a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #0c0c0d;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.canvas-nav-item a:hover {
+  background: #f4f7ff;
 }
 
 /* =======================================

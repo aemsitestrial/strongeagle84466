@@ -47,6 +47,12 @@
     ]
   },
   {
+    "id": "canvas",
+    "components": [
+      "canvas-option"
+    ]
+  },
+  {
     "id": "cards-v1",
     "components": [
       "cards-item"

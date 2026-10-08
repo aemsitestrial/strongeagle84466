@@ -332,6 +332,21 @@
     ]
   },
   {
+    "id": "canvas-option",
+    "fields": [
+      {
+        "component": "text",
+        "name": "optionLabel",
+        "label": "Option Label"
+      },
+      {
+        "component": "text",
+        "name": "optionLink",
+        "label": "Option Link"
+      }
+    ]
+  },
+  {
     "id": "cards-v1",
     "fields": [
       {
