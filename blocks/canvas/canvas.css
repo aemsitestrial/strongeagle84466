@@ -129,6 +129,11 @@
 ======================================= */
 
 .canvas-mic-btn {
+  box-sizing: border-box;
+  flex: 0 0 36px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
@@ -158,6 +163,12 @@
 ======================================= */
 
 .canvas-submit-btn {
+  box-sizing: border-box;
+  flex: 0 0 48px;
+  min-width: 48px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
   width: 48px;
   height: 48px;
   border: 0;
@@ -355,6 +366,8 @@
   }
 
   .canvas-submit-btn {
+    flex-basis: 40px;
+    min-width: 40px;
     width: 40px;
     height: 40px;
   }
