@@ -182,7 +182,7 @@
           "multi": false
         },
         {
-          "component": "reference",
+          "component": "aem-content",
           "valueType": "string",
           "name": "content_video",
           "label": "Video",

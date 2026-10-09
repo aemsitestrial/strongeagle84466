@@ -29,14 +29,22 @@ function renderPanelVideo(panel, tabTitle) {
   if (!videoCell) return;
 
   let video = videoCell.querySelector('video');
-  const existingSource = video?.querySelector('source[src]')?.src || video?.getAttribute('src');
+  const existingSource = video?.querySelector('source[src]')?.getAttribute('src')
+    || video?.getAttribute('src');
   const videoLink = videoCell.querySelector('a[href]');
-  const videoSource = existingSource || videoLink?.href;
+  const videoText = videoCell.textContent.trim();
+  const videoSource = existingSource || videoLink?.getAttribute('href') || videoText;
   if (!video && !videoSource) return;
+
+  const normalizedSource = videoSource.startsWith('/')
+    ? new URL(videoSource, window.location.origin).href
+    : videoSource;
 
   if (!video) {
     video = document.createElement('video');
-    video.src = videoSource;
+    const source = document.createElement('source');
+    source.src = normalizedSource;
+    video.appendChild(source);
   }
 
   video.controls = true;
