@@ -383,6 +383,20 @@ async function renderNavigationMenu(menuButton, data) {
     menuButton.classList.remove('is-close');
     menuButton.setAttribute('aria-label', 'Open navigation');
     menuButton.setAttribute('aria-expanded', 'false');
+    menuButton.replaceChildren();
+    const icon = createImageElement(data.canvasMenuIcon || data.menuIcon, 'Open navigation');
+    if (icon) menuButton.appendChild(icon);
+    else {
+      const fallback = document.createElement('span');
+      fallback.className = 'canvas-icon-fallback';
+      fallback.textContent = 'Menu';
+      menuButton.appendChild(fallback);
+    }
+    menuButton.onclick = async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      await renderNavigationMenu(menuButton, data);
+    };
     toolbar.prepend(menuButton);
     document.removeEventListener('click', onOutsideClick);
   };
@@ -462,6 +476,7 @@ async function renderNavigationMenu(menuButton, data) {
 
     state.activeL1.children.forEach((item) => {
       const activateL2 = () => {
+        if (state.activeL2 === item) return;
         state.activeL2 = item.children.length ? item : null;
         render();
       };
