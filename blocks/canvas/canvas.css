@@ -14,63 +14,19 @@
 .canvas-search {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 22px;
+  flex-direction: column;
+  align-items: stretch;
   width: 100%;
   max-width: 812px;
   margin-inline: auto;
 }
 
-.canvas-nav-panel {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 0;
-  z-index: 30;
-  width: min(320px, 80vw);
-  background: rgb(255 255 255 / 95%);
-  border: 1px solid #d9d9d9;
-  border-radius: 16px;
-  box-shadow: 0 18px 30px rgb(20 32 52 / 12%);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px);
-  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+.canvas-search-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
 }
-
-.canvas-nav-panel.is-open {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.canvas-nav-list {
-  list-style: none;
-  margin: 0;
-  padding: 8px;
-}
-
-.canvas-nav-item {
-  margin: 0;
-}
-
-.canvas-nav-item a {
-  display: block;
-  padding: 10px 12px;
-  border-radius: 10px;
-  color: #0c0c0d;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-.canvas-nav-item a:hover {
-  background: #f4f7ff;
-}
-
-/* =======================================
-   MENU BUTTON
-======================================= */
 
 .canvas-menu-btn {
   width: 80px;
@@ -85,6 +41,126 @@
   backdrop-filter: blur(13px);
   cursor: pointer;
   font-size: 16px;
+}
+
+.canvas-nav-panel {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 0 8px 8px;
+  box-sizing: border-box;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.canvas-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+
+.canvas-nav-row .canvas-menu-btn {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #dedede;
+  background: rgb(255 255 255 / 80%);
+  color: #222;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.canvas-nav-row .canvas-menu-btn.is-close {
+  border: 0;
+  background: transparent;
+  font-size: 32px;
+}
+
+.canvas-nav-row .canvas-nav-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 20px;
+  border: 1px solid #e1e1e1;
+  border-radius: 999px;
+  background: #fff;
+  color: #171717;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.canvas-nav-row .canvas-nav-item:hover,
+.canvas-nav-row .canvas-nav-item.is-active {
+  border-color: #477bf5;
+  background: #477bf5;
+  color: #fff;
+}
+
+.canvas-nav-submenu {
+  display: none;
+  width: min(628px, 100%);
+  margin: 0 auto;
+  padding: 14px 24px;
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 16px;
+  background: rgb(245 245 245 / 88%);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(20px);
+  box-sizing: border-box;
+}
+
+.canvas-nav-submenu.is-open {
+  display: block;
+}
+
+.canvas-nav-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.canvas-nav-list > li {
+  margin: 0;
+  border-bottom: 1px solid rgb(0 0 0 / 12%);
+}
+
+.canvas-nav-list .canvas-nav-l3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  color: #292929;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.canvas-nav-list .canvas-nav-l3::after {
+  content: '\2192';
+  margin-left: 12px;
+}
+
+.canvas-nav-list .canvas-nav-l3:hover {
+  color: #1e5de8;
 }
 
 /* =======================================
@@ -353,14 +429,33 @@
 }
 
 @media (width <= 768px) {
-  .canvas-search {
+  .canvas-search-toolbar {
     gap: 12px;
   }
 
-  .canvas-menu-btn {
+  .canvas-search-toolbar > .canvas-menu-btn {
     width: 56px;
     height: 56px;
     min-width: 56px;
+  }
+
+  .canvas-nav-row {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+
+  .canvas-nav-row .canvas-nav-item {
+    flex: 0 0 auto;
+  }
+
+  .canvas-nav-submenu {
+    padding: 12px 16px;
+  }
+
+  .canvas-nav-list {
+    grid-template-columns: 1fr;
   }
 
   .canvas-search-container {

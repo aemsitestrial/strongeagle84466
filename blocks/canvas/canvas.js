@@ -252,34 +252,48 @@ function extractNavItemsFromJson(payload) {
     return [];
   }
 
-  const items = [];
-
-  const walk = (list, depth = 0, maxDepth = 3) => {
-    if (!Array.isArray(list) || depth > maxDepth) return;
-
-    list.forEach((item) => {
-      if (!item) return;
-
+  const normalizeItems = (list) => list
+    .filter(Boolean)
+    .map((item) => {
       const title = item.title || item.name || item.label || item.text || '';
       const href = item.path || item.href || item.url || item.link || '';
+      const childItems = item.items || item.children || item.subItems || item.subitems || [];
 
-      if (title && href) {
-        items.push({ title: String(title).trim(), href: String(href).trim() });
-      }
+      return {
+        title: String(title).trim(),
+        href: String(href).trim(),
+        children: Array.isArray(childItems) ? normalizeItems(childItems) : [],
+      };
+    })
+    .filter((item) => item.title);
 
-      const children = item.items || item.children || item.subItems || item.subitems || [];
-      if (children.length) {
-        walk(children, depth + 1, maxDepth);
-      }
-    });
-  };
+  const items = normalizeItems(nodes);
+  if (items.some((item) => item.children.length)) return items;
 
-  walk(nodes);
-
-  return items.filter((item, index, array) => {
-    const key = `${item.title}|${item.href}`;
-    return array.findIndex((entry) => `${entry.title}|${entry.href}` === key) === index;
+  const roots = [];
+  const indexed = items.map((item) => ({ ...item, children: [] }));
+  indexed.forEach((item) => {
+    let parent;
+    if (item.href) {
+      const itemUrl = new URL(item.href, window.location.origin);
+      const { pathname } = itemUrl;
+      const itemPath = pathname.replace(/\/$/, '');
+      const [closestParent] = indexed
+        .filter((candidate) => candidate !== item && candidate.href)
+        .filter((candidate) => {
+          const candidateUrl = new URL(candidate.href, window.location.origin);
+          const { pathname: candidatePathname } = candidateUrl;
+          const candidatePath = candidatePathname.replace(/\/$/, '');
+          return candidatePath && itemPath.startsWith(`${candidatePath}/`);
+        })
+        .sort((first, second) => second.href.length - first.href.length);
+      parent = closestParent;
+    }
+    if (parent) parent.children.push(item);
+    else roots.push(item);
   });
+
+  return roots;
 }
 
 async function fetchNavigationData(rootPath, depth = 3) {
@@ -326,7 +340,7 @@ async function fetchNavigationData(rootPath, depth = 3) {
             : new URL(item.href, window.location.origin).href,
         }));
 
-      return links.length ? links.slice(0, 10) : [];
+      return links.length ? extractNavItemsFromJson(links) : [];
     } catch (error) {
       return [];
     }
@@ -336,53 +350,169 @@ async function fetchNavigationData(rootPath, depth = 3) {
 }
 
 async function renderNavigationMenu(menuButton, data) {
-  const navPanel = menuButton.parentElement?.querySelector('.canvas-nav-panel');
-
-  if (navPanel && navPanel.dataset.loaded === 'true') {
-    navPanel.classList.toggle('is-open');
-    return;
-  }
-
-  const panel = document.createElement('div');
-  panel.className = 'canvas-nav-panel';
-
-  const list = document.createElement('ul');
-  list.className = 'canvas-nav-list';
-
   const rootPath = normalizeNavigationPath(data.canvasNavRootPath || data.canvasnavrootpath || '/');
   const depth = toPositiveInt(data.canvasNavDepth || data.canvasnavdepth, 3);
   const items = await fetchNavigationData(rootPath, depth);
+  const wrapper = menuButton.closest('.canvas-search');
+  const toolbar = wrapper.querySelector('.canvas-search-toolbar');
+  const panel = document.createElement('div');
+  panel.className = 'canvas-nav-panel';
 
-  if (!items.length) {
-    const fallbackItem = document.createElement('li');
-    fallbackItem.className = 'canvas-nav-item';
-    const fallbackLink = document.createElement('a');
-    fallbackLink.href = '/';
-    fallbackLink.textContent = 'Home';
-    fallbackItem.appendChild(fallbackLink);
-    list.appendChild(fallbackItem);
-  } else {
-    items.forEach((item) => {
-      const navItem = document.createElement('li');
-      navItem.className = 'canvas-nav-item';
-      const link = document.createElement('a');
-      link.href = item.href;
-      link.textContent = item.title;
-      navItem.appendChild(link);
-      list.appendChild(navItem);
+  const submenu = document.createElement('div');
+  submenu.className = 'canvas-nav-submenu';
+  submenu.setAttribute('aria-live', 'polite');
+
+  const navRow = document.createElement('div');
+  navRow.className = 'canvas-nav-row';
+  panel.append(submenu, navRow);
+
+  const state = {
+    level: 'l1',
+    activeL1: null,
+    activeL2: null,
+  };
+
+  let closeNavigation;
+
+  const onOutsideClick = (event) => {
+    if (!wrapper.contains(event.target)) closeNavigation();
+  };
+
+  closeNavigation = () => {
+    panel.remove();
+    menuButton.classList.remove('is-close');
+    menuButton.setAttribute('aria-label', 'Open navigation');
+    menuButton.setAttribute('aria-expanded', 'false');
+    toolbar.prepend(menuButton);
+    document.removeEventListener('click', onOutsideClick);
+  };
+
+  const setToggle = () => {
+    menuButton.replaceChildren();
+    const isL1 = state.level === 'l1';
+    menuButton.setAttribute('aria-label', isL1 ? 'Close navigation' : 'Show L1 navigation');
+    menuButton.setAttribute('aria-expanded', 'true');
+    menuButton.classList.toggle('is-close', isL1);
+
+    if (isL1) {
+      menuButton.textContent = '×';
+    } else {
+      const icon = createImageElement(data.canvasMenuIcon || data.menuIcon, '');
+      if (icon) menuButton.appendChild(icon);
+      else menuButton.textContent = '☰';
+    }
+  };
+
+  const makeLink = (item, className) => {
+    const link = document.createElement('a');
+    link.className = className;
+    link.href = item.href || '#';
+    link.textContent = item.title;
+    if (!item.href) link.setAttribute('aria-disabled', 'true');
+    return link;
+  };
+
+  const makeLevelButton = (item, className, onActivate) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = className;
+    button.textContent = item.title;
+    button.setAttribute('aria-expanded', 'false');
+    button.addEventListener('mouseenter', onActivate);
+    button.addEventListener('focus', onActivate);
+    button.addEventListener('click', onActivate);
+    return button;
+  };
+
+  const render = () => {
+    navRow.replaceChildren();
+    submenu.replaceChildren();
+    setToggle();
+
+    if (state.level === 'l1') {
+      navRow.appendChild(menuButton);
+      items.forEach((item) => {
+        if (item.children.length) {
+          navRow.appendChild(makeLevelButton(item, 'canvas-nav-item canvas-nav-l1', () => {
+            state.level = 'l2';
+            state.activeL1 = item;
+            state.activeL2 = null;
+            render();
+          }));
+        } else {
+          navRow.appendChild(makeLink(item, 'canvas-nav-item canvas-nav-l1'));
+        }
+      });
+      return;
+    }
+
+    navRow.appendChild(menuButton);
+    const activeL1Button = document.createElement('button');
+    activeL1Button.type = 'button';
+    activeL1Button.className = 'canvas-nav-item canvas-nav-l1 is-active';
+    activeL1Button.textContent = state.activeL1.title;
+    activeL1Button.setAttribute('aria-label', `Show ${state.activeL1.title} subnavigation`);
+    activeL1Button.addEventListener('click', () => {
+      state.level = 'l1';
+      state.activeL1 = null;
+      state.activeL2 = null;
+      render();
     });
-  }
+    navRow.appendChild(activeL1Button);
 
-  panel.appendChild(list);
-  panel.dataset.loaded = 'true';
+    state.activeL1.children.forEach((item) => {
+      const activateL2 = () => {
+        state.activeL2 = item.children.length ? item : null;
+        render();
+      };
+      if (item.children.length) {
+        const button = makeLevelButton(item, 'canvas-nav-item canvas-nav-l2', activateL2);
+        if (state.activeL2 === item) {
+          button.classList.add('is-active');
+          button.setAttribute('aria-expanded', 'true');
+        }
+        navRow.appendChild(button);
+      } else {
+        navRow.appendChild(makeLink(item, 'canvas-nav-item canvas-nav-l2'));
+      }
+    });
 
-  if (navPanel) {
-    navPanel.replaceWith(panel);
-  } else {
-    menuButton.parentElement.appendChild(panel);
-  }
+    if (state.activeL2) {
+      const list = document.createElement('ul');
+      list.className = 'canvas-nav-list';
+      state.activeL2.children.forEach((item) => {
+        const entry = document.createElement('li');
+        entry.className = 'canvas-nav-item';
+        entry.appendChild(makeLink(item, 'canvas-nav-l3'));
+        list.appendChild(entry);
+      });
+      submenu.appendChild(list);
+      submenu.classList.add('is-open');
+    }
+  };
 
-  panel.classList.add('is-open');
+  menuButton.onclick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (state.level === 'l1') {
+      closeNavigation();
+      return;
+    }
+    state.level = 'l1';
+    state.activeL1 = null;
+    state.activeL2 = null;
+    render();
+  };
+
+  panel.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeNavigation();
+    }
+  });
+
+  wrapper.appendChild(panel);
+  document.addEventListener('click', onOutsideClick);
+  render();
 }
 
 function createSearchBar({
@@ -396,6 +526,9 @@ function createSearchBar({
   const wrapper = document.createElement('div');
   wrapper.className = 'canvas-search';
 
+  const toolbar = document.createElement('div');
+  toolbar.className = 'canvas-search-toolbar';
+
   if (showNavigation) {
     const menuButton = createIconButton({
       className: 'canvas-menu-btn',
@@ -404,13 +537,13 @@ function createSearchBar({
       fallbackText: 'Menu',
     });
 
-    menuButton.addEventListener('click', async (event) => {
+    menuButton.onclick = async (event) => {
       event.preventDefault();
       event.stopPropagation();
       await renderNavigationMenu(menuButton, data);
-    });
+    };
 
-    wrapper.append(menuButton);
+    toolbar.append(menuButton);
   }
 
   const container = document.createElement('div');
@@ -449,13 +582,8 @@ function createSearchBar({
 
   searchInput.appendChild(controls);
   container.appendChild(searchInput);
-  wrapper.appendChild(container);
-
-  document.addEventListener('click', (event) => {
-    const navPanel = wrapper.querySelector('.canvas-nav-panel');
-    if (!navPanel || wrapper.contains(event.target)) return;
-    navPanel.classList.remove('is-open');
-  });
+  toolbar.appendChild(container);
+  wrapper.appendChild(toolbar);
 
   return wrapper;
 }
