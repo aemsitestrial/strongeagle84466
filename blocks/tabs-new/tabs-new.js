@@ -24,40 +24,50 @@ function getTabAlignment(block) {
 }
 
 function renderPanelVideo(panel, tabTitle) {
-  const imageCell = panel.children[3];
-  const videoCell = panel.children[4];
-  if (!videoCell) return;
-
-  let video = videoCell.querySelector('video');
+  const videoPattern = /\.(mp4|m4v|mov|webm|ogv)(?:[?#].*)?$/i;
+  const video = panel.querySelector('video');
   const existingSource = video?.querySelector('source[src]')?.getAttribute('src')
     || video?.getAttribute('src');
-  const videoLink = videoCell.querySelector('a[href]');
-  const videoText = videoCell.textContent.trim();
-  const videoSource = existingSource || videoLink?.getAttribute('href') || videoText;
-  if (!video && !videoSource) return;
+  const videoLink = [...panel.querySelectorAll('a[href]')].find((link) => (
+    videoPattern.test(link.getAttribute('href'))
+  ));
+  const pathMatch = panel.textContent.match(/(?:https?:\/\/|\/)[^\s<>"']+\.(?:mp4|m4v|mov|webm|ogv)(?:[?#][^\s<>"']*)?/i);
+  const videoSource = existingSource || videoLink?.getAttribute('href') || pathMatch?.[0];
+  if (!videoSource && !video) return;
 
-  const normalizedSource = videoSource.startsWith('/')
-    ? new URL(videoSource, window.location.origin).href
-    : videoSource;
-
+  const media = video || document.createElement('video');
   if (!video) {
-    video = document.createElement('video');
     const source = document.createElement('source');
-    source.src = normalizedSource;
-    video.appendChild(source);
+    source.src = new URL(videoSource, document.baseURI).href;
+    media.appendChild(source);
   }
 
-  video.controls = true;
-  video.preload = 'metadata';
-  video.setAttribute('playsinline', '');
-  video.setAttribute('aria-label', `${tabTitle} video`);
+  media.controls = true;
+  media.preload = 'metadata';
+  media.setAttribute('playsinline', '');
+  media.setAttribute('aria-label', `${tabTitle} video`);
 
   const wrapper = document.createElement('div');
   wrapper.className = 'tabs-media tabs-video-wrapper';
-  wrapper.appendChild(video);
+  wrapper.appendChild(media);
 
-  imageCell?.remove();
-  videoCell.replaceChildren(wrapper);
+  if (videoLink) {
+    videoLink.replaceWith(wrapper);
+  } else if (video?.parentElement) {
+    video.replaceWith(wrapper);
+  } else {
+    const videoRow = [...panel.children].find((row) => (
+      pathMatch && row.textContent.includes(pathMatch[0])
+    ));
+    if (videoRow) {
+      videoRow.replaceChildren(wrapper);
+    } else {
+      panel.appendChild(wrapper);
+    }
+  }
+
+  const imageRow = [...panel.children].find((row) => row.querySelector('picture, img'));
+  imageRow?.remove();
 }
 
 export default async function decorate(block) {
