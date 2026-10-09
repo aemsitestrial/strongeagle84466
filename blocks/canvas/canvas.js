@@ -419,10 +419,12 @@ function createSearchBar({
   const searchInput = document.createElement('div');
   searchInput.className = 'canvas-search-input';
 
-  const placeholder = document.createElement('span');
-  placeholder.className = 'canvas-placeholder';
-  placeholder.textContent = watermark || DEFAULT_SEARCH_WATERMARK;
-  searchInput.appendChild(placeholder);
+  const searchField = document.createElement('input');
+  searchField.type = 'search';
+  searchField.className = 'canvas-search-field';
+  searchField.placeholder = watermark || DEFAULT_SEARCH_WATERMARK;
+  searchField.setAttribute('aria-label', watermark || DEFAULT_SEARCH_WATERMARK);
+  searchInput.appendChild(searchField);
 
   const controls = document.createElement('div');
   controls.className = 'canvas-controls';
