@@ -3,15 +3,68 @@ import { moveInstrumentation } from '../../scripts/scripts.js';
 
 let tabBlockCount = 0;
 
+function getTabAlignment(block) {
+  const alignmentRow = [...block.children].find((row) => (
+    ['tabalignment', 'alignment'].includes(
+      row.firstElementChild
+        ? row.firstElementChild.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '')
+        : '',
+    )
+  ));
+  const rowValue = alignmentRow?.children[1]?.textContent.trim().toLowerCase();
+  const alignment = (block.dataset.tabAlignment || rowValue || 'left').toLowerCase();
+
+  return ['left', 'center', 'right'].includes(alignment) ? alignment : 'left';
+}
+
+function renderPanelVideo(panel, tabTitle) {
+  const imageCell = panel.children[3];
+  const videoCell = panel.children[4];
+  if (!videoCell) return;
+
+  let video = videoCell.querySelector('video');
+  const existingSource = video?.querySelector('source[src]')?.src || video?.getAttribute('src');
+  const videoLink = videoCell.querySelector('a[href]');
+  const videoSource = existingSource || videoLink?.href;
+  if (!video && !videoSource) return;
+
+  if (!video) {
+    video = document.createElement('video');
+    video.src = videoSource;
+  }
+
+  video.controls = true;
+  video.preload = 'metadata';
+  video.setAttribute('playsinline', '');
+  video.setAttribute('aria-label', `${tabTitle} video`);
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'tabs-media tabs-video-wrapper';
+  wrapper.appendChild(video);
+
+  imageCell?.remove();
+  videoCell.replaceChildren(wrapper);
+}
+
 export default async function decorate(block) {
   tabBlockCount += 1;
+
+  const alignment = getTabAlignment(block);
+  block.classList.remove('align-left', 'align-center', 'align-right');
+  block.classList.add(`align-${alignment}`);
 
   const tabList = document.createElement('div');
   tabList.className = 'tabs-list';
   tabList.setAttribute('role', 'tablist');
   tabList.id = `tabs-new-list-${tabBlockCount}`;
 
-  const panels = [...block.children];
+  const panels = [...block.children].filter((panel) => (
+    !['tabalignment', 'alignment'].includes(
+      panel.firstElementChild
+        ? panel.firstElementChild.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '')
+        : '',
+    )
+  ));
 
   panels.forEach((panel, index) => {
     const firstCell = panel.firstElementChild;
@@ -25,6 +78,8 @@ export default async function decorate(block) {
     const tabTitle = tabTitleElement
       ? tabTitleElement.textContent.trim()
       : `Tab ${index + 1}`;
+
+    renderPanelVideo(panel, tabTitle);
 
     const panelId = `tabs-new-panel-${tabBlockCount}-${index + 1}`;
     const buttonId = `tabs-new-tab-${tabBlockCount}-${index + 1}`;

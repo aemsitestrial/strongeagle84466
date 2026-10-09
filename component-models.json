@@ -6942,6 +6942,27 @@
                 "value": "tcs-yellow"
               }
             ]
+          },
+          {
+            "component": "select",
+            "valueType": "string",
+            "name": "tabAlignment",
+            "label": "Tab Alignment",
+            "value": "left",
+            "options": [
+              {
+                "name": "Left",
+                "value": "left"
+              },
+              {
+                "name": "Center",
+                "value": "center"
+              },
+              {
+                "name": "Right",
+                "value": "right"
+              }
+            ]
           }
         ]
       }
@@ -6994,6 +7015,13 @@
         "valueType": "string",
         "name": "content_image",
         "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "content_video",
+        "label": "Video",
         "multi": false
       },
       {
