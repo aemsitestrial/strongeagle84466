@@ -4,14 +4,19 @@ import { moveInstrumentation } from '../../scripts/scripts.js';
 let tabBlockCount = 0;
 
 function getTabAlignment(block) {
-  const alignmentRow = [...block.children].find((row) => (
-    ['tabalignment', 'alignment'].includes(
-      row.firstElementChild
-        ? row.firstElementChild.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '')
-        : '',
-    )
-  ));
-  const rowValue = alignmentRow?.children[1]?.textContent.trim().toLowerCase();
+  const alignmentRow = [...block.children].find((row) => {
+    if (row.classList.contains('tabs-item')) return false;
+
+    const key = row.firstElementChild?.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
+    const value = row.children[1]?.textContent.trim().toLowerCase();
+    const rowText = row.textContent.trim().toLowerCase();
+
+    return ['tabalignment', 'alignment'].includes(key)
+      || (!value && ['left', 'center', 'right'].includes(rowText));
+  });
+  const rowValue = (
+    alignmentRow?.children[1]?.textContent || alignmentRow?.textContent || ''
+  ).trim().toLowerCase();
   const alignment = (block.dataset.tabAlignment || rowValue || 'left').toLowerCase();
   alignmentRow?.remove();
 

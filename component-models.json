@@ -6969,7 +6969,7 @@
     ]
   },
   {
-    "id": "tabs-item",
+    "id": "tabs-new-item",
     "fields": [
       {
         "component": "text",
