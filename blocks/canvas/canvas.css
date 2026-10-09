@@ -148,6 +148,11 @@
   object-fit: contain;
 }
 
+.canvas-mic-btn img {
+  width: 36px;
+  height: 36px;
+}
+
 /* =======================================
    SUBMIT BUTTON
 ======================================= */
@@ -354,10 +359,14 @@
     height: 40px;
   }
 
-  .canvas-menu-btn img,
-  .canvas-mic-btn img {
+  .canvas-menu-btn img {
     width: 22px;
     height: 22px;
+  }
+
+  .canvas-mic-btn img {
+    width: 30px;
+    height: 30px;
   }
 
   .canvas-title {
