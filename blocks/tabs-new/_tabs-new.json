@@ -44,7 +44,7 @@
           }
         }
       }
-    }
+      }
   ],
   "models": [
     {
@@ -106,27 +106,27 @@
                   "value": "tcs-yellow"
                 }
               ]
+            }
+          ]
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "tabAlignment",
+          "label": "Tab Alignment",
+          "value": "left",
+          "options": [
+            {
+              "name": "Left",
+              "value": "left"
             },
             {
-              "component": "select",
-              "valueType": "string",
-              "name": "tabAlignment",
-              "label": "Tab Alignment",
-              "value": "left",
-              "options": [
-                {
-                  "name": "Left",
-                  "value": "left"
-                },
-                {
-                  "name": "Center",
-                  "value": "center"
-                },
-                {
-                  "name": "Right",
-                  "value": "right"
-                }
-              ]
+              "name": "Center",
+              "value": "center"
+            },
+            {
+              "name": "Right",
+              "value": "right"
             }
           ]
         }

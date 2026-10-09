@@ -13,6 +13,7 @@ function getTabAlignment(block) {
   ));
   const rowValue = alignmentRow?.children[1]?.textContent.trim().toLowerCase();
   const alignment = (block.dataset.tabAlignment || rowValue || 'left').toLowerCase();
+  alignmentRow?.remove();
 
   return ['left', 'center', 'right'].includes(alignment) ? alignment : 'left';
 }
@@ -58,13 +59,7 @@ export default async function decorate(block) {
   tabList.setAttribute('role', 'tablist');
   tabList.id = `tabs-new-list-${tabBlockCount}`;
 
-  const panels = [...block.children].filter((panel) => (
-    !['tabalignment', 'alignment'].includes(
-      panel.firstElementChild
-        ? panel.firstElementChild.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '')
-        : '',
-    )
-  ));
+  const panels = [...block.children];
 
   panels.forEach((panel, index) => {
     const firstCell = panel.firstElementChild;
