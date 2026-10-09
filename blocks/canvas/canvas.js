@@ -148,9 +148,10 @@ function createImageElement(source, altText) {
       return null;
     }
 
-    if (trimmed.startsWith('/') || trimmed.startsWith('http') || trimmed.startsWith('data:')) {
+    const isRelativeImagePath = /\.(avif|gif|jpe?g|png|svg|webp)(?:[?#].*)?$/i.test(trimmed);
+    if (trimmed.startsWith('/') || trimmed.startsWith('http') || trimmed.startsWith('data:') || isRelativeImagePath) {
       const image = document.createElement('img');
-      image.src = trimmed;
+      image.src = new URL(trimmed, document.baseURI).href;
       image.alt = altText || 'Canvas icon';
       image.setAttribute('loading', 'lazy');
       return image;
@@ -432,7 +433,7 @@ function createSearchBar({
         className: 'canvas-mic-btn',
         label: 'Use microphone',
         iconSource: microphoneIcon,
-        fallbackText: 'Mic',
+        fallbackText: '🎙️',
       }),
     );
   }
