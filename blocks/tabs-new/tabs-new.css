@@ -126,10 +126,13 @@
   box-shadow: none;
   padding: 12px 0;
   position: relative;
+  color: #888;
+  font-weight: 500;
 }
 
 .tabs-new.underline .tabs-tab[aria-selected='true'] {
   background: transparent;
+  font-weight: 700;
 }
 
 .tabs-new.underline .tabs-tab[aria-selected='true']::after {
