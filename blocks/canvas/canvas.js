@@ -139,7 +139,10 @@ function updateFloatingCanvasSearches() {
       const relation = first.block.compareDocumentPosition(second.block);
       return relation === Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
     });
-  const passedEntries = entries.filter((entry) => entry.sentinel.getBoundingClientRect().top <= 16);
+  const passedEntries = entries.filter((entry) => {
+    const dockTop = window.innerHeight - entry.search.offsetHeight - 16;
+    return entry.sentinel.getBoundingClientRect().top <= dockTop + 1;
+  });
   const activeEntry = passedEntries[passedEntries.length - 1] || null;
 
   entries.forEach((entry) => {
