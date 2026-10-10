@@ -206,147 +206,72 @@ function normalizeNavigationPath(value = '') {
     : `/${candidate.replace(/\/+$/, '')}`;
 }
 
-function buildNavigationCandidates(rootPath, depth = 3) {
+function buildNavigationTree(indexData, rootPath, depth = 3) {
   const normalizedRoot = normalizeNavigationPath(rootPath);
-  const paths = new Set();
+  const maxDepth = Math.min(3, Math.max(1, toPositiveInt(depth, 3)));
+  const entries = indexData
+    .filter((item) => item.path && String(item.hideInNav).toLowerCase() !== 'true')
+    .map((item) => ({
+      title: String(item.title || item.path.split('/').filter(Boolean).pop()).trim(),
+      href: normalizeNavigationPath(item.path),
+      navOrder: Number(item.navOrder) || 99,
+    }))
+    .filter((item) => item.title)
+    .filter((item) => {
+      if (normalizedRoot === '/') return item.href !== '/';
+      return item.href === normalizedRoot || item.href.startsWith(`${normalizedRoot}/`);
+    });
 
-  if (normalizedRoot && normalizedRoot !== '/') {
-    paths.add(normalizedRoot);
-    paths.add(`${normalizedRoot}/`);
-    paths.add(`${normalizedRoot}/.nav.json`);
-    paths.add(`${normalizedRoot}/nav.json`);
-    paths.add(`${normalizedRoot}/nav`);
-    paths.add(`${normalizedRoot}/navigation.json`);
-    paths.add(`${normalizedRoot}/index.json`);
-    paths.add(`${normalizedRoot}.json`);
-  }
+  const getRelativeDepth = (path) => {
+    const relativePath = normalizedRoot === '/'
+      ? path
+      : path.slice(normalizedRoot.length);
+    return relativePath.split('/').filter(Boolean).length;
+  };
 
-  paths.add('/nav');
-  paths.add('/nav.json');
-  paths.add('/.nav.json');
-  paths.add('/content.json');
-
-  const maxDepth = Math.max(1, Number.isFinite(depth) ? depth : 3);
-  if (maxDepth > 1) {
-    paths.add(
-      `/${normalizedRoot
-        .replace(/^\//, '')
-        .split('/')
-        .filter(Boolean)
-        .slice(0, maxDepth)
-        .join('/')}`,
-    );
-  }
-
-  return [...paths].filter(Boolean);
-}
-
-function extractNavItemsFromJson(payload) {
-  if (!payload) return [];
-
-  const nodes = Array.isArray(payload)
-    ? payload
-    : payload.items || payload.children || payload.data || payload.nav || payload.navigation || [];
-
-  if (!Array.isArray(nodes)) {
-    return [];
-  }
-
-  const normalizeItems = (list) => list
-    .filter(Boolean)
-    .map((item) => {
-      const title = item.title || item.name || item.label || item.text || '';
-      const href = item.path || item.href || item.url || item.link || '';
-      const childItems = item.items || item.children || item.subItems || item.subitems || [];
-
-      return {
-        title: String(title).trim(),
-        href: String(href).trim(),
-        children: Array.isArray(childItems) ? normalizeItems(childItems) : [],
-      };
-    })
-    .filter((item) => item.title);
-
-  const items = normalizeItems(nodes);
-  if (items.some((item) => item.children.length)) return items;
-
-  const roots = [];
-  const indexed = items.map((item) => ({ ...item, children: [] }));
-  indexed.forEach((item) => {
-    let parent;
-    if (item.href) {
-      const itemUrl = new URL(item.href, window.location.origin);
-      const { pathname } = itemUrl;
-      const itemPath = pathname.replace(/\/$/, '');
-      const [closestParent] = indexed
-        .filter((candidate) => candidate !== item && candidate.href)
-        .filter((candidate) => {
-          const candidateUrl = new URL(candidate.href, window.location.origin);
-          const { pathname: candidatePathname } = candidateUrl;
-          const candidatePath = candidatePathname.replace(/\/$/, '');
-          return candidatePath && itemPath.startsWith(`${candidatePath}/`);
-        })
-        .sort((first, second) => second.href.length - first.href.length);
-      parent = closestParent;
-    }
-    if (parent) parent.children.push(item);
-    else roots.push(item);
+  const byOrder = (first, second) => first.navOrder - second.navOrder;
+  const makeNode = (entry, children = []) => ({
+    title: entry.title,
+    href: entry.href,
+    children,
   });
 
-  return roots;
+  return entries
+    .filter((entry) => getRelativeDepth(entry.href) === 1)
+    .sort(byOrder)
+    .map((l1) => {
+      const l2Items = maxDepth >= 2
+        ? entries
+          .filter((entry) => getRelativeDepth(entry.href) === 2
+            && entry.href.startsWith(`${l1.href}/`))
+          .sort(byOrder)
+        : [];
+
+      const children = l2Items.map((l2) => {
+        const l3Items = maxDepth >= 3
+          ? entries
+            .filter((entry) => getRelativeDepth(entry.href) === 3
+              && entry.href.startsWith(`${l2.href}/`))
+            .sort(byOrder)
+            .map((l3) => makeNode(l3))
+          : [];
+        return makeNode(l2, l3Items);
+      });
+
+      return makeNode(l1, children);
+    });
 }
 
 async function fetchNavigationData(rootPath, depth = 3) {
-  const candidates = buildNavigationCandidates(rootPath, depth);
-
-  const results = await Promise.all(candidates.map(async (candidate) => {
-    try {
-      const url = candidate.startsWith('http')
-        ? candidate
-        : `${window.location.origin}${candidate}`;
-      const response = await fetch(url, { cache: 'no-store' });
-
-      if (!response.ok) return [];
-
-      const contentType = response.headers.get('content-type') || '';
-      const text = await response.text();
-
-      if (!text) return [];
-
-      if (contentType.includes('application/json')
-                || text.trim().startsWith('{')
-                || text.trim().startsWith('[')) {
-        try {
-          const payload = JSON.parse(text);
-          const items = extractNavItemsFromJson(payload);
-          if (items.length) return items;
-        } catch (error) {
-          // ignore malformed JSON and continue to next candidate
-        }
-      }
-
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      const scriptPattern = /^javascript:/i;
-      const links = [...doc.querySelectorAll('a[href]')]
-        .map((link) => ({
-          title: link.textContent.trim(),
-          href: link.getAttribute('href') || '',
-        }))
-        .filter((item) => item.title && item.href && !scriptPattern.test(item.href))
-        .map((item) => ({
-          title: item.title,
-          href: item.href.startsWith('/')
-            ? item.href
-            : new URL(item.href, window.location.origin).href,
-        }));
-
-      return links.length ? extractNavItemsFromJson(links) : [];
-    } catch (error) {
-      return [];
-    }
-  }));
-
-  return results.find((items) => items.length) || [];
+  try {
+    const response = await fetch('/query-index.json', { cache: 'no-store' });
+    if (!response.ok) return [];
+    const payload = await response.json();
+    const indexData = Array.isArray(payload) ? payload : payload.data || [];
+    return buildNavigationTree(indexData, rootPath, depth);
+  } catch (error) {
+    return [];
+  }
 }
 
 async function renderNavigationMenu(menuButton, data) {
@@ -433,8 +358,10 @@ async function renderNavigationMenu(menuButton, data) {
     button.textContent = item.title;
     button.setAttribute('aria-expanded', 'false');
     button.addEventListener('mouseenter', onActivate);
-    button.addEventListener('focus', onActivate);
-    button.addEventListener('click', onActivate);
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      onActivate();
+    });
     return button;
   };
 
