@@ -129,6 +129,44 @@ function normalizeCanvasStyle(value) {
   return ['default', 'floating-sticky'].includes(normalized) ? normalized : 'default';
 }
 
+function attachCanvasEffects(block, search) {
+  let updateFloating = () => {};
+
+  if (block.classList.contains('canvas-floating-sticky')) {
+    const anchor = document.createElement('div');
+    anchor.className = 'canvas-floating-anchor';
+    const sentinel = document.createElement('span');
+    sentinel.className = 'canvas-floating-sentinel';
+    sentinel.setAttribute('aria-hidden', 'true');
+    search.before(anchor);
+    anchor.append(sentinel, search);
+    updateFloating = () => {
+      const isPastAnchor = sentinel.getBoundingClientRect().top < 16;
+      anchor.classList.toggle('is-floating', isPastAnchor);
+      anchor.style.height = isPastAnchor ? `${search.offsetHeight}px` : '';
+    };
+  }
+
+  let hasEnteredView = false;
+  const updateMotion = () => {
+    if (hasEnteredView || block.dataset.motionType === 'none') return;
+    const bounds = block.getBoundingClientRect();
+    if (bounds.bottom > 0 && bounds.top < window.innerHeight) {
+      hasEnteredView = true;
+      block.classList.add('is-motion-visible');
+    }
+  };
+
+  const update = () => {
+    updateFloating();
+    updateMotion();
+  };
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+}
+
 function createImageElement(source, altText) {
   if (!source) return null;
 
@@ -575,6 +613,7 @@ function renderSearchCanvas(block, data) {
   });
 
   block.appendChild(search);
+  attachCanvasEffects(block, search);
 }
 
 async function fetchIntentOptions(maxOptions = 5) {
@@ -663,6 +702,9 @@ async function renderIntentCanvas(block, data) {
   content.appendChild(optionsContainer);
   section.appendChild(content);
   block.appendChild(section);
+
+  const search = searchSlot.querySelector('.canvas-search');
+  if (search) attachCanvasEffects(block, search);
 }
 
 export default function decorate(block) {

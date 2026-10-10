@@ -7,11 +7,18 @@
   position: relative;
 }
 
-.canvas.canvas-floating-sticky {
-  position: sticky;
-  top: 16px;
-  z-index: 20;
-  align-self: flex-start;
+.canvas-floating-anchor {
+  position: relative;
+  width: 100%;
+}
+
+.canvas-floating-sentinel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
 }
 
 /* =======================================
@@ -26,6 +33,17 @@
   width: 100%;
   max-width: 812px;
   margin-inline: auto;
+}
+
+.canvas-floating-sticky .canvas-floating-anchor.is-floating > .canvas-search {
+  position: fixed;
+  z-index: 999;
+  top: 16px;
+  left: 50%;
+  width: min(812px, calc(100vw - 32px));
+  max-width: none;
+  margin: 0;
+  transform: translateX(-50%);
 }
 
 .canvas-search-intro {
@@ -528,15 +546,15 @@
   }
 }
 
-.canvas[data-motion-type='fade'] > .canvas-search-intro,
-.canvas[data-motion-type='fade'] > .canvas-search,
-.canvas[data-motion-type='fade'] > .canvas-intent {
+.canvas[data-motion-type='fade'].is-motion-visible .canvas-search-intro,
+.canvas[data-motion-type='fade'].is-motion-visible .canvas-search,
+.canvas[data-motion-type='fade'].is-motion-visible > .canvas-intent {
   animation: canvas-fade-in 0.45s ease both;
 }
 
-.canvas[data-motion-type='slide-up'] > .canvas-search-intro,
-.canvas[data-motion-type='slide-up'] > .canvas-search,
-.canvas[data-motion-type='slide-up'] > .canvas-intent {
+.canvas[data-motion-type='slide-up'].is-motion-visible .canvas-search-intro,
+.canvas[data-motion-type='slide-up'].is-motion-visible .canvas-search,
+.canvas[data-motion-type='slide-up'].is-motion-visible > .canvas-intent {
   animation: canvas-slide-up 0.45s ease both;
 }
 
@@ -553,21 +571,21 @@
 @keyframes canvas-slide-up {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    translate: 0 18px;
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    translate: 0 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .canvas[data-motion-type='fade'] > .canvas-search-intro,
-  .canvas[data-motion-type='fade'] > .canvas-search,
+  .canvas[data-motion-type='fade'] .canvas-search-intro,
+  .canvas[data-motion-type='fade'] .canvas-search,
   .canvas[data-motion-type='fade'] > .canvas-intent,
-  .canvas[data-motion-type='slide-up'] > .canvas-search-intro,
-  .canvas[data-motion-type='slide-up'] > .canvas-search,
+  .canvas[data-motion-type='slide-up'] .canvas-search-intro,
+  .canvas[data-motion-type='slide-up'] .canvas-search,
   .canvas[data-motion-type='slide-up'] > .canvas-intent,
   .canvas-nav-row > *,
   .canvas-nav-submenu.is-open {
