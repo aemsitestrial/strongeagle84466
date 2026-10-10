@@ -35,7 +35,7 @@
   margin-inline: auto;
 }
 
-.canvas-floating-sticky .canvas-floating-anchor.is-floating > .canvas-search {
+.canvas-floating-sticky > .canvas-search.is-floating {
   position: fixed;
   z-index: 999;
   top: auto;
@@ -45,6 +45,20 @@
   max-width: none;
   margin: 0;
   transform: translateX(-50%);
+  animation: none;
+}
+
+.canvas-floating-sticky > .canvas-search.is-fading-out {
+  position: fixed;
+  z-index: 999;
+  top: auto;
+  bottom: 16px;
+  left: 50%;
+  width: min(812px, calc(100vw - 32px));
+  max-width: none;
+  margin: 0;
+  pointer-events: none;
+  animation: canvas-dock-fade-out 0.3s ease forwards;
 }
 
 .canvas-search-intro {
@@ -548,13 +562,13 @@
 }
 
 .canvas[data-motion-type='fade'].is-motion-visible .canvas-search-intro,
-.canvas[data-motion-type='fade'].is-motion-visible .canvas-search,
+.canvas[data-motion-type='fade'].is-motion-visible .canvas-search:not(.is-floating, .is-fading-out),
 .canvas[data-motion-type='fade'].is-motion-visible > .canvas-intent {
   animation: canvas-fade-in 0.45s ease both;
 }
 
 .canvas[data-motion-type='slide-up'].is-motion-visible .canvas-search-intro,
-.canvas[data-motion-type='slide-up'].is-motion-visible .canvas-search,
+.canvas[data-motion-type='slide-up'].is-motion-visible .canvas-search:not(.is-floating, .is-fading-out),
 .canvas[data-motion-type='slide-up'].is-motion-visible > .canvas-intent {
   animation: canvas-slide-up 0.45s ease both;
 }
@@ -566,6 +580,18 @@
 
   to {
     opacity: 1;
+  }
+}
+
+@keyframes canvas-dock-fade-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, 16px);
   }
 }
 

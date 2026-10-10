@@ -143,12 +143,29 @@ function updateFloatingCanvasSearches() {
     const dockTop = window.innerHeight - entry.search.offsetHeight - 16;
     return entry.sentinel.getBoundingClientRect().top <= dockTop + 1;
   });
-  const activeEntry = passedEntries[passedEntries.length - 1] || null;
+  const activeEntry = passedEntries.findLast((entry) => {
+    const dockTop = window.innerHeight - entry.search.offsetHeight - 16;
+    return entry.block.getBoundingClientRect().bottom > dockTop;
+  }) || null;
+  const exitingEntry = activeEntry
+    ? null
+    : passedEntries[passedEntries.length - 1] || null;
 
   entries.forEach((entry) => {
     const isFloating = entry === activeEntry;
+    const isFadingOut = entry === exitingEntry;
     entry.anchor.classList.toggle('is-floating', isFloating);
+    entry.anchor.classList.toggle('is-fading-out', isFadingOut);
     entry.anchor.style.height = isFloating ? `${entry.search.offsetHeight}px` : '';
+
+    if (isFloating || isFadingOut) {
+      entry.search.classList.toggle('is-floating', isFloating);
+      entry.search.classList.toggle('is-fading-out', isFadingOut);
+      if (entry.search.parentElement !== entry.block) entry.block.append(entry.search);
+    } else {
+      entry.search.classList.remove('is-floating', 'is-fading-out');
+      if (entry.search.parentElement !== entry.anchor) entry.anchor.append(entry.search);
+    }
   });
 }
 
