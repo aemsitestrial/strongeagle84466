@@ -21,6 +21,14 @@
   margin-inline: auto;
 }
 
+.canvas-search-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin: 0 auto 32px;
+}
+
 .canvas-search-toolbar {
   display: flex;
   align-items: center;

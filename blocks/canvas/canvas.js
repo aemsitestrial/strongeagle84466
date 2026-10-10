@@ -531,6 +531,30 @@ function createSearchBar({
 }
 
 function renderSearchCanvas(block, data) {
+  const titleText = data.canvasTitle || data.canvastitle || '';
+  const descriptionText = data.canvasDescription || data.canvasdescription || '';
+
+  if (titleText || descriptionText) {
+    const intro = document.createElement('div');
+    intro.className = 'canvas-search-intro';
+
+    if (titleText) {
+      const title = document.createElement('h2');
+      title.className = 'canvas-title';
+      title.textContent = titleText;
+      intro.appendChild(title);
+    }
+
+    if (descriptionText) {
+      const description = document.createElement('div');
+      description.className = 'canvas-description';
+      description.innerHTML = descriptionText;
+      intro.appendChild(description);
+    }
+
+    block.appendChild(intro);
+  }
+
   const search = createSearchBar({
     watermark: data.canvasSearchWatermark || data.searchWatermark || '',
     showNavigation: asBoolean(data.showNavigation, true),
