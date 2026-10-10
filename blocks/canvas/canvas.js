@@ -185,6 +185,11 @@ function attachCanvasEffects(block, search) {
       sentinel,
     });
     if (!floatingSearchListenersAttached) {
+      document.addEventListener(
+        'scroll',
+        updateFloatingCanvasSearches,
+        true,
+      );
       window.addEventListener(
         'scroll',
         updateFloatingCanvasSearches,
