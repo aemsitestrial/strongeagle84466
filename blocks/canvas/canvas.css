@@ -310,6 +310,17 @@
   height: 36px;
 }
 
+.canvas-mic-btn.is-listening {
+  border-radius: 50%;
+  background: rgb(205 44 44 / 12%);
+  box-shadow: 0 0 0 4px rgb(205 44 44 / 12%);
+}
+
+.canvas-mic-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 /* =======================================
    SUBMIT BUTTON
 ======================================= */

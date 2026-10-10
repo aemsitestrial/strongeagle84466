@@ -134,7 +134,14 @@ let floatingSearchListenersAttached = false;
 
 function updateFloatingCanvasSearches() {
   const entries = [...floatingCanvasSearches]
-    .filter((entry) => entry.block.isConnected)
+    .filter((entry) => {
+      if (entry.block.isConnected) return true;
+      entry.scrollTargets.forEach((target) => {
+        target.removeEventListener('scroll', updateFloatingCanvasSearches);
+      });
+      floatingCanvasSearches.delete(entry);
+      return false;
+    })
     .sort((first, second) => {
       const relation = first.block.compareDocumentPosition(second.block);
       return relation === Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
@@ -178,12 +185,25 @@ function attachCanvasEffects(block, search) {
     sentinel.setAttribute('aria-hidden', 'true');
     search.before(anchor);
     anchor.append(sentinel, search);
-    floatingCanvasSearches.add({
+    const entry = {
       block,
       anchor,
       search,
       sentinel,
-    });
+      scrollTargets: [],
+    };
+    floatingCanvasSearches.add(entry);
+    let ancestor = block.parentElement;
+    while (ancestor && ancestor !== document.body) {
+      const { overflowX, overflowY } = getComputedStyle(ancestor);
+      if (/(auto|scroll)/.test(`${overflowX} ${overflowY}`)) {
+        ancestor.addEventListener('scroll', updateFloatingCanvasSearches, {
+          passive: true,
+        });
+        entry.scrollTargets.push(ancestor);
+      }
+      ancestor = ancestor.parentElement;
+    }
     if (!floatingSearchListenersAttached) {
       document.addEventListener(
         'scroll',
@@ -562,6 +582,58 @@ async function renderNavigationMenu(menuButton, data) {
   render();
 }
 
+function setupVoiceSearch(button, input) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    button.disabled = true;
+    button.setAttribute('aria-disabled', 'true');
+    button.title = 'Voice search is not supported in this browser';
+    return;
+  }
+
+  let recognition;
+  let isListening = false;
+
+  const setListening = (listening) => {
+    isListening = listening;
+    button.classList.toggle('is-listening', listening);
+    button.setAttribute('aria-pressed', String(listening));
+    button.setAttribute('aria-label', listening ? 'Stop voice search' : 'Use microphone');
+    button.title = listening ? 'Listening...' : 'Use microphone';
+  };
+
+  button.addEventListener('click', () => {
+    if (isListening) {
+      recognition.stop();
+      return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = document.documentElement.lang || navigator.language || 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.onstart = () => setListening(true);
+    recognition.onresult = (event) => {
+      const transcript = [...event.results]
+        .map((result) => result[0].transcript)
+        .join(' ')
+        .trim();
+      if (transcript) {
+        input.value = transcript;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+
+    try {
+      recognition.start();
+    } catch (error) {
+      setListening(false);
+    }
+  });
+}
+
 function createSearchBar({
   watermark,
   showNavigation,
@@ -610,14 +682,14 @@ function createSearchBar({
   controls.className = 'canvas-controls';
 
   if (showMicrophone) {
-    controls.append(
-      createIconButton({
-        className: 'canvas-mic-btn',
-        label: 'Use microphone',
-        iconSource: microphoneIcon,
-        fallbackText: '🎙️',
-      }),
-    );
+    const microphoneButton = createIconButton({
+      className: 'canvas-mic-btn',
+      label: 'Use microphone',
+      iconSource: microphoneIcon,
+      fallbackText: 'Mic',
+    });
+    setupVoiceSearch(microphoneButton, searchField);
+    controls.append(microphoneButton);
   }
 
   const submit = document.createElement('button');
