@@ -72,7 +72,8 @@
         "teaser",
         "video",
         "cards-v1",
-        "card"
+        "card",
+        "tcs-header"
       ]
     }
   ]
