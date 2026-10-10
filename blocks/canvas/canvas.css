@@ -38,7 +38,8 @@
 .canvas-floating-sticky .canvas-floating-anchor.is-floating > .canvas-search {
   position: fixed;
   z-index: 999;
-  top: 16px;
+  top: auto;
+  bottom: 16px;
   left: 50%;
   width: min(812px, calc(100vw - 32px));
   max-width: none;
