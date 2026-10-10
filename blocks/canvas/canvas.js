@@ -129,9 +129,27 @@ function normalizeCanvasStyle(value) {
   return ['default', 'floating-sticky'].includes(normalized) ? normalized : 'default';
 }
 
-function attachCanvasEffects(block, search) {
-  let updateFloating = () => {};
+const floatingCanvasSearches = new Set();
+let floatingSearchListenersAttached = false;
 
+function updateFloatingCanvasSearches() {
+  const entries = [...floatingCanvasSearches]
+    .filter((entry) => entry.block.isConnected)
+    .sort((first, second) => {
+      const relation = first.block.compareDocumentPosition(second.block);
+      return relation === Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+    });
+  const passedEntries = entries.filter((entry) => entry.sentinel.getBoundingClientRect().top <= 16);
+  const activeEntry = passedEntries[passedEntries.length - 1] || null;
+
+  entries.forEach((entry) => {
+    const isFloating = entry === activeEntry;
+    entry.anchor.classList.toggle('is-floating', isFloating);
+    entry.anchor.style.height = isFloating ? `${entry.search.offsetHeight}px` : '';
+  });
+}
+
+function attachCanvasEffects(block, search) {
   if (block.classList.contains('canvas-floating-sticky')) {
     const anchor = document.createElement('div');
     anchor.className = 'canvas-floating-anchor';
@@ -140,11 +158,24 @@ function attachCanvasEffects(block, search) {
     sentinel.setAttribute('aria-hidden', 'true');
     search.before(anchor);
     anchor.append(sentinel, search);
-    updateFloating = () => {
-      const isPastAnchor = sentinel.getBoundingClientRect().top < 16;
-      anchor.classList.toggle('is-floating', isPastAnchor);
-      anchor.style.height = isPastAnchor ? `${search.offsetHeight}px` : '';
-    };
+    floatingCanvasSearches.add({
+      block,
+      anchor,
+      search,
+      sentinel,
+    });
+    if (!floatingSearchListenersAttached) {
+      window.addEventListener(
+        'scroll',
+        updateFloatingCanvasSearches,
+        {
+          passive: true,
+        },
+      );
+      window.addEventListener('resize', updateFloatingCanvasSearches);
+      floatingSearchListenersAttached = true;
+    }
+    updateFloatingCanvasSearches();
   }
 
   let hasEnteredView = false;
@@ -157,14 +188,15 @@ function attachCanvasEffects(block, search) {
     }
   };
 
-  const update = () => {
-    updateFloating();
-    updateMotion();
-  };
-
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
+  window.addEventListener(
+    'scroll',
+    updateMotion,
+    {
+      passive: true,
+    },
+  );
+  window.addEventListener('resize', updateMotion);
+  updateMotion();
 }
 
 function createImageElement(source, altText) {
