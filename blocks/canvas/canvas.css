@@ -7,6 +7,13 @@
   position: relative;
 }
 
+.canvas.canvas-floating-sticky {
+  position: sticky;
+  top: 16px;
+  z-index: 20;
+  align-self: flex-start;
+}
+
 /* =======================================
    SEARCH BAR
 ======================================= */
@@ -298,12 +305,6 @@
    FLOATING STICKY
 ======================================= */
 
-.canvas-floating-sticky {
-  position: sticky;
-  top: 16px;
-  z-index: 20;
-}
-
 /* =======================================
    INTENT CANVAS
 ======================================= */
@@ -527,7 +528,47 @@
   }
 }
 
+.canvas[data-motion-type='fade'] > .canvas-search-intro,
+.canvas[data-motion-type='fade'] > .canvas-search,
+.canvas[data-motion-type='fade'] > .canvas-intent {
+  animation: canvas-fade-in 0.45s ease both;
+}
+
+.canvas[data-motion-type='slide-up'] > .canvas-search-intro,
+.canvas[data-motion-type='slide-up'] > .canvas-search,
+.canvas[data-motion-type='slide-up'] > .canvas-intent {
+  animation: canvas-slide-up 0.45s ease both;
+}
+
+@keyframes canvas-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes canvas-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .canvas[data-motion-type='fade'] > .canvas-search-intro,
+  .canvas[data-motion-type='fade'] > .canvas-search,
+  .canvas[data-motion-type='fade'] > .canvas-intent,
+  .canvas[data-motion-type='slide-up'] > .canvas-search-intro,
+  .canvas[data-motion-type='slide-up'] > .canvas-search,
+  .canvas[data-motion-type='slide-up'] > .canvas-intent,
   .canvas-nav-row > *,
   .canvas-nav-submenu.is-open {
     animation: none;

@@ -119,6 +119,16 @@ function toPositiveInt(value, fallback = 0) {
   return Math.max(parsed, 0);
 }
 
+function normalizeMotionType(value) {
+  const normalized = String(value || 'none').trim().toLowerCase().replace(/\s+/g, '-');
+  return ['none', 'fade', 'slide-up'].includes(normalized) ? normalized : 'none';
+}
+
+function normalizeCanvasStyle(value) {
+  const normalized = String(value || 'default').trim().toLowerCase().replace(/\s+/g, '-');
+  return ['default', 'floating-sticky'].includes(normalized) ? normalized : 'default';
+}
+
 function createImageElement(source, altText) {
   if (!source) return null;
 
@@ -669,12 +679,14 @@ export default function decorate(block) {
 
   const canvasType = String(data.canvasType || data.canvastype || 'search').trim().toLowerCase();
   const normalizedType = canvasType === 'intent' ? 'intent' : 'search';
-  const canvasStyle = String(data.canvasStyle || data.canvasstyle || 'default').trim().toLowerCase();
+  const canvasStyle = normalizeCanvasStyle(data.canvasStyle || data.canvasstyle);
+  const motionType = normalizeMotionType(data.motionType || data.motiontype);
 
   block.classList.add('canvas');
   block.classList.add(`canvas-${normalizedType}`);
+  block.dataset.motionType = motionType;
 
-  if (canvasStyle === 'floating-sticky' || canvasStyle === 'floatingsticky') {
+  if (canvasStyle === 'floating-sticky') {
     block.classList.add('canvas-floating-sticky');
   } else {
     block.classList.add('canvas-default');
