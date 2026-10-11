@@ -636,7 +636,6 @@ function setupVoiceSearch(button, input) {
 
 function createSearchBar({
   watermark,
-  showNavigation,
   showMicrophone,
   menuIcon,
   microphoneIcon,
@@ -648,22 +647,20 @@ function createSearchBar({
   const toolbar = document.createElement('div');
   toolbar.className = 'canvas-search-toolbar';
 
-  if (showNavigation) {
-    const menuButton = createIconButton({
-      className: 'canvas-menu-btn',
-      label: 'Open navigation',
-      iconSource: menuIcon,
-      fallbackText: 'Menu',
-    });
+  const menuButton = createIconButton({
+    className: 'canvas-menu-btn',
+    label: 'Open navigation',
+    iconSource: menuIcon,
+    fallbackText: 'Menu',
+  });
 
-    menuButton.onclick = async (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      await renderNavigationMenu(menuButton, data);
-    };
+  menuButton.onclick = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    await renderNavigationMenu(menuButton, data);
+  };
 
-    toolbar.append(menuButton);
-  }
+  toolbar.append(menuButton);
 
   const container = document.createElement('div');
   container.className = 'canvas-search-container';
@@ -734,7 +731,6 @@ function renderSearchCanvas(block, data) {
 
   const search = createSearchBar({
     watermark: data.canvasSearchWatermark || data.searchWatermark || '',
-    showNavigation: asBoolean(data.showNavigation, true),
     showMicrophone: asBoolean(data.showMicrophone, true),
     menuIcon: data.canvasMenuIcon || data.menuIcon,
     microphoneIcon: data.canvasMicrophoneIcon || data.microphoneIcon || data.searchIcon,
@@ -797,7 +793,6 @@ async function renderIntentCanvas(block, data) {
     searchSlot.append(
       createSearchBar({
         watermark: data.canvasSearchWatermark || data.searchWatermark || '',
-        showNavigation: asBoolean(data.showNavigation, true),
         showMicrophone: asBoolean(data.showMicrophone, true),
         menuIcon: data.canvasMenuIcon || data.menuIcon,
         microphoneIcon: data.canvasMicrophoneIcon || data.microphoneIcon || data.searchIcon,
@@ -857,11 +852,8 @@ export default function decorate(block) {
   block.classList.add(`canvas-${normalizedType}`);
   block.dataset.motionType = motionType;
 
-  if (canvasStyle === 'floating-sticky') {
-    block.classList.add('canvas-floating-sticky');
-  } else {
-    block.classList.add('canvas-default');
-  }
+  block.dataset.canvasStyle = canvasStyle;
+  block.classList.add('canvas-default');
 
   if (normalizedType === 'intent') {
     renderIntentCanvas(block, data, optionList);
