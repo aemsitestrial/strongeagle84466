@@ -769,6 +769,8 @@ async function renderIntentCanvas(block, data) {
 
   const content = document.createElement('div');
   content.className = 'canvas-intent-content';
+  const optionsFrame = document.createElement('div');
+  optionsFrame.className = 'canvas-intent-options-frame';
 
   const titleText = data.canvasTitle || data.canvastitle || '';
   if (titleText) {
@@ -823,8 +825,9 @@ async function renderIntentCanvas(block, data) {
     optionsContainer.appendChild(option);
   });
 
-  content.appendChild(optionsContainer);
+  optionsFrame.appendChild(optionsContainer);
   section.appendChild(content);
+  section.appendChild(optionsFrame);
   block.appendChild(section);
 
   const search = searchSlot.querySelector('.canvas-search');
