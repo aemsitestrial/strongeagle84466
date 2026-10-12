@@ -6,7 +6,7 @@ function formatHtmlPath(path) {
   let resolvedPath = path;
 
   if (!resolvedPath.startsWith('/content/')) {
-    resolvedPath = `/content/2026/39/briskdeer43959${
+    resolvedPath = `${
       resolvedPath.startsWith('/') ? '' : '/'
     }${resolvedPath}`;
   }
@@ -19,8 +19,8 @@ function formatHtmlPath(path) {
 export default function decorate(block) {
   const rows = [...block.children];
 
-  const section = document.createElement('div');
-  section.className = 'tcs-canva-container';
+  const container = document.createElement('div');
+  container.className = 'tcs-canva-container';
 
   const content = document.createElement('div');
   content.className = 'tcs-canva-content';
@@ -28,60 +28,54 @@ export default function decorate(block) {
   const ctaContainer = document.createElement('div');
   ctaContainer.className = 'tcs-canva-cta-container';
 
-  rows.forEach((row, index) => {
+  // Heading
+  const title = rows[0]?.querySelector('div')?.textContent?.trim()
+    || 'How can TCS help you?';
+
+  const heading = document.createElement('h2');
+  heading.className = 'tcs-canva-title';
+  heading.textContent = title;
+
+  // Description
+  const descriptionContent = rows[1]?.querySelector('div')?.innerHTML
+    || 'Describe or select a challenge, opportunity or ambition';
+
+  const description = document.createElement('div');
+  description.className = 'tcs-canva-description';
+  description.innerHTML = descriptionContent;
+
+  // Empty search placeholder space
+  const placeholder = document.createElement('div');
+  placeholder.className = 'tcs-canva-placeholder';
+
+  content.append(heading);
+  content.append(description);
+  content.append(placeholder);
+
+  // CTA Rows
+  rows.slice(2).forEach((row) => {
     const cells = [...row.children];
 
-    // Header
-    if (index === 0) {
-      const title = document.createElement('h2');
-      title.className = 'tcs-canva-title';
-      title.textContent = cells[0]?.textContent.trim() || 'How can TCS help you?';
-
-      content.append(title);
-      return;
-    }
-
-    // Description
-    if (index === 1) {
-      const description = document.createElement('p');
-      description.className = 'tcs-canva-description';
-      description.textContent = cells[0]?.textContent.trim()
-        || 'Describe or select a challenge, opportunity or ambition';
-
-      content.append(description);
-
-      const placeholder = document.createElement('div');
-      placeholder.className = 'tcs-canva-placeholder';
-
-      content.append(placeholder);
-
-      return;
-    }
-
-    // CTA Rows
-    const label = cells[0]?.textContent.trim();
-    const linkElement = cells[1]?.querySelector('a');
-
+    const label = cells[0]?.textContent?.trim();
     if (!label) return;
 
-    const link = formatHtmlPath(linkElement?.getAttribute('href') || '#');
+    const href = cells[1]?.querySelector('a')?.getAttribute('href') || '#';
+    const target = cells[2]?.textContent?.trim() || '_self';
 
     const cta = document.createElement('a');
     cta.className = 'tcs-canva-cta';
-    cta.href = link;
+    cta.href = formatHtmlPath(href);
+    cta.target = target;
     cta.textContent = label;
 
-    if (cells[0]) {
-      moveInstrumentation(cells[0], cta);
-    }
+    moveInstrumentation(cells[0], cta);
 
     ctaContainer.append(cta);
   });
 
   content.append(ctaContainer);
+  container.append(content);
 
-  section.append(content);
-
-  block.textContent = '';
-  block.append(section);
+  block.innerHTML = '';
+  block.append(container);
 }

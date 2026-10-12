@@ -7093,10 +7093,6 @@
   },
   {
     "id": "tcs-canva",
-    "fields": []
-  },
-  {
-    "id": "tcs-canva-header",
     "fields": [
       {
         "component": "text",
@@ -7104,18 +7100,13 @@
         "label": "Heading",
         "valueType": "string",
         "value": "How can TCS help you?"
-      }
-    ]
-  },
-  {
-    "id": "tcs-canva-description",
-    "fields": [
+      },
       {
-        "component": "textarea",
+        "component": "richtext",
         "name": "description",
         "label": "Description",
         "valueType": "string",
-        "value": "Describe or select a challenge, opportunity or ambition"
+        "value": "<p>Describe or select a challenge, opportunity or ambition</p>"
       }
     ]
   },

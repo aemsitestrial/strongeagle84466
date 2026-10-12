@@ -22,7 +22,7 @@
   width: 451px;
   height: 322px;
   left: 93px;
-  bottom: -160px;
+  bottom: -140px;
   background: #e8b931;
   opacity: 0.4;
   filter: blur(222px);
@@ -36,8 +36,8 @@
   position: absolute;
   width: 538px;
   height: 384px;
-  right: -80px;
-  bottom: -160px;
+  right: -60px;
+  bottom: -140px;
   background: #4673db;
   opacity: 0.4;
   filter: blur(222px);
@@ -70,7 +70,6 @@
 }
 
 .tcs-canva-description {
-  margin: 0;
   max-width: 812px;
   font-family: Inter, sans-serif;
   font-style: normal;
@@ -82,11 +81,18 @@
   color: #0c0c0d;
 }
 
+.tcs-canva-description p {
+  margin: 0;
+}
+
+/* Empty Search Area */
 .tcs-canva-placeholder {
   width: 607px;
   height: 72px;
+  flex-shrink: 0;
 }
 
+/* CTA Container */
 .tcs-canva-cta-container {
   display: flex;
   flex-wrap: wrap;
@@ -96,6 +102,7 @@
   gap: 12px;
 }
 
+/* CTA Pills */
 .tcs-canva-cta {
   box-sizing: border-box;
   display: inline-flex;
@@ -119,7 +126,7 @@
 
 .tcs-canva-cta:hover {
   border-color: #4673db;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .tcs-canva-cta:focus-visible {
@@ -131,10 +138,6 @@
 @media (width <= 1024px) {
   .tcs-canva-container {
     padding: 120px 24px;
-  }
-
-  .tcs-canva-content {
-    max-width: 100%;
   }
 
   .tcs-canva-placeholder {
@@ -166,25 +169,24 @@
     height: 72px;
   }
 
-  .tcs-canva-container::before {
-    left: -100px;
-    width: 300px;
-    height: 250px;
-  }
-
-  .tcs-canva-container::after {
-    right: -120px;
-    width: 320px;
-    height: 260px;
-  }
-
   .tcs-canva-cta-container {
     max-width: 100%;
-    gap: 10px;
   }
 
   .tcs-canva-cta {
     padding: 12px 24px;
     font-size: 14px;
+  }
+
+  .tcs-canva-container::before {
+    width: 300px;
+    height: 220px;
+    left: -100px;
+  }
+
+  .tcs-canva-container::after {
+    width: 320px;
+    height: 240px;
+    right: -100px;
   }
 }

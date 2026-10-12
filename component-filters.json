@@ -157,8 +157,6 @@
   {
     "id": "tcs-canva",
     "components": [
-      "tcs-canva-header",
-      "tcs-canva-description",
       "tcs-canva-cta"
     ]
   },
