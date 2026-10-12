@@ -808,14 +808,21 @@ async function renderIntentCanvas(block, data) {
 
   const options = await fetchIntentOptions(maxOptions);
 
-  options.forEach((item) => {
+  options.forEach((item, index) => {
     const option = document.createElement('a');
 
     option.className = 'canvas-option-pill';
     option.href = item.url || '#';
     option.textContent = item.label || '';
 
-    optionsContainer.appendChild(option);
+    const rowIndex = Math.floor(index / 3);
+    let row = optionsContainer.children[rowIndex];
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'canvas-options-row';
+      optionsContainer.appendChild(row);
+    }
+    row.appendChild(option);
   });
 
   optionsFrame.appendChild(optionsContainer);
