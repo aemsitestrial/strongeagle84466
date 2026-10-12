@@ -73,7 +73,11 @@
         "video",
         "cards-v1",
         "card",
-        "tcs-header"
+        "tcs-header",
+        "tcs-footer",
+        "tcs-footer-cta",
+        "tcs-footer-copyright",
+        "tcs-footer-legal-item"
       ]
     }
   ]

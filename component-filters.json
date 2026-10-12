@@ -38,7 +38,11 @@
       "video",
       "cards-v1",
       "card",
-      "tcs-header"
+      "tcs-header",
+      "tcs-footer",
+      "tcs-footer-cta",
+      "tcs-footer-copyright",
+      "tcs-footer-legal-item"
     ]
   },
   {
@@ -144,6 +148,16 @@
     "id": "tabs",
     "components": [
       "tabs-item"
+    ]
+  },
+  {
+    "id": "tcs-footer",
+    "components": [
+      "tcs-footer-hamburger",
+      "tcs-footer-search",
+      "tcs-footer-cta",
+      "tcs-footer-copyright",
+      "tcs-footer-legal-item"
     ]
   },
   {
