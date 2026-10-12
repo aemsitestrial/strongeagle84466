@@ -64,7 +64,7 @@
   font-weight: 500;
   font-size: 32px;
   line-height: 140%;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
   text-align: center;
   color: #0c0c0d;
 }
@@ -76,7 +76,7 @@
   font-weight: 500;
   font-size: 16px;
   line-height: 160%;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   text-align: center;
   color: #0c0c0d;
 }
@@ -96,40 +96,56 @@
 .tcs-canva-cta-container {
   display: flex;
   flex-wrap: wrap;
-  place-content: center center;
+  justify-content: center;
   align-items: center;
-  max-width: 900px;
+  width: 100%;
+  max-width: 760px;
   gap: 12px;
 }
 
-/* CTA Pills */
-.tcs-canva-cta {
+.tcs-canva-cta-item {
+  position: relative;
+  display: inline-flex;
+}
+
+.tcs-canva-cta-fields {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tcs-canva-cta-pill {
   box-sizing: border-box;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  min-height: 50px;
+  height: 50px;
   padding: 12px 32px;
   background: #fff;
   border: 1px solid #e6e6e6;
   border-radius: 9999px;
-  font-family: Inter, sans-serif;
-  font-style: normal;
+  font-family: inherit;
   font-weight: 500;
   font-size: 16px;
-  line-height: 160%;
-  letter-spacing: -0.005em;
+  line-height: 24px;
+  letter-spacing: 0;
   color: #0c0c0d;
   text-decoration: none;
-  transition: all 0.2s ease;
+  max-width: 100%;
+  text-align: center;
+  overflow-wrap: anywhere;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.tcs-canva-cta:hover {
+.tcs-canva-cta-pill:hover {
   border-color: #4673db;
   transform: translateY(-2px);
 }
 
-.tcs-canva-cta:focus-visible {
+.tcs-canva-cta-pill:focus-visible {
   outline: 2px solid #4673db;
   outline-offset: 2px;
 }
@@ -173,7 +189,7 @@
     max-width: 100%;
   }
 
-  .tcs-canva-cta {
+  .tcs-canva-cta-pill {
     padding: 12px 24px;
     font-size: 14px;
   }

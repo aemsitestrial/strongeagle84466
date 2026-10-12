@@ -1,23 +1,70 @@
 import { moveInstrumentation } from '../../scripts/scripts.js';
 
-function formatHtmlPath(path) {
-  if (!path || path === '/') return path || '#';
+function isCtaItem(element) {
+  return element.classList.contains('tcs-canva-cta')
+    || element.dataset.aueModel === 'tcs-canva-cta';
+}
 
-  let resolvedPath = path;
+function getFieldCell(item, fieldName, index) {
+  const instrumentedField = item.querySelector(`[data-aue-prop="${fieldName}"]`);
+  if (instrumentedField) return instrumentedField;
 
-  if (!resolvedPath.startsWith('/content/')) {
-    resolvedPath = `${
-      resolvedPath.startsWith('/') ? '' : '/'
-    }${resolvedPath}`;
+  const keyedRow = [...item.children].find((row) => {
+    const key = row.firstElementChild?.textContent.trim().toLowerCase();
+    return key === fieldName;
+  });
+  if (keyedRow?.children[1]) return keyedRow.children[1];
+
+  return item.children[index] || null;
+}
+
+function getFieldValue(cell, preferHref = false) {
+  if (!cell) return '';
+  const link = cell.matches('a[href]') ? cell : cell.querySelector('a[href]');
+  if (preferHref && link) return link.getAttribute('href') || link.href;
+  return cell.textContent.trim();
+}
+
+function decorateCtaItem(item) {
+  if (item.dataset.tcsCanvaDecorated === 'true') return item;
+
+  const labelCell = getFieldCell(item, 'label', 0);
+  const linkCell = getFieldCell(item, 'link', 1);
+  const targetCell = getFieldCell(item, 'target', 2);
+  const label = getFieldValue(labelCell);
+  if (!label) return null;
+
+  const href = getFieldValue(linkCell, true);
+  const requestedTarget = getFieldValue(targetCell);
+  const target = ['_blank', '_self'].includes(requestedTarget) ? requestedTarget : '_self';
+  const sourceFields = document.createElement('div');
+  sourceFields.className = 'tcs-canva-cta-fields';
+  sourceFields.setAttribute('aria-hidden', 'true');
+  [...item.childNodes].forEach((node) => sourceFields.append(node));
+  sourceFields.querySelectorAll('a, button, input, select, textarea, [tabindex]')
+    .forEach((element) => element.setAttribute('tabindex', '-1'));
+  item.append(sourceFields);
+
+  let cta;
+  if (href) {
+    cta = document.createElement('a');
+    cta.href = href;
+    cta.target = target;
+    if (target === '_blank') cta.rel = 'noopener noreferrer';
+  } else {
+    cta = document.createElement('span');
   }
-
-  return resolvedPath.endsWith('.html')
-    ? resolvedPath
-    : `${resolvedPath}.html`;
+  cta.className = 'tcs-canva-cta-pill';
+  cta.textContent = label;
+  item.append(cta);
+  item.classList.add('tcs-canva-cta-item');
+  item.dataset.tcsCanvaDecorated = 'true';
+  return item;
 }
 
 export default function decorate(block) {
-  const rows = [...block.children];
+  const authoredItems = [...block.children].filter(isCtaItem);
+  const fieldRows = [...block.children].filter((row) => !authoredItems.includes(row));
 
   const container = document.createElement('div');
   container.className = 'tcs-canva-container';
@@ -28,54 +75,41 @@ export default function decorate(block) {
   const ctaContainer = document.createElement('div');
   ctaContainer.className = 'tcs-canva-cta-container';
 
-  // Heading
-  const title = rows[0]?.querySelector('div')?.textContent?.trim()
-    || 'How can TCS help you?';
+  const titleCell = fieldRows[0]?.querySelector(':scope > div') || fieldRows[0];
+  const descriptionCell = fieldRows[1]?.querySelector(':scope > div') || fieldRows[1];
+  const title = titleCell?.textContent?.trim() || 'How can TCS help you?';
 
   const heading = document.createElement('h2');
   heading.className = 'tcs-canva-title';
   heading.textContent = title;
-
-  // Description
-  const descriptionContent = rows[1]?.querySelector('div')?.innerHTML
-    || 'Describe or select a challenge, opportunity or ambition';
+  if (fieldRows[0]) moveInstrumentation(fieldRows[0], heading);
+  if (titleCell && titleCell !== fieldRows[0]) moveInstrumentation(titleCell, heading);
 
   const description = document.createElement('div');
   description.className = 'tcs-canva-description';
-  description.innerHTML = descriptionContent;
+  if (descriptionCell?.textContent.trim()) {
+    description.append(...[...descriptionCell.childNodes]);
+  } else {
+    description.textContent = 'Describe or select a challenge, opportunity or ambition';
+  }
+  if (fieldRows[1]) moveInstrumentation(fieldRows[1], description);
+  if (descriptionCell && descriptionCell !== fieldRows[1]) {
+    moveInstrumentation(descriptionCell, description);
+  }
 
-  // Empty search placeholder space
   const placeholder = document.createElement('div');
   placeholder.className = 'tcs-canva-placeholder';
+  placeholder.setAttribute('aria-hidden', 'true');
 
-  content.append(heading);
-  content.append(description);
-  content.append(placeholder);
-
-  // CTA Rows
-  rows.slice(2).forEach((row) => {
-    const cells = [...row.children];
-
-    const label = cells[0]?.textContent?.trim();
-    if (!label) return;
-
-    const href = cells[1]?.querySelector('a')?.getAttribute('href') || '#';
-    const target = cells[2]?.textContent?.trim() || '_self';
-
-    const cta = document.createElement('a');
-    cta.className = 'tcs-canva-cta';
-    cta.href = formatHtmlPath(href);
-    cta.target = target;
-    cta.textContent = label;
-
-    moveInstrumentation(cells[0], cta);
-
-    ctaContainer.append(cta);
+  content.append(heading, description, placeholder);
+  authoredItems.forEach((item) => {
+    const ctaItem = decorateCtaItem(item);
+    if (ctaItem) ctaContainer.append(ctaItem);
   });
 
   content.append(ctaContainer);
   container.append(content);
 
-  block.innerHTML = '';
+  fieldRows.slice(0, 2).forEach((row) => row.remove());
   block.append(container);
 }
