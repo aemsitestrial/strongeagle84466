@@ -309,8 +309,8 @@
 }
 
 .canvas-mic-btn img {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
 }
 
 .canvas-mic-btn.is-listening {
@@ -445,11 +445,11 @@
   width: 100%;
   max-width: 900px;
   min-height: 118px;
-  display: flex;
-  flex-wrap: wrap;
-  place-content: center;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 10px 0;
 }
 
 .canvas-option-pill:any-link {
@@ -466,10 +466,25 @@
   line-height: 160%;
   letter-spacing: 0;
   display: flex;
+  grid-column: span 4;
+  justify-self: center;
+  max-width: 100%;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.25s ease;
+}
+
+.canvas-option-pill:nth-child(4):nth-last-child(2) {
+  grid-column: 3 / span 4;
+}
+
+.canvas-option-pill:nth-child(5):last-child {
+  grid-column: 7 / span 4;
+}
+
+.canvas-option-pill:nth-child(4):last-child {
+  grid-column: 5 / span 4;
 }
 
 .canvas-option-pill:any-link:hover {
@@ -609,11 +624,6 @@
     height: 22px;
   }
 
-  .canvas-mic-btn img {
-    width: 30px;
-    height: 30px;
-  }
-
   .canvas-title {
     font-size: 28px;
   }
@@ -622,8 +632,10 @@
     font-size: 16px;
   }
 
-  .canvas-option-pill {
-    width: 100%;
+  .canvas-option-pill:any-link {
+    padding: 10px 12px;
+    font-size: 14px;
+    white-space: normal;
   }
 
   .canvas-glow-yellow,

@@ -222,26 +222,18 @@ function attachCanvasEffects(block, search) {
     }
     updateFloatingCanvasSearches();
   }
+}
 
-  let hasEnteredView = false;
-  const updateMotion = () => {
-    if (hasEnteredView || block.dataset.motionType === 'none') return;
-    const bounds = block.getBoundingClientRect();
-    if (bounds.bottom > 0 && bounds.top < window.innerHeight) {
-      hasEnteredView = true;
+function attachCanvasMotion(block) {
+  if (block.dataset.motionType === 'none') return;
+
+  const observer = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
       block.classList.add('is-motion-visible');
+      observer.disconnect();
     }
-  };
-
-  window.addEventListener(
-    'scroll',
-    updateMotion,
-    {
-      passive: true,
-    },
-  );
-  window.addEventListener('resize', updateMotion);
-  updateMotion();
+  });
+  observer.observe(block);
 }
 
 function createImageElement(source, altText) {
@@ -739,6 +731,7 @@ function renderSearchCanvas(block, data) {
 
   block.appendChild(search);
   attachCanvasEffects(block, search);
+  attachCanvasMotion(block);
 }
 
 async function fetchIntentOptions(maxOptions = 5) {
@@ -808,8 +801,8 @@ async function renderIntentCanvas(block, data) {
   const optionsContainer = document.createElement('div');
   optionsContainer.className = 'canvas-options';
 
-  const maxOptions = Math.max(
-    0,
+  const maxOptions = Math.min(
+    5,
     toPositiveInt(data.maximumOptions || data.maximumoptions, 5),
   );
 
@@ -832,6 +825,7 @@ async function renderIntentCanvas(block, data) {
 
   const search = searchSlot.querySelector('.canvas-search');
   if (search) attachCanvasEffects(block, search);
+  attachCanvasMotion(block);
 }
 
 export default function decorate(block) {
