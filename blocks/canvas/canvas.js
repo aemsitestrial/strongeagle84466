@@ -70,6 +70,39 @@ function extractCellValue(cell) {
   return cell.textContent.trim();
 }
 
+function extractOptionValue(cell) {
+  const link = cell?.querySelector('a');
+  return link ? { label: link.textContent.trim(), url: link.href } : null;
+}
+
+function extractAuthoredOptions(optionRows) {
+  return optionRows.map((option) => {
+    const fields = {};
+    [...option.children].forEach((row) => {
+      const cells = [...row.children];
+      if (cells.length < 2) return;
+      const key = normalizeFieldKey(cells[0].textContent);
+      if (['optionlabel', 'label', 'title'].includes(key)) {
+        fields.label = extractOptionValue(cells[1])?.label || cells[1].textContent.trim();
+      } else if (['optionlink', 'link', 'url', 'href'].includes(key)) {
+        fields.url = extractCellValue(cells[1]);
+      }
+    });
+
+    if (!fields.label || !fields.url) {
+      const cells = [...option.children];
+      if (!fields.label && cells[0]) {
+        fields.label = extractOptionValue(cells[0])?.label || cells[0].textContent.trim();
+      }
+      if (!fields.url && cells[1]) {
+        fields.url = extractOptionValue(cells[1])?.url || extractCellValue(cells[1]);
+      }
+    }
+
+    return fields;
+  }).filter((item) => item.label);
+}
+
 function extractData(block) {
   const data = {};
   let fieldIndex = 0;
@@ -606,13 +639,17 @@ function setupVoiceSearch(button, input) {
     recognition.interimResults = true;
     recognition.onstart = () => setListening(true);
     recognition.onresult = (event) => {
-      const transcript = [...event.results]
-        .map((result) => result[0].transcript)
-        .join(' ')
-        .trim();
+      const transcriptParts = [];
+      for (let index = 0; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        const resultText = result?.[0]?.transcript?.trim();
+        if (resultText) transcriptParts.push(resultText);
+      }
+      const transcript = transcriptParts.join(' ').trim();
       if (transcript) {
         input.value = transcript;
         input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
       }
     };
     recognition.onerror = () => setListening(false);
@@ -629,6 +666,7 @@ function setupVoiceSearch(button, input) {
 function createSearchBar({
   watermark,
   showMicrophone,
+  showNavigation,
   menuIcon,
   microphoneIcon,
   data,
@@ -639,20 +677,22 @@ function createSearchBar({
   const toolbar = document.createElement('div');
   toolbar.className = 'canvas-search-toolbar';
 
-  const menuButton = createIconButton({
-    className: 'canvas-menu-btn',
-    label: 'Open navigation',
-    iconSource: menuIcon,
-    fallbackText: 'Menu',
-  });
+  if (showNavigation) {
+    const menuButton = createIconButton({
+      className: 'canvas-menu-btn',
+      label: 'Open navigation',
+      iconSource: menuIcon,
+      fallbackText: 'Menu',
+    });
 
-  menuButton.onclick = async (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    await renderNavigationMenu(menuButton, data);
-  };
+    menuButton.onclick = async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      await renderNavigationMenu(menuButton, data);
+    };
 
-  toolbar.append(menuButton);
+    toolbar.append(menuButton);
+  }
 
   const container = document.createElement('div');
   container.className = 'canvas-search-container';
@@ -685,7 +725,10 @@ function createSearchBar({
   submit.type = 'button';
   submit.className = 'canvas-submit-btn';
   submit.setAttribute('aria-label', 'Submit search');
-  submit.textContent = '→';
+  const submitArrow = document.createElement('span');
+  submitArrow.className = 'canvas-submit-arrow';
+  submitArrow.setAttribute('aria-hidden', 'true');
+  submit.appendChild(submitArrow);
   controls.appendChild(submit);
 
   searchInput.appendChild(controls);
@@ -723,6 +766,7 @@ function renderSearchCanvas(block, data) {
 
   const search = createSearchBar({
     watermark: data.canvasSearchWatermark || data.searchWatermark || '',
+    showNavigation: asBoolean(data.showNavigation, true),
     showMicrophone: asBoolean(data.showMicrophone, true),
     menuIcon: data.canvasMenuIcon || data.menuIcon,
     microphoneIcon: data.canvasMicrophoneIcon || data.microphoneIcon || data.searchIcon,
@@ -750,7 +794,7 @@ async function fetchIntentOptions(maxOptions = 5) {
   }
 }
 
-async function renderIntentCanvas(block, data) {
+async function renderIntentCanvas(block, data, authoredOptions) {
   const section = document.createElement('section');
   section.className = 'canvas-intent';
 
@@ -788,6 +832,7 @@ async function renderIntentCanvas(block, data) {
     searchSlot.append(
       createSearchBar({
         watermark: data.canvasSearchWatermark || data.searchWatermark || '',
+        showNavigation: asBoolean(data.showNavigation, true),
         showMicrophone: asBoolean(data.showMicrophone, true),
         menuIcon: data.canvasMenuIcon || data.menuIcon,
         microphoneIcon: data.canvasMicrophoneIcon || data.microphoneIcon || data.searchIcon,
@@ -806,7 +851,15 @@ async function renderIntentCanvas(block, data) {
     toPositiveInt(data.maximumOptions || data.maximumoptions, 5),
   );
 
-  const options = await fetchIntentOptions(maxOptions);
+  const configuredOptions = extractAuthoredOptions(authoredOptions);
+  const optionsType = String(data.optionsType || data.optionstype || 'default')
+    .trim()
+    .toLowerCase();
+  const fallbackOptions = optionsType === 'default'
+    ? await fetchIntentOptions(maxOptions)
+    : [];
+  const options = (configuredOptions.length ? configuredOptions : fallbackOptions)
+    .slice(0, maxOptions);
 
   options.forEach((item, index) => {
     const option = document.createElement('a');
@@ -839,12 +892,6 @@ export default function decorate(block) {
   const data = extractData(block);
   const optionList = [...block.querySelectorAll('.canvas-option')];
 
-  console.group('Canvas Debug');
-  console.log('Raw Block HTML', block.innerHTML);
-  console.log('Block Children', [...block.children]);
-  console.log('Extracted Data', data);
-  console.groupEnd();
-
   block.innerHTML = '';
 
   const canvasType = String(data.canvasType || data.canvastype || 'search').trim().toLowerCase();
@@ -857,7 +904,8 @@ export default function decorate(block) {
   block.dataset.motionType = motionType;
 
   block.dataset.canvasStyle = canvasStyle;
-  block.classList.add('canvas-default');
+  block.classList.remove('canvas-default', 'canvas-floating-sticky');
+  block.classList.add(`canvas-${canvasStyle}`);
 
   if (normalizedType === 'intent') {
     renderIntentCanvas(block, data, optionList);
