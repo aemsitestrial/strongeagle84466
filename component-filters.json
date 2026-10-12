@@ -151,6 +151,14 @@
     ]
   },
   {
+    "id": "tcs-canva",
+    "components": [
+      "tcs-canva-header",
+      "tcs-canva-description",
+      "tcs-canva-cta"
+    ]
+  },
+  {
     "id": "tcs-footer",
     "components": [
       "tcs-footer-hamburger",
