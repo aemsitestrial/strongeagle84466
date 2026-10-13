@@ -13,7 +13,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: clip;
   padding: 160px 80px;
   border-radius: 20px;
   background: #fff;
@@ -56,6 +56,16 @@
   line-height: 1.6;
   text-align: center;
   overflow-wrap: anywhere;
+}
+
+.canvas-block-search-slot {
+  position: sticky;
+  z-index: 3;
+  top: 16px;
+  display: flex;
+  width: 100%;
+  max-width: 812px;
+  justify-content: center;
 }
 
 .canvas-block-options {

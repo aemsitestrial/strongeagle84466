@@ -122,6 +122,10 @@ async function render(block, data, authoredOptions) {
     content.appendChild(description);
   }
 
+  const searchSlot = document.createElement('div');
+  searchSlot.className = 'canvas-block-search-slot';
+  content.appendChild(searchSlot);
+
   const optionsContainer = document.createElement('div');
   optionsContainer.className = 'canvas-block-options';
   const maximumOptions = Math.min(5, positiveInteger(data.maximumOptions, 5));
