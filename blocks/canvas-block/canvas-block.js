@@ -59,6 +59,12 @@ function extractOptions(optionRows) {
       if (!fields.url && cells[1]) fields.url = extractValue(cells[1]);
     }
 
+    const authoredLink = option.querySelector('a');
+    if (authoredLink) {
+      if (!fields.label) fields.label = authoredLink.textContent.trim();
+      if (!fields.url) fields.url = authoredLink.href;
+    }
+
     return fields;
   }).filter((option) => option.label);
 }
@@ -115,7 +121,8 @@ async function resolveOptions(
 
   if (normalizedOptionsType === 'authorable') {
     const validauthoredItems = authoredItems
-      .filter((option) => option.label && option.url)
+      .filter((option) => option.label)
+      .map((option) => ({ ...option, url: option.url || '#' }))
       .slice(0, maximumOptions);
 
     if (validauthoredItems.length) {
