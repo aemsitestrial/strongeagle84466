@@ -81,10 +81,11 @@
             {
               "component": "select",
               "name": "optionsType",
-              "label": "Options Type",
+              "label": "Options Source",
               "value": "default",
               "options": [
-                { "name": "Default", "value": "default" }
+                { "name": "Default JSON", "value": "default" },
+                { "name": "Authored Options", "value": "authored" }
               ]
             }
           ]
