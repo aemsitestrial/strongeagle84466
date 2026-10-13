@@ -110,5 +110,12 @@
       ]
     }
   ],
-  "filters": []
+  "filters": [
+    {
+      "id": "canvas-block",
+      "components": [
+        "canvas-block-option"
+      ]
+    }
+  ]
 }

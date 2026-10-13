@@ -55,6 +55,12 @@
     ]
   },
   {
+    "id": "canvas-block",
+    "components": [
+      "canvas-block-option"
+    ]
+  },
+  {
     "id": "cards-v1",
     "components": [
       "cards-item"
