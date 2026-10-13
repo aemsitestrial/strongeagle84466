@@ -55,7 +55,7 @@
     ]
   },
   {
-    "id": "canvas-block",
+    "id": "canvas-block-items",
     "components": [
       "canvas-block-item"
     ]
