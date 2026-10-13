@@ -183,14 +183,14 @@
         },
         {
           "title": "Canvas Block Option",
-          "id": "canvas-block-option",
+          "id": "canvas-block-item",
           "plugins": {
             "xwalk": {
               "page": {
                 "resourceType": "core/franklin/components/block/v1/block/item",
                 "template": {
                   "name": "Canvas Block Option",
-                  "model": "canvas-block-option",
+                  "model": "canvas-block-item",
                   "optionLabel": "Option Label",
                   "optionLink": "/"
                 }

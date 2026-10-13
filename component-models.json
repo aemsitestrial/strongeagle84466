@@ -268,7 +268,7 @@
     ]
   },
   {
-    "id": "canvas-block-option",
+    "id": "canvas-block-item",
     "fields": [
       {
         "component": "text",

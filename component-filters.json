@@ -57,7 +57,7 @@
   {
     "id": "canvas-block",
     "components": [
-      "canvas-block-option"
+      "canvas-block-item"
     ]
   },
   {

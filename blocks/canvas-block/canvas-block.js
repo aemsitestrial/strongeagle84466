@@ -20,7 +20,7 @@ function extractData(block) {
   let fieldIndex = 0;
 
   [...block.children].forEach((row) => {
-    if (row.classList.contains('canvas-block-option')) return;
+    if (row.classList.contains('canvas-block-item')) return;
     const cells = [...row.children];
     if (!cells.length) return;
 
@@ -108,18 +108,18 @@ async function fetchDefaultOptions(maximumOptions) {
 
 async function resolveOptions(
   optionsType,
-  authoredOptions,
+  authoredItems,
   maximumOptions,
 ) {
   const normalizedOptionsType = normalizeOptionsType(optionsType);
 
   if (normalizedOptionsType === 'authorable') {
-    const validAuthoredOptions = authoredOptions
+    const validauthoredItems = authoredItems
       .filter((option) => option.label && option.url)
       .slice(0, maximumOptions);
 
-    if (validAuthoredOptions.length) {
-      return validAuthoredOptions;
+    if (validauthoredItems.length) {
+      return validauthoredItems;
     }
   }
 
@@ -137,7 +137,7 @@ function attachMotion(block) {
   observer.observe(block);
 }
 
-async function render(block, data, authoredOptions) {
+async function render(block, data, authoredItems) {
   const section = document.createElement('section');
   section.className = 'canvas-block-stage';
 
@@ -175,7 +175,7 @@ async function render(block, data, authoredOptions) {
     positiveInteger(data.maximumOptions, 5),
   );
 
-  const authoredOptionData = extractOptions(authoredOptions);
+  const authoredOptionData = extractOptions(authoredItems);
 
   const configuredOptions = await resolveOptions(
     data.optionsType,
@@ -207,7 +207,7 @@ async function render(block, data, authoredOptions) {
 
 export default function decorate(block) {
   const data = extractData(block);
-  const optionRows = [...block.querySelectorAll('.canvas-block-option')];
+  const optionRows = [...block.querySelectorAll('.canvas-block-item')];
   block.innerHTML = '';
   block.classList.add('canvas-block');
   block.dataset.motionType = normalizeMotionType(data.motionType);
