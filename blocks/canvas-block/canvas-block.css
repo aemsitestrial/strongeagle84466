@@ -68,14 +68,6 @@
   justify-content: center;
 }
 
-.canvas-block-options-area {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-}
-
 .canvas-block-options {
   position: relative;
   z-index: 2;

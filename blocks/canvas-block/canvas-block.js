@@ -15,10 +15,6 @@ function extractValue(cell) {
   return link ? link.href || link.textContent.trim() : cell?.textContent.trim() || '';
 }
 
-function extractLabel(cell) {
-  return cell?.querySelector('a')?.textContent.trim() || cell?.textContent.trim() || '';
-}
-
 function extractData(block) {
   const data = {};
   let fieldIndex = 0;
@@ -51,7 +47,7 @@ function extractOptions(optionRows) {
       if (cells.length < 2) return;
       const key = normalizeKey(cells[0].textContent);
       if (['optionlabel', 'label', 'title'].includes(key)) {
-        fields.label = extractLabel(cells[1]);
+        fields.label = cells[1].textContent.trim();
       } else if (['optionlink', 'link', 'url', 'href'].includes(key)) {
         fields.url = extractValue(cells[1]);
       }
@@ -59,7 +55,7 @@ function extractOptions(optionRows) {
 
     if (!fields.label || !fields.url) {
       const cells = [...option.children];
-      if (!fields.label && cells[0]) fields.label = extractLabel(cells[0]);
+      if (!fields.label && cells[0]) fields.label = cells[0].textContent.trim();
       if (!fields.url && cells[1]) fields.url = extractValue(cells[1]);
     }
 
@@ -72,6 +68,17 @@ function normalizeMotionType(value) {
   return ['none', 'fade', 'slide-up'].includes(motion) ? motion : 'none';
 }
 
+function normalizeOptionsType(value) {
+  const optionsType = String(value || 'default')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-');
+
+  return ['default', 'authorable'].includes(optionsType)
+    ? optionsType
+    : 'default';
+}
+
 function positiveInteger(value, fallback) {
   const parsed = Number.parseInt(value, 10);
   return Number.isNaN(parsed) ? fallback : Math.max(parsed, 0);
@@ -80,12 +87,43 @@ function positiveInteger(value, fallback) {
 async function fetchDefaultOptions(maximumOptions) {
   try {
     const response = await fetch('/blocks/canvas-block/dummy.json');
-    if (!response.ok) return [];
+
+    if (!response.ok) {
+      return [];
+    }
+
     const data = await response.json();
-    return (data.options || []).slice(0, maximumOptions);
-  } catch (error) {
+
+    if (!Array.isArray(data.options)) {
+      return [];
+    }
+
+    return data.options
+      .filter((option) => option?.label && option?.url)
+      .slice(0, maximumOptions);
+  } catch {
     return [];
   }
+}
+
+async function resolveOptions(
+  optionsType,
+  authoredOptions,
+  maximumOptions,
+) {
+  const normalizedOptionsType = normalizeOptionsType(optionsType);
+
+  if (normalizedOptionsType === 'authorable') {
+    const validAuthoredOptions = authoredOptions
+      .filter((option) => option.label && option.url)
+      .slice(0, maximumOptions);
+
+    if (validAuthoredOptions.length) {
+      return validAuthoredOptions;
+    }
+  }
+
+  return fetchDefaultOptions(maximumOptions);
 }
 
 function attachMotion(block) {
@@ -126,20 +164,24 @@ async function render(block, data, authoredOptions) {
     content.appendChild(description);
   }
 
-  const optionsArea = document.createElement('div');
-  optionsArea.className = 'canvas-block-options-area';
-
   const searchSlot = document.createElement('div');
   searchSlot.className = 'canvas-block-search-slot';
-  optionsArea.appendChild(searchSlot);
+  content.appendChild(searchSlot);
 
   const optionsContainer = document.createElement('div');
   optionsContainer.className = 'canvas-block-options';
-  const maximumOptions = Math.min(5, positiveInteger(data.maximumOptions, 5));
-  const optionsType = String(data.optionsType || 'default').trim().toLowerCase();
-  const configuredOptions = optionsType === 'authored'
-    ? extractOptions(authoredOptions).slice(0, maximumOptions)
-    : await fetchDefaultOptions(maximumOptions);
+  const maximumOptions = Math.min(
+    5,
+    positiveInteger(data.maximumOptions, 5),
+  );
+
+  const authoredOptionData = extractOptions(authoredOptions);
+
+  const configuredOptions = await resolveOptions(
+    data.optionsType,
+    authoredOptionData,
+    maximumOptions,
+  );
 
   configuredOptions.forEach((item, index) => {
     const link = document.createElement('a');
@@ -157,8 +199,7 @@ async function render(block, data, authoredOptions) {
     row.appendChild(link);
   });
 
-  optionsArea.appendChild(optionsContainer);
-  content.appendChild(optionsArea);
+  content.appendChild(optionsContainer);
   section.appendChild(content);
   block.appendChild(section);
   attachMotion(block);
