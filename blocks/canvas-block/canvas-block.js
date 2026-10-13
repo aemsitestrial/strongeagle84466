@@ -3,16 +3,23 @@ const FIELD_ORDER = [
   'canvasDescription',
   'motionType',
   'maximumOptions',
-  'optionsType',
 ];
 
 function normalizeKey(value = '') {
-  return String(value).trim().toLowerCase().replace(/[^a-z0-9]+/g, '');
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
 }
 
 function extractValue(cell) {
   const link = cell?.querySelector('a');
-  return link ? link.href || link.textContent.trim() : cell?.textContent.trim() || '';
+
+  if (link) {
+    return link.href || link.textContent.trim();
+  }
+
+  return cell?.textContent.trim() || '';
 }
 
 function extractData(block) {
@@ -21,11 +28,17 @@ function extractData(block) {
 
   [...block.children].forEach((row) => {
     if (row.classList.contains('canvas-block-item')) return;
+
     const cells = [...row.children];
+
     if (!cells.length) return;
 
     const key = normalizeKey(cells[0].textContent);
-    const fieldName = FIELD_ORDER.find((field) => normalizeKey(field) === key);
+
+    const fieldName = FIELD_ORDER.find(
+      (field) => normalizeKey(field) === key,
+    );
+
     if (fieldName && cells.length > 1) {
       data[fieldName] = extractValue(cells[1]);
       return;
@@ -33,61 +46,92 @@ function extractData(block) {
 
     const fallbackField = FIELD_ORDER[fieldIndex];
     fieldIndex += 1;
-    if (fallbackField) data[fallbackField] = extractValue(cells[0]);
+
+    if (fallbackField) {
+      data[fallbackField] = extractValue(cells[0]);
+    }
   });
 
   return data;
 }
 
 function extractOptions(optionRows) {
-  return optionRows.map((option) => {
-    const fields = {};
-    [...option.children].forEach((row) => {
-      const cells = [...row.children];
-      if (cells.length < 2) return;
-      const key = normalizeKey(cells[0].textContent);
-      if (['optionlabel', 'label', 'title'].includes(key)) {
-        fields.label = cells[1].textContent.trim();
-      } else if (['optionlink', 'link', 'url', 'href'].includes(key)) {
-        fields.url = extractValue(cells[1]);
+  return optionRows
+    .map((option) => {
+      const fields = {};
+
+      [...option.children].forEach((row) => {
+        const cells = [...row.children];
+
+        if (cells.length < 2) return;
+
+        const key = normalizeKey(cells[0].textContent);
+
+        if (['optionlabel', 'label', 'title'].includes(key)) {
+          fields.label = cells[1].textContent.trim();
+        }
+
+        if (['optionlink', 'link', 'url', 'href'].includes(key)) {
+          fields.url = extractValue(cells[1]);
+        }
+      });
+
+      /*
+       * Positional fallback for markup where the child fields are
+       * rendered directly without field-name cells.
+       */
+      if (!fields.label || !fields.url) {
+        const cells = [...option.children];
+
+        if (!fields.label && cells[0]) {
+          fields.label = cells[0].textContent.trim();
+        }
+
+        if (!fields.url && cells[1]) {
+          fields.url = extractValue(cells[1]);
+        }
       }
-    });
 
-    if (!fields.label || !fields.url) {
-      const cells = [...option.children];
-      if (!fields.label && cells[0]) fields.label = cells[0].textContent.trim();
-      if (!fields.url && cells[1]) fields.url = extractValue(cells[1]);
-    }
+      /*
+       * Final fallback if the authored option contains an anchor.
+       */
+      const authoredLink = option.querySelector('a');
 
-    const authoredLink = option.querySelector('a');
-    if (authoredLink) {
-      if (!fields.label) fields.label = authoredLink.textContent.trim();
-      if (!fields.url) fields.url = authoredLink.href;
-    }
+      if (authoredLink) {
+        if (!fields.label) {
+          fields.label = authoredLink.textContent.trim();
+        }
 
-    return fields;
-  }).filter((option) => option.label);
+        if (!fields.url) {
+          fields.url = authoredLink.href;
+        }
+      }
+
+      return {
+        label: fields.label?.trim() || '',
+        url: fields.url?.trim() || '',
+      };
+    })
+    .filter((option) => option.label && option.url);
 }
 
 function normalizeMotionType(value) {
-  const motion = String(value || 'none').trim().toLowerCase().replace(/\s+/g, '-');
-  return ['none', 'fade', 'slide-up'].includes(motion) ? motion : 'none';
-}
-
-function normalizeOptionsType(value) {
-  const optionsType = String(value || 'default')
+  const motion = String(value || 'none')
     .trim()
     .toLowerCase()
     .replace(/\s+/g, '-');
 
-  return ['default', 'authorable'].includes(optionsType)
-    ? optionsType
-    : 'default';
+  return ['none', 'fade', 'slide-up'].includes(motion)
+    ? motion
+    : 'none';
 }
 
 function positiveInteger(value, fallback) {
   const parsed = Number.parseInt(value, 10);
-  return Number.isNaN(parsed) ? fallback : Math.max(parsed, 0);
+
+  return Number.isNaN(parsed)
+    ? fallback
+    : Math.max(parsed, 0);
 }
 
 async function fetchDefaultOptions(maximumOptions) {
@@ -106,28 +150,30 @@ async function fetchDefaultOptions(maximumOptions) {
 
     return data.options
       .filter((option) => option?.label && option?.url)
+      .map((option) => ({
+        label: String(option.label).trim(),
+        url: String(option.url).trim(),
+      }))
       .slice(0, maximumOptions);
   } catch {
     return [];
   }
 }
 
-async function resolveOptions(
-  optionsType,
-  authoredItems,
-  maximumOptions,
-) {
-  const normalizedOptionsType = normalizeOptionsType(optionsType);
+/**
+ * Authored-first automatic fallback:
+ *
+ * 1. If valid child options exist, return them.
+ * 2. dummy.json is not fetched in that case.
+ * 3. If no valid child options exist, load the default options.
+ */
+async function resolveOptions(authoredItems, maximumOptions) {
+  const validAuthoredItems = authoredItems
+    .filter((option) => option.label && option.url)
+    .slice(0, maximumOptions);
 
-  if (normalizedOptionsType === 'authorable') {
-    const validauthoredItems = authoredItems
-      .filter((option) => option.label)
-      .map((option) => ({ ...option, url: option.url || '#' }))
-      .slice(0, maximumOptions);
-
-    if (validauthoredItems.length) {
-      return validauthoredItems;
-    }
+  if (validAuthoredItems.length > 0) {
+    return validAuthoredItems;
   }
 
   return fetchDefaultOptions(maximumOptions);
@@ -135,13 +181,36 @@ async function resolveOptions(
 
 function attachMotion(block) {
   if (block.dataset.motionType === 'none') return;
+
   const observer = new IntersectionObserver((entries) => {
     if (entries.some((entry) => entry.isIntersecting)) {
       block.classList.add('is-motion-visible');
       observer.disconnect();
     }
   });
+
   observer.observe(block);
+}
+
+function renderOptionPills(optionsContainer, configuredOptions) {
+  configuredOptions.forEach((item, index) => {
+    const link = document.createElement('a');
+
+    link.className = 'canvas-block-option-pill';
+    link.href = item.url;
+    link.textContent = item.label;
+
+    const rowIndex = Math.floor(index / 3);
+    let row = optionsContainer.children[rowIndex];
+
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'canvas-block-options-row';
+      optionsContainer.appendChild(row);
+    }
+
+    row.appendChild(link);
+  });
 }
 
 async function render(block, data, authoredItems) {
@@ -149,9 +218,17 @@ async function render(block, data, authoredItems) {
   section.className = 'canvas-block-stage';
 
   const glowYellow = document.createElement('div');
-  glowYellow.className = 'canvas-block-glow canvas-block-glow-yellow';
+  glowYellow.className = [
+    'canvas-block-glow',
+    'canvas-block-glow-yellow',
+  ].join(' ');
+
   const glowBlue = document.createElement('div');
-  glowBlue.className = 'canvas-block-glow canvas-block-glow-blue';
+  glowBlue.className = [
+    'canvas-block-glow',
+    'canvas-block-glow-blue',
+  ].join(' ');
+
   section.append(glowYellow, glowBlue);
 
   const content = document.createElement('div');
@@ -177,6 +254,7 @@ async function render(block, data, authoredItems) {
 
   const optionsContainer = document.createElement('div');
   optionsContainer.className = 'canvas-block-options';
+
   const maximumOptions = Math.min(
     5,
     positiveInteger(data.maximumOptions, 5),
@@ -185,38 +263,32 @@ async function render(block, data, authoredItems) {
   const authoredOptionData = extractOptions(authoredItems);
 
   const configuredOptions = await resolveOptions(
-    data.optionsType,
     authoredOptionData,
     maximumOptions,
   );
 
-  configuredOptions.forEach((item, index) => {
-    const link = document.createElement('a');
-    link.className = 'canvas-block-option-pill';
-    link.href = item.url || '#';
-    link.textContent = item.label || '';
-
-    const rowIndex = Math.floor(index / 3);
-    let row = optionsContainer.children[rowIndex];
-    if (!row) {
-      row = document.createElement('div');
-      row.className = 'canvas-block-options-row';
-      optionsContainer.appendChild(row);
-    }
-    row.appendChild(link);
-  });
+  renderOptionPills(optionsContainer, configuredOptions);
 
   content.appendChild(optionsContainer);
   section.appendChild(content);
   block.appendChild(section);
+
   attachMotion(block);
 }
 
-export default function decorate(block) {
+export default async function decorate(block) {
   const data = extractData(block);
-  const optionRows = [...block.querySelectorAll('.canvas-block-item')];
+
+  /*
+   * Collect the child items before clearing the original block markup.
+   */
+  const optionRows = [
+    ...block.querySelectorAll('.canvas-block-item'),
+  ];
+
   block.innerHTML = '';
   block.classList.add('canvas-block');
   block.dataset.motionType = normalizeMotionType(data.motionType);
-  render(block, data, optionRows);
+
+  await render(block, data, optionRows);
 }

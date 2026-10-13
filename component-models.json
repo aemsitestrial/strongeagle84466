@@ -244,23 +244,6 @@
         "label": "Maximum Options",
         "value": 5,
         "valueType": "number"
-      },
-      {
-        "component": "select",
-        "name": "optionsType",
-        "label": "Options Type",
-        "value": "default",
-        "valueType": "string",
-        "options": [
-          {
-            "name": "Default Options",
-            "value": "default"
-          },
-          {
-            "name": "Authorable Options",
-            "value": "authorable"
-          }
-        ]
       }
     ]
   },
