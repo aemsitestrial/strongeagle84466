@@ -168,33 +168,6 @@
           },
           {
             "component": "container",
-            "name": "searchCanvasSettings",
-            "label": "Search Canvas Settings",
-            "collapsible": false,
-            "condition": {
-              "==": [
-                {
-                  "var": "canvasType"
-                },
-                "search"
-              ]
-            },
-            "fields": [
-              {
-                "component": "aem-content",
-                "name": "canvasNavRootPath",
-                "label": "Canvas Nav Root Path"
-              },
-              {
-                "component": "number",
-                "name": "canvasNavDepth",
-                "label": "Canvas Nav Depth",
-                "value": 3
-              }
-            ]
-          },
-          {
-            "component": "container",
             "name": "intentCanvasSettings",
             "label": "Intent Canvas Settings",
             "collapsible": false,

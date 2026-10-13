@@ -501,13 +501,27 @@ async function renderNavigationMenu(menuButton, data) {
     return link;
   };
 
-  const makeLevelButton = (item, className, onActivate) => {
+  const makeLevelButton = (item, className, onActivate, {
+    expanded = false,
+    activateOnHover = false,
+  } = {}) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = className;
-    button.textContent = item.title;
-    button.setAttribute('aria-expanded', 'false');
-    button.addEventListener('mouseenter', onActivate);
+    button.classList.add('has-children');
+    const label = document.createElement('span');
+    label.className = 'canvas-nav-label';
+    label.textContent = item.title;
+    const chevron = document.createElement('span');
+    chevron.className = 'canvas-nav-chevron';
+    chevron.setAttribute('aria-hidden', 'true');
+    button.append(label, chevron);
+    button.dataset.navHref = item.href;
+    button.setAttribute('aria-expanded', String(expanded));
+    if (activateOnHover) {
+      button.addEventListener('mouseenter', onActivate);
+      button.addEventListener('focus', onActivate);
+    }
     button.addEventListener('click', (event) => {
       event.stopPropagation();
       onActivate();
@@ -515,9 +529,30 @@ async function renderNavigationMenu(menuButton, data) {
     return button;
   };
 
+  const renderSubmenu = () => {
+    submenu.replaceChildren();
+    submenu.classList.remove('is-open');
+    if (!state.activeL2) return;
+
+    const list = document.createElement('ul');
+    list.className = 'canvas-nav-list';
+    state.activeL2.children.forEach((item) => {
+      const entry = document.createElement('li');
+      const link = makeLink(item, 'canvas-nav-l3');
+      const arrow = document.createElement('span');
+      arrow.className = 'canvas-nav-link-arrow';
+      arrow.setAttribute('aria-hidden', 'true');
+      arrow.textContent = '\u2192';
+      link.appendChild(arrow);
+      entry.appendChild(link);
+      list.appendChild(entry);
+    });
+    submenu.appendChild(list);
+    submenu.classList.add('is-open');
+  };
+
   const render = () => {
     navRow.replaceChildren();
-    submenu.replaceChildren();
     setToggle();
 
     if (state.level === 'l1') {
@@ -534,6 +569,7 @@ async function renderNavigationMenu(menuButton, data) {
           navRow.appendChild(makeLink(item, 'canvas-nav-item canvas-nav-l1'));
         }
       });
+      renderSubmenu();
       return;
     }
 
@@ -553,34 +589,30 @@ async function renderNavigationMenu(menuButton, data) {
 
     state.activeL1.children.forEach((item) => {
       const activateL2 = () => {
-        if (state.activeL2 === item) return;
         state.activeL2 = item.children.length ? item : null;
-        render();
+        navRow.querySelectorAll('.canvas-nav-l2.has-children').forEach((button) => {
+          const isActive = state.activeL2?.href === button.dataset.navHref;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-expanded', String(isActive));
+        });
+        renderSubmenu();
       };
       if (item.children.length) {
-        const button = makeLevelButton(item, 'canvas-nav-item canvas-nav-l2', activateL2);
+        const button = makeLevelButton(
+          item,
+          'canvas-nav-item canvas-nav-l2',
+          activateL2,
+          { expanded: state.activeL2 === item, activateOnHover: true },
+        );
         if (state.activeL2 === item) {
           button.classList.add('is-active');
-          button.setAttribute('aria-expanded', 'true');
         }
         navRow.appendChild(button);
       } else {
         navRow.appendChild(makeLink(item, 'canvas-nav-item canvas-nav-l2'));
       }
     });
-
-    if (state.activeL2) {
-      const list = document.createElement('ul');
-      list.className = 'canvas-nav-list';
-      state.activeL2.children.forEach((item) => {
-        const entry = document.createElement('li');
-        entry.className = 'canvas-nav-item';
-        entry.appendChild(makeLink(item, 'canvas-nav-l3'));
-        list.appendChild(entry);
-      });
-      submenu.appendChild(list);
-      submenu.classList.add('is-open');
-    }
+    renderSubmenu();
   };
 
   menuButton.onclick = (event) => {
@@ -600,6 +632,16 @@ async function renderNavigationMenu(menuButton, data) {
     if (event.key === 'Escape') {
       closeNavigation();
     }
+  });
+
+  panel.addEventListener('mouseleave', () => {
+    if (!state.activeL2) return;
+    state.activeL2 = null;
+    navRow.querySelectorAll('.canvas-nav-l2.has-children').forEach((button) => {
+      button.classList.remove('is-active');
+      button.setAttribute('aria-expanded', 'false');
+    });
+    renderSubmenu();
   });
 
   wrapper.appendChild(panel);
