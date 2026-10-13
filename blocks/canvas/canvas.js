@@ -356,14 +356,25 @@ function normalizeNavigationPath(value = '') {
     : `/${candidate.replace(/\/+$/, '')}`;
 }
 
+function formatNavigationTitle(value, path) {
+  const title = String(value || path.split('/').filter(Boolean).pop() || '').trim();
+  return title.replace(/[-_]+/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 function buildNavigationTree(indexData, rootPath, depth = 3) {
   const normalizedRoot = normalizeNavigationPath(rootPath);
   const maxDepth = Math.min(3, Math.max(1, toPositiveInt(depth, 3)));
+  const excludedPaths = new Set(['/', '/footer', '/nav']);
   const entries = indexData
-    .filter((item) => item.path && String(item.hideInNav).toLowerCase() !== 'true')
+    .filter((item) => {
+      const path = normalizeNavigationPath(item.path);
+      return item.path
+        && !excludedPaths.has(path)
+        && String(item.hideInNav).toLowerCase() !== 'true';
+    })
     .map((item) => ({
-      title: String(item.title || item.path.split('/').filter(Boolean).pop()).trim(),
       href: normalizeNavigationPath(item.path),
+      title: formatNavigationTitle(item.title, normalizeNavigationPath(item.path)),
       navOrder: Number(item.navOrder) || 99,
     }))
     .filter((item) => item.title)
@@ -557,6 +568,13 @@ async function renderNavigationMenu(menuButton, data) {
 
     if (state.level === 'l1') {
       navRow.appendChild(menuButton);
+      if (!items.length) {
+        const emptyState = document.createElement('span');
+        emptyState.className = 'canvas-nav-empty';
+        emptyState.setAttribute('role', 'status');
+        emptyState.textContent = 'No navigation pages are available.';
+        navRow.appendChild(emptyState);
+      }
       items.forEach((item) => {
         if (item.children.length) {
           navRow.appendChild(makeLevelButton(item, 'canvas-nav-item canvas-nav-l1', () => {
@@ -660,13 +678,17 @@ function setupVoiceSearch(button, input) {
 
   let recognition;
   let isListening = false;
+  let recognitionErrorMessage = '';
 
   const setListening = (listening) => {
     isListening = listening;
     button.classList.toggle('is-listening', listening);
     button.setAttribute('aria-pressed', String(listening));
-    button.setAttribute('aria-label', listening ? 'Stop voice search' : 'Use microphone');
-    button.title = listening ? 'Listening...' : 'Use microphone';
+    button.setAttribute(
+      'aria-label',
+      listening ? 'Stop voice search' : recognitionErrorMessage || 'Use microphone',
+    );
+    button.title = listening ? 'Listening...' : recognitionErrorMessage || 'Use microphone';
   };
 
   button.addEventListener('click', () => {
@@ -679,7 +701,11 @@ function setupVoiceSearch(button, input) {
     recognition.lang = document.documentElement.lang || navigator.language || 'en-US';
     recognition.continuous = false;
     recognition.interimResults = true;
-    recognition.onstart = () => setListening(true);
+    recognition.onstart = () => {
+      recognitionErrorMessage = '';
+      button.title = 'Listening...';
+      setListening(true);
+    };
     recognition.onresult = (event) => {
       const transcriptParts = [];
       for (let index = 0; index < event.results.length; index += 1) {
@@ -694,13 +720,27 @@ function setupVoiceSearch(button, input) {
         input.dispatchEvent(new Event('change', { bubbles: true }));
       }
     };
-    recognition.onerror = () => setListening(false);
+    recognition.onerror = (event) => {
+      const messages = {
+        'not-allowed': 'Microphone access is blocked. Allow microphone access for this site and try again.',
+        'service-not-allowed': 'Microphone access is blocked by the browser or embedding page.',
+        'audio-capture': 'No microphone is available to the browser.',
+        'no-speech': 'No speech was detected. Try again.',
+        network: 'Voice recognition is unavailable because of a network error.',
+      };
+      recognitionErrorMessage = messages[event.error] || 'Voice recognition failed. Try again.';
+      setListening(false);
+    };
     recognition.onend = () => setListening(false);
 
     try {
       recognition.start();
     } catch (error) {
+      recognitionErrorMessage = error.name === 'NotAllowedError'
+        ? 'Microphone access is blocked. Allow microphone access for this site and try again.'
+        : 'Voice recognition could not start. Try again.';
       setListening(false);
+      button.title = recognitionErrorMessage;
     }
   });
 }
