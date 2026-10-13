@@ -402,6 +402,23 @@
     ]
   },
   {
+    "id": "canvas-option",
+    "fields": [
+      {
+        "component": "text",
+        "name": "optionLabel",
+        "label": "Option Label",
+        "valueType": "string"
+      },
+      {
+        "component": "aem-content",
+        "name": "optionLink",
+        "label": "Option Link",
+        "valueType": "string"
+      }
+    ]
+  },
+  {
     "id": "cards-v1",
     "fields": [
       {
