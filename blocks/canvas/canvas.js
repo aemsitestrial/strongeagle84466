@@ -357,70 +357,76 @@ function normalizeNavigationPath(value = '') {
 }
 
 function formatNavigationTitle(value, path) {
-  const title = String(value || path.split('/').filter(Boolean).pop() || '').trim();
-  return title.replace(/[-_]+/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase());
+  const authoredTitle = String(value || '').trim();
+  if (authoredTitle) return authoredTitle;
+  const pathTitle = path.split('/').filter(Boolean).pop() || '';
+  return pathTitle
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function buildNavigationTree(indexData, rootPath, depth = 3) {
   const normalizedRoot = normalizeNavigationPath(rootPath);
   const maxDepth = Math.min(3, Math.max(1, toPositiveInt(depth, 3)));
   const excludedPaths = new Set(['/', '/footer', '/nav']);
-  const entries = indexData
-    .filter((item) => {
-      const path = normalizeNavigationPath(item.path);
-      return item.path
-        && !excludedPaths.has(path)
-        && String(item.hideInNav).toLowerCase() !== 'true';
+  const excludedPrefixes = ['/blocks'];
+  const entriesByPath = new Map(indexData
+    .filter((item) => item.path && String(item.hideInNav).toLowerCase() !== 'true')
+    .map((item) => {
+      const href = normalizeNavigationPath(item.path);
+      return [href, {
+        href,
+        title: formatNavigationTitle(item.title, href),
+        navOrder: Number(item.navOrder) || 99,
+      }];
     })
-    .map((item) => ({
-      href: normalizeNavigationPath(item.path),
-      title: formatNavigationTitle(item.title, normalizeNavigationPath(item.path)),
-      navOrder: Number(item.navOrder) || 99,
-    }))
-    .filter((item) => item.title)
-    .filter((item) => {
-      if (normalizedRoot === '/') return item.href !== '/';
-      return item.href === normalizedRoot || item.href.startsWith(`${normalizedRoot}/`);
-    });
+    .filter(([href]) => !excludedPaths.has(href)
+      && !excludedPrefixes.some((prefix) => href === prefix || href.startsWith(`${prefix}/`)))
+    .filter(([href]) => normalizedRoot === '/'
+      || href === normalizedRoot
+      || href.startsWith(`${normalizedRoot}/`)));
+  const treeNodes = new Map();
 
-  const getRelativeDepth = (path) => {
+  entriesByPath.forEach((entry) => {
     const relativePath = normalizedRoot === '/'
-      ? path
-      : path.slice(normalizedRoot.length);
-    return relativePath.split('/').filter(Boolean).length;
-  };
+      ? entry.href.slice(1)
+      : entry.href.slice(normalizedRoot.length).replace(/^\/+/, '');
+    const segments = relativePath.split('/').filter(Boolean).slice(0, maxDepth);
+    let parent = null;
 
-  const byOrder = (first, second) => first.navOrder - second.navOrder;
-  const makeNode = (entry, children = []) => ({
-    title: entry.title,
-    href: entry.href,
-    children,
+    segments.forEach((segment, index) => {
+      const href = `${normalizedRoot === '/' ? '' : normalizedRoot}/${segments.slice(0, index + 1).join('/')}` || '/';
+      const indexedPage = entriesByPath.get(href);
+      let node = treeNodes.get(href);
+      if (!node) {
+        node = {
+          href,
+          title: indexedPage?.title || formatNavigationTitle('', href),
+          navOrder: indexedPage?.navOrder ?? entry.navOrder,
+          children: [],
+          parentHref: parent?.href || null,
+        };
+        treeNodes.set(href, node);
+        if (parent) parent.children.push(node);
+      } else if (indexedPage) {
+        node.title = indexedPage.title;
+        node.navOrder = indexedPage.navOrder;
+      }
+      parent = node;
+    });
   });
 
-  return entries
-    .filter((entry) => getRelativeDepth(entry.href) === 1)
-    .sort(byOrder)
-    .map((l1) => {
-      const l2Items = maxDepth >= 2
-        ? entries
-          .filter((entry) => getRelativeDepth(entry.href) === 2
-            && entry.href.startsWith(`${l1.href}/`))
-          .sort(byOrder)
-        : [];
+  const sortTree = (nodes) => nodes
+    .sort((first, second) => first.navOrder - second.navOrder
+      || first.title.localeCompare(second.title))
+    .map((node) => ({
+      title: node.title,
+      href: node.href,
+      children: sortTree(node.children),
+    }));
 
-      const children = l2Items.map((l2) => {
-        const l3Items = maxDepth >= 3
-          ? entries
-            .filter((entry) => getRelativeDepth(entry.href) === 3
-              && entry.href.startsWith(`${l2.href}/`))
-            .sort(byOrder)
-            .map((l3) => makeNode(l3))
-          : [];
-        return makeNode(l2, l3Items);
-      });
-
-      return makeNode(l1, children);
-    });
+  const rootNodes = [...treeNodes.values()].filter((node) => !node.parentHref);
+  return sortTree(rootNodes);
 }
 
 async function fetchNavigationData(rootPath, depth = 3) {
@@ -436,9 +442,7 @@ async function fetchNavigationData(rootPath, depth = 3) {
 }
 
 async function renderNavigationMenu(menuButton, data) {
-  const rootPath = normalizeNavigationPath(data.canvasNavRootPath || data.canvasnavrootpath || '/');
-  const depth = toPositiveInt(data.canvasNavDepth || data.canvasnavdepth, 3);
-  const items = await fetchNavigationData(rootPath, depth);
+  const items = await fetchNavigationData('/', 3);
   const wrapper = menuButton.closest('.canvas-search');
   const toolbar = wrapper.querySelector('.canvas-search-toolbar');
   const panel = document.createElement('div');
