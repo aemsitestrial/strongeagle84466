@@ -27,7 +27,7 @@ function extractValue(cell) {
 function extractData(block) {
   const data = {};
   const parentRows = [...block.children]
-    .filter((row) => !row.classList.contains('cta'));
+    .filter((row) => !row.classList.contains('canvas-block-cta'));
 
   parentRows.forEach((row, index) => {
     const cells = [...row.children];
@@ -83,7 +83,7 @@ function getCtaLinkValue(ctaBlock, index) {
 }
 
 /**
- * Read CTA child blocks before Canvas clears its original markup.
+ * Read Canvas CTA child items before the block clears its original markup.
  *
  * CTA field positions:
  * 0: text_cta
@@ -320,7 +320,7 @@ export default async function decorate(block) {
   const data = extractData(block);
 
   const ctaBlocks = [
-    ...block.querySelectorAll(':scope > .cta'),
+    ...block.querySelectorAll(':scope > .canvas-block-cta'),
   ];
 
   const authoredOptions = extractCtaOptions(ctaBlocks);

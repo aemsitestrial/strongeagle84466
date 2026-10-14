@@ -57,7 +57,7 @@
   {
     "id": "canvas-block-ctas",
     "components": [
-      "cta"
+      "canvas-block-cta"
     ]
   },
   {
