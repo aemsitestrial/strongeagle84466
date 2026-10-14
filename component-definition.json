@@ -175,7 +175,7 @@
                 "template": {
                   "name": "Canvas Block",
                   "model": "canvas-block",
-                  "filter": "canvas-block-ctas"
+                  "filter": "canvas-block"
                 }
               }
             }

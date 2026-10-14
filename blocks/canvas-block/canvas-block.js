@@ -27,7 +27,10 @@ function extractValue(cell) {
 function extractData(block) {
   const data = {};
   const parentRows = [...block.children]
-    .filter((row) => !row.classList.contains('canvas-block-cta'));
+    .filter((row) => (
+      !row.classList.contains('canvas-block-cta')
+      && !row.classList.contains('cta')
+    ));
 
   parentRows.forEach((row, index) => {
     const cells = [...row.children];
@@ -319,9 +322,10 @@ export default async function decorate(block) {
    */
   const data = extractData(block);
 
-  const ctaBlocks = [
-    ...block.querySelectorAll(':scope > .canvas-block-cta'),
-  ];
+  const ctaBlocks = [...block.children].filter((row) => (
+    row.classList.contains('canvas-block-cta')
+    || row.classList.contains('cta')
+  ));
 
   const authoredOptions = extractCtaOptions(ctaBlocks);
 
