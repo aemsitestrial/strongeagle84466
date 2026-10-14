@@ -1,6 +1,7 @@
 .canvas-block {
     position: relative;
     width: 100%;
+    font-family: Inter, var(--body-font-family);
 }
 
 .canvas-block-stage {
@@ -13,6 +14,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 64px;
+    isolation: isolate;
     overflow: clip;
     padding: 160px 80px;
     border-radius: 20px;
@@ -29,6 +32,7 @@
     min-width: 0;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 40px;
     padding: 0 80px;
 }
@@ -39,9 +43,12 @@
     min-width: 0;
     margin: 0;
     color: #0c0c0d;
-    font-size: 40px;
+    font-family: inherit;
+    font-size: 96px;
+    font-style: normal;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 120%;
+    letter-spacing: -0.025em;
     text-align: center;
     overflow-wrap: anywhere;
 }
@@ -52,19 +59,27 @@
     min-width: 0;
     color: #0c0c0d;
     font-size: 18px;
+    font-style: normal;
     font-weight: 500;
-    line-height: 1.6;
+    line-height: 160%;
+    letter-spacing: -0.005em;
     text-align: center;
     overflow-wrap: anywhere;
 }
 
+.canvas-block-description > * {
+    margin: 0;
+}
+
+/* Reserved space for the floating search menu (Figma: 607 x 72) */
 .canvas-block-search-slot {
-    position: sticky;
+    position: relative;
     z-index: 3;
-    top: 16px;
     display: flex;
-    width: 100%;
-    max-width: 812px;
+    flex: none;
+    width: 607px;
+    max-width: 100%;
+    height: 72px;
     justify-content: center;
 }
 
@@ -77,32 +92,39 @@
     min-height: 118px;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 12px;
 }
 
 .canvas-block-options-row {
     display: flex;
     width: 100%;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .canvas-block-option-pill:any-link {
     box-sizing: border-box;
     display: flex;
     max-width: 100%;
-    min-height: 53px;
+    height: 53px;
+    flex: none;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     padding: 12px 32px;
-    border: 1px solid #d8d8d8;
-    border-radius: 999px;
+    border: 1px solid #e6e6e6;
+    border-radius: 9999px;
     background: #fff;
     color: #0c0c0d;
     font-size: 18px;
+    font-style: normal;
     font-weight: 500;
-    line-height: 1.6;
+    line-height: 160%;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
     text-decoration: none;
     transition: background-color 0.25s ease, border-color 0.25s ease;
 }
@@ -125,6 +147,7 @@
 }
 
 .canvas-block-glow-yellow {
+    z-index: 0;
     top: 679px;
     left: 6.46%;
     width: 451px;
@@ -135,8 +158,9 @@
 }
 
 .canvas-block-glow-blue {
+    z-index: 1;
     top: 679px;
-    right: 6.94%;
+    left: 55.69%;
     width: 538px;
     height: 384px;
     background: #4673db;
@@ -185,7 +209,7 @@
     }
 
     .canvas-block-title {
-        font-size: 32px;
+        font-size: 64px;
     }
 
     .canvas-block-description {
@@ -220,11 +244,17 @@
     }
 
     .canvas-block-title {
-        font-size: 28px;
+        font-size: 40px;
+    }
+
+    .canvas-block-search-slot {
+        width: 100%;
     }
 
     .canvas-block-option-pill:any-link {
+        height: auto;
         min-height: 48px;
+        white-space: normal;
         padding: 10px 20px;
         font-size: 16px;
     }
@@ -245,6 +275,7 @@
 
     .canvas-block-glow-blue {
         right: -20%;
+        left: auto;
     }
 }
 

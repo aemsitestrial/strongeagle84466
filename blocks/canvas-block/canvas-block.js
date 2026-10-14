@@ -10,9 +10,9 @@ const FIELD_ORDER = [
 // Block items render as plain rows after the parent field rows.
 function isCtaRow(row, index) {
   return row.classList.contains('canvas-block-cta')
-    || row.classList.contains('cta')
-    || row.dataset.aueModel === 'canvas-block-cta'
-    || index >= FIELD_ORDER.length;
+        || row.classList.contains('cta')
+        || row.dataset.aueModel === 'canvas-block-cta'
+        || index >= FIELD_ORDER.length;
 }
 
 function normalizeKey(value = '') {
@@ -27,8 +27,8 @@ function extractValue(cell) {
 
   if (link) {
     return link.getAttribute('href')
-      || link.href
-      || link.textContent.trim();
+            || link.href
+            || link.textContent.trim();
   }
 
   return cell?.textContent?.trim() || '';
@@ -87,9 +87,9 @@ function getCtaLinkValue(ctaBlock, index) {
   const link = field.querySelector('a[href]');
 
   return link?.getAttribute('href')
-    || link?.href
-    || field.textContent?.trim()
-    || '';
+        || link?.href
+        || field.textContent?.trim()
+        || '';
 }
 
 /**
@@ -111,11 +111,11 @@ function extractCtaOptions(ctaBlocks) {
             .querySelector('.cta-text')
             ?.textContent
             ?.trim()
-            || renderedLink.textContent?.trim()
-            || '',
+                        || renderedLink.textContent?.trim()
+                        || '',
           url: renderedLink.getAttribute('href')
-            || renderedLink.href
-            || '',
+                        || renderedLink.href
+                        || '',
           target: renderedLink.target === '_blank'
             ? '_blank'
             : '',
@@ -328,9 +328,9 @@ async function render(block, data, authoredOptions) {
 
 export default async function decorate(block) {
   /*
-   * Read the parent fields and CTA children before clearing
-   * the original authored markup.
-   */
+     * Read the parent fields and CTA children before clearing
+     * the original authored markup.
+     */
   const data = extractData(block);
 
   const ctaBlocks = [...block.children].filter(isCtaRow);

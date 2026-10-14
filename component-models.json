@@ -263,29 +263,6 @@
         "valueType": "string"
       },
       {
-        "component": "reference",
-        "name": "icon",
-        "label": "Icon",
-        "valueType": "string"
-      },
-      {
-        "component": "select",
-        "name": "iconPosition",
-        "label": "Icon Position",
-        "valueType": "string",
-        "value": "before",
-        "options": [
-          {
-            "name": "Before Text",
-            "value": "before"
-          },
-          {
-            "name": "After Text",
-            "value": "after"
-          }
-        ]
-      },
-      {
         "component": "select",
         "name": "linkTarget",
         "label": "CTA Link Type",
