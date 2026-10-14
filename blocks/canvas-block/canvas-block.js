@@ -1,9 +1,19 @@
+import { moveInstrumentation } from '../../scripts/scripts.js';
+
 const FIELD_ORDER = [
   'canvasTitle',
   'canvasDescription',
   'motionType',
   'maximumOptions',
 ];
+
+// Block items render as plain rows after the parent field rows.
+function isCtaRow(row, index) {
+  return row.classList.contains('canvas-block-cta')
+    || row.classList.contains('cta')
+    || row.dataset.aueModel === 'canvas-block-cta'
+    || index >= FIELD_ORDER.length;
+}
 
 function normalizeKey(value = '') {
   return String(value)
@@ -27,10 +37,7 @@ function extractValue(cell) {
 function extractData(block) {
   const data = {};
   const parentRows = [...block.children]
-    .filter((row) => (
-      !row.classList.contains('canvas-block-cta')
-      && !row.classList.contains('cta')
-    ));
+    .filter((row, index) => !isCtaRow(row, index));
 
   parentRows.forEach((row, index) => {
     const cells = [...row.children];
@@ -112,6 +119,7 @@ function extractCtaOptions(ctaBlocks) {
           target: renderedLink.target === '_blank'
             ? '_blank'
             : '',
+          source: ctaBlock,
         };
       }
 
@@ -129,6 +137,7 @@ function extractCtaOptions(ctaBlocks) {
         target: linkTarget === 'new-window'
           ? '_blank'
           : '',
+        source: ctaBlock,
       };
     })
     .filter((option) => option.label && option.url);
@@ -243,6 +252,8 @@ function renderOptionPills(optionsContainer, options) {
       link.rel = 'noopener noreferrer';
     }
 
+    if (item.source) moveInstrumentation(item.source, link);
+
     row.appendChild(link);
   });
 }
@@ -322,10 +333,7 @@ export default async function decorate(block) {
    */
   const data = extractData(block);
 
-  const ctaBlocks = [...block.children].filter((row) => (
-    row.classList.contains('canvas-block-cta')
-    || row.classList.contains('cta')
-  ));
+  const ctaBlocks = [...block.children].filter(isCtaRow);
 
   const authoredOptions = extractCtaOptions(ctaBlocks);
 
