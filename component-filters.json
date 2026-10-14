@@ -55,9 +55,9 @@
     ]
   },
   {
-    "id": "canvas-block-items",
+    "id": "canvas-block-ctas",
     "components": [
-      "canvas-block-item"
+      "cta"
     ]
   },
   {

@@ -25,16 +25,14 @@
       "valueType": "string",
       "name": "text_cta",
       "label": "CTA Title",
-      "value": "",
-      "required": true
+      "value": ""
     },
     {
       "component": "aem-content",
       "valueType": "string",
       "name": "ctaLink",
       "label": "CTA Link",
-      "value": "",
-      "required": true
+      "value": ""
     },
     {
       "component": "reference",
@@ -66,13 +64,38 @@
     {
       "component": "select",
       "valueType": "string",
+      "name": "linkTarget",
+      "label": "CTA Link Type",
+      "value": "default",
+      "options": [
+        {
+          "name": "Default",
+          "value": "default"
+        },
+        {
+          "name": "Open In New Window",
+          "value": "new-window"
+        }
+      ]
+    },
+    {
+      "component": "select",
+      "valueType": "string",
       "name": "iconSize",
       "label": "Icon Size",
       "value": "24",
       "options": [
         {
+          "name": "14 x 14",
+          "value": "14"
+        },
+        {
           "name": "16 x 16",
           "value": "16"
+        },
+        {
+          "name": "18 x 18",
+          "value": "18"
         },
         {
           "name": "20 x 20",
@@ -93,52 +116,6 @@
         {
           "name": "48 x 48",
           "value": "48"
-        }
-      ]
-    },
-    {
-      "component": "select",
-      "valueType": "string",
-      "name": "linkTarget",
-      "label": "CTA Link Type",
-      "value": "default",
-      "options": [
-        {
-          "name": "Default",
-          "value": "default"
-        },
-        {
-          "name": "Open In New Window",
-          "value": "new-window"
-        }
-      ]
-    },
-    {
-      "component": "select",
-      "valueType": "string",
-      "name": "ctaView",
-      "label": "CTA View",
-      "value": "default",
-      "options": [
-        {
-          "name": "Default",
-          "value": "default"
-        },
-        {
-          "name": "Primary",
-          "value": "primary"
-        },
-        {
-          "name": "Secondary",
-          "value": "secondary"
-        },
-        {
-          "name": "Tertiary",
-          "value": "tertiary"
-        },
-        {
-          "name": "White Filled",
-          "value": "white-filled"
         }
       ]
     },
@@ -191,6 +168,60 @@
     {
       "component": "select",
       "valueType": "string",
+      "name": "textColor",
+      "label": "Text Color",
+      "value": "",
+      "options": [
+        {
+          "name": "Variant Default",
+          "value": ""
+        },
+        {
+          "name": "Black",
+          "value": "#0C0C0D"
+        },
+        {
+          "name": "Dark Gray",
+          "value": "#303030"
+        },
+        {
+          "name": "Off White",
+          "value": "#F3F3F3"
+        },
+        {
+          "name": "White",
+          "value": "#FFFFFF"
+        }
+      ]
+    },
+    {
+      "component": "select",
+      "valueType": "string",
+      "name": "borderColor",
+      "label": "Border Color",
+      "value": "",
+      "options": [
+        {
+          "name": "Variant Default",
+          "value": ""
+        },
+        {
+          "name": "Light Gray",
+          "value": "#E6E6E6"
+        },
+        {
+          "name": "Black",
+          "value": "#0C0C0D"
+        },
+        {
+          "name": "White",
+          "value": "#FFFFFF"
+        }
+      ]
+    },
+    {
+      "component": "select",
+      "valueType": "string",
       "name": "hoverBackgroundColor",
       "label": "Hover Background Color",
       "value": "",
@@ -225,52 +256,7 @@
         }
       ]
     },
-    {
-      "component": "select",
-      "valueType": "string",
-      "name": "textColor",
-      "label": "Text Color",
-      "value": "",
-      "options": [
-        {
-          "name": "Variant Default",
-          "value": ""
-        },
-        {
-          "name": "Dark Gray",
-          "value": "#303030"
-        },
-        {
-          "name": "Off White",
-          "value": "#F3F3F3"
-        },
-        {
-          "name": "White",
-          "value": "#FFFFFF"
-        }
-      ]
-    },
-    {
-      "component": "select",
-      "valueType": "string",
-      "name": "borderColor",
-      "label": "Border Color",
-      "value": "",
-      "options": [
-        {
-          "name": "Variant Default",
-          "value": ""
-        },
-        {
-          "name": "Black",
-          "value": "#000000"
-        },
-        {
-          "name": "White",
-          "value": "#FFFFFF"
-        }
-      ]
-    },
+    
     {
       "component": "select",
       "valueType": "string",
@@ -285,27 +271,10 @@
         {
           "name": "2px",
           "value": "2"
-        }
-      ]
-    },
-    {
-      "component": "select",
-      "valueType": "string",
-      "name": "borderRadius",
-      "label": "Border Radius",
-      "value": "9999",
-      "options": [
+        },
         {
-          "name": "0px",
+          "name": "No Border",
           "value": "0"
-        },
-        {
-          "name": "6px",
-          "value": "6"
-        },
-        {
-          "name": "9999px (Pill)",
-          "value": "9999"
         }
       ]
     },
@@ -321,7 +290,7 @@
           "value": "0"
         },
         {
-          "name": "8px (Figma)",
+          "name": "8px",
           "value": "8"
         }
       ]
@@ -339,7 +308,7 @@
         },
         {
           "name": "Black",
-          "value": "#000000"
+          "value": "#0C0C0D"
         },
         {
           "name": "Dark Gray",
@@ -400,13 +369,42 @@
     {
       "component": "select",
       "valueType": "string",
-      "name": "arrowColor",
-      "label": "Arrow Color",
+      "name": "iconColor",
+      "label": "Icon Color",
       "value": "black",
       "options": [
         {
           "name": "Black",
           "value": "black"
+        },
+        {
+          "name": "Gray",
+          "value": "gray"
+        },
+        {
+          "name": "White",
+          "value": "white"
+        }
+      ]
+    },
+    {
+      "component": "select",
+      "valueType": "string",
+      "name": "hoverIconColor",
+      "label": "Hover Icon Color",
+      "value": "",
+      "options": [
+        {
+          "name": "Same as Icon Color",
+          "value": ""
+        },
+        {
+          "name": "Black",
+          "value": "black"
+        },
+        {
+          "name": "Gray",
+          "value": "gray"
         },
         {
           "name": "White",
@@ -451,57 +449,26 @@
     {
       "component": "select",
       "valueType": "string",
-      "name": "fontWeight",
-      "label": "Font Weight",
-      "value": "500",
-      "options": [
-        {
-          "name": "Regular (400)",
-          "value": "400"
-        },
-        {
-          "name": "Medium (500)",
-          "value": "500"
-        }
-      ]
-    },
-    {
-      "component": "select",
-      "valueType": "string",
       "name": "typographyStyle",
-      "label": "Typography Style",
-      "value": "500",
-      "options": [
-        {
-          "name": "Regular (400)",
-          "value": "400"
-        },
-        {
-          "name": "Medium (500)",
-          "value": "500"
-        }
-      ]
-    },
-    {
-      "component": "select",
-      "valueType": "string",
-      "name": "state",
-      "label": "State",
+      "label": "Text Size",
       "value": "default",
       "options": [
         {
-          "name": "Default",
+          "name": "Default (16px)",
           "value": "default"
         },
         {
-          "name": "Disabled",
-          "value": "disabled"
-        },
-        {
-          "name": "Loading",
-          "value": "loading"
+          "name": "Compact (14px)",
+          "value": "compact"
         }
       ]
+    },
+    {
+      "component": "boolean",
+      "valueType": "boolean",
+      "name": "bold",
+      "label": "Bold",
+      "value": false
     }
       ]
     }

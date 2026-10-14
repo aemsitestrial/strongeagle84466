@@ -5,24 +5,22 @@ const DEFAULTS = {
   iconPosition: 'before',
   iconSize: '24',
   linkTarget: 'default',
-  ctaView: 'default',
   shape: 'rectangle',
   backgroundColor: '',
   hoverBackgroundColor: '',
   textColor: '',
   borderColor: '',
   borderWidth: '1',
-  borderRadius: '9999',
   backdropBlur: '8',
   hoverTextColor: '',
   ctaWidth: 'auto',
   alignment: 'left',
-  arrowColor: 'black',
+  iconColor: 'black',
+  hoverIconColor: '',
   contentLayout: 'normal',
   buttonSize: 'default',
-  fontWeight: '500',
-  typographyStyle: '500',
-  state: 'default',
+  typographyStyle: 'default',
+  bold: false,
 };
 
 const ALLOWED_SHAPES = [
@@ -41,6 +39,13 @@ function getFieldValue(block, index, fallback = '') {
   return field.textContent.trim() || fallback;
 }
 
+function getLinkFieldValue(block, index, fallback = '') {
+  const field = block.children[index];
+  const link = field?.querySelector('a[href]');
+
+  return link?.getAttribute('href') || link?.href || field?.textContent.trim() || fallback;
+}
+
 function normalizeShape(value) {
   if (ALLOWED_SHAPES.includes(value)) {
     return value;
@@ -49,7 +54,21 @@ function normalizeShape(value) {
   return DEFAULTS.shape;
 }
 
-function createIcon(icon, size, arrowColor) {
+function normalizeTypographyStyle(value) {
+  if (value === 'default' || value === 'compact') {
+    return value;
+  }
+
+  return DEFAULTS.typographyStyle;
+}
+
+function normalizeIconSize(value) {
+  const allowedSizes = ['14', '16', '18', '20', '24', '32', '40', '48'];
+
+  return allowedSizes.includes(value) ? value : DEFAULTS.iconSize;
+}
+
+function createIcon(icon, size, iconColor, hoverIconColor) {
   if (!icon) {
     return null;
   }
@@ -58,8 +77,14 @@ function createIcon(icon, size, arrowColor) {
 
   image.classList.add(
     'cta-icon',
-    `cta-icon-${arrowColor}`,
+    `cta-icon-${iconColor}`,
   );
+
+  if (hoverIconColor) {
+    image.classList.add(
+      `cta-icon-hover-${hoverIconColor}`,
+    );
+  }
 
   image.style.width = `${size}px`;
   image.style.height = `${size}px`;
@@ -68,33 +93,62 @@ function createIcon(icon, size, arrowColor) {
 }
 
 function readBlockContent(block) {
+  const legacyView = [
+    'default',
+    'primary',
+    'secondary',
+    'tertiary',
+    'white-filled',
+  ].includes(getFieldValue(block, 6, ''));
+  const legacyOffset = legacyView ? 1 : 0;
+  const hasBorderRadiusField = block.children.length >= 24 + (legacyView ? 1 : 0);
+  const hasFontWeightField = block.children.length >= 23 + legacyOffset;
+  const radiusOffset = hasBorderRadiusField ? 1 : 0;
+  const fontWeightOffset = hasFontWeightField ? 1 : 0;
+  const fieldOffset = legacyOffset + radiusOffset;
+  const legacyState = [
+    'default',
+    'disabled',
+    'loading',
+  ].includes(getFieldValue(
+    block,
+    23 - (hasBorderRadiusField ? 0 : 1) - (hasFontWeightField ? 0 : 1),
+    '',
+  )) && legacyView;
+
   return {
     textcta: getFieldValue(block, 0, ''),
-    ctaLink: getFieldValue(block, 1, ''),
+    ctaLink: getLinkFieldValue(block, 1, ''),
     icon: block.children[2]?.querySelector('img'),
     iconPosition: getFieldValue(block, 3, 'before'),
-    iconSize: getFieldValue(block, 4, '24'),
-    linkTarget: getFieldValue(block, 5, 'default'),
-    ctaView: getFieldValue(block, 6, 'default'),
+    iconSize: normalizeIconSize(getFieldValue(block, 5, '24')),
+    linkTarget: getFieldValue(block, 4, 'default'),
     shape: normalizeShape(
-      getFieldValue(block, 7, 'rectangle'),
+      getFieldValue(block, 6 + legacyOffset, 'rectangle'),
     ),
-    backgroundColor: getFieldValue(block, 8, ''),
-    hoverBackgroundColor: getFieldValue(block, 9, ''),
-    textColor: getFieldValue(block, 10, ''),
-    borderColor: getFieldValue(block, 11, ''),
-    borderWidth: getFieldValue(block, 12, '1'),
-    borderRadius: getFieldValue(block, 13, '9999'),
-    backdropBlur: getFieldValue(block, 14, '8'),
-    hoverTextColor: getFieldValue(block, 15, ''),
-    ctaWidth: getFieldValue(block, 16, 'auto'),
-    alignment: getFieldValue(block, 17, 'left'),
-    arrowColor: getFieldValue(block, 18, 'black'),
-    contentLayout: getFieldValue(block, 19, 'normal'),
-    buttonSize: getFieldValue(block, 20, 'default'),
-    fontWeight: getFieldValue(block, 21, '500'),
-    typographyStyle: getFieldValue(block, 22, '500'),
-    state: getFieldValue(block, 23, 'default'),
+    backgroundColor: getFieldValue(block, 7 + legacyOffset, ''),
+    textColor: getFieldValue(block, 8 + legacyOffset, ''),
+    borderColor: getFieldValue(block, 9 + legacyOffset, ''),
+    hoverBackgroundColor: getFieldValue(block, 10 + legacyOffset, ''),
+    borderWidth: getFieldValue(block, 11 + legacyOffset, '1'),
+    backdropBlur: getFieldValue(block, 12 + fieldOffset, '8'),
+    hoverTextColor: getFieldValue(block, 13 + fieldOffset, ''),
+    ctaWidth: getFieldValue(block, 14 + fieldOffset, 'auto'),
+    alignment: getFieldValue(block, 15 + fieldOffset, 'left'),
+    iconColor: getFieldValue(block, 16 + fieldOffset, 'black'),
+    hoverIconColor: legacyView
+      ? ''
+      : getFieldValue(block, 17 + fieldOffset, ''),
+    contentLayout: getFieldValue(block, 18 + fieldOffset, 'normal'),
+    buttonSize: getFieldValue(block, 19 + fieldOffset, 'default'),
+    typographyStyle: normalizeTypographyStyle(
+      getFieldValue(block, 20 + fieldOffset + fontWeightOffset, 'default'),
+    ),
+    bold: getFieldValue(
+      block,
+      (legacyState ? 24 : 21) + fieldOffset + fontWeightOffset,
+      'false',
+    ) === 'true',
   };
 }
 
@@ -108,10 +162,8 @@ function createCta(data) {
   link.className = [
     'cta-link',
     `cta-link-${data.shape}`,
-    `cta-view-${data.ctaView}`,
     `cta-layout-${data.contentLayout}`,
     `cta-size-${data.buttonSize}`,
-    `cta-state-${data.state}`,
     `cta-typography-${data.typographyStyle}`,
   ].join(' ');
 
@@ -122,70 +174,38 @@ function createCta(data) {
     data.textcta,
   );
 
-  if (
-    data.state === 'disabled'
-    || data.state === 'loading'
-  ) {
-    link.setAttribute(
-      'aria-disabled',
-      'true',
-    );
-
-    link.tabIndex = -1;
-
-    link.addEventListener(
-      'click',
-      (event) => event.preventDefault(),
-    );
-  }
-
-  if (data.state === 'loading') {
-    link.setAttribute(
-      'aria-busy',
-      'true',
-    );
-  }
-
   if (data.linkTarget === 'new-window') {
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
   }
 
   if (data.backgroundColor) {
-    link.style.backgroundColor = data.backgroundColor;
+    link.style.setProperty('--cta-background-color', data.backgroundColor);
   }
 
   if (data.textColor) {
-    link.style.color = data.textColor;
+    link.style.setProperty('--cta-text-color', data.textColor);
   }
 
   if (data.borderColor) {
-    link.style.borderColor = data.borderColor;
+    link.style.setProperty('--cta-border-color', data.borderColor);
   }
 
   link.style.borderWidth = `${data.borderWidth}px`;
-
-  link.style.borderRadius = `${data.borderRadius}px`;
 
   link.style.backdropFilter = `blur(${data.backdropBlur}px)`;
 
   link.style.setProperty(
     '--cta-font-weight',
-    data.typographyStyle || data.fontWeight,
+    data.bold ? '700' : '500',
   );
 
   if (data.hoverBackgroundColor) {
-    link.style.setProperty(
-      '--cta-hover-bg',
-      data.hoverBackgroundColor,
-    );
+    link.style.setProperty('--cta-hover-bg', data.hoverBackgroundColor);
   }
 
   if (data.hoverTextColor) {
-    link.style.setProperty(
-      '--cta-hover-text',
-      data.hoverTextColor,
-    );
+    link.style.setProperty('--cta-hover-text', data.hoverTextColor);
   }
 
   if (
@@ -195,7 +215,8 @@ function createCta(data) {
     const icon = createIcon(
       data.icon,
       data.iconSize,
-      data.arrowColor,
+      data.iconColor,
+      data.hoverIconColor,
     );
 
     if (icon) {
@@ -217,7 +238,8 @@ function createCta(data) {
     const icon = createIcon(
       data.icon,
       data.iconSize,
-      data.arrowColor,
+      data.iconColor,
+      data.hoverIconColor,
     );
 
     if (icon) {

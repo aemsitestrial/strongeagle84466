@@ -16,100 +16,116 @@ function extractValue(cell) {
   const link = cell?.querySelector('a');
 
   if (link) {
-    return link.href || link.textContent.trim();
+    return link.getAttribute('href')
+      || link.href
+      || link.textContent.trim();
   }
 
-  return cell?.textContent.trim() || '';
+  return cell?.textContent?.trim() || '';
 }
 
 function extractData(block) {
   const data = {};
-  let fieldIndex = 0;
+  const parentRows = [...block.children]
+    .filter((row) => !row.classList.contains('cta'));
 
-  [...block.children].forEach((row) => {
-    if (row.classList.contains('canvas-block-item')) return;
-
+  parentRows.forEach((row, index) => {
     const cells = [...row.children];
 
     if (!cells.length) return;
 
     const key = normalizeKey(cells[0].textContent);
-
     const fieldName = FIELD_ORDER.find(
       (field) => normalizeKey(field) === key,
     );
 
     if (fieldName && cells.length > 1) {
-      data[fieldName] = extractValue(cells[1]);
+      const valueCell = cells[1];
+
+      data[fieldName] = fieldName === 'canvasDescription'
+        ? valueCell.innerHTML.trim()
+        : extractValue(valueCell);
+
       return;
     }
 
-    const fallbackField = FIELD_ORDER[fieldIndex];
-    fieldIndex += 1;
+    const fallbackField = FIELD_ORDER[index];
 
-    if (fallbackField) {
-      data[fallbackField] = extractValue(cells[0]);
-    }
+    if (!fallbackField) return;
+
+    data[fallbackField] = fallbackField === 'canvasDescription'
+      ? cells[0].innerHTML.trim()
+      : extractValue(cells[0]);
   });
 
   return data;
 }
 
-function extractOptions(optionRows) {
-  return optionRows
-    .map((option) => {
-      const fields = {};
+function getCtaFieldValue(ctaBlock, index, fallback = '') {
+  const field = ctaBlock.children[index];
 
-      [...option.children].forEach((row) => {
-        const cells = [...row.children];
+  if (!field) return fallback;
 
-        if (cells.length < 2) return;
+  return field.textContent?.trim() || fallback;
+}
 
-        const key = normalizeKey(cells[0].textContent);
+function getCtaLinkValue(ctaBlock, index) {
+  const field = ctaBlock.children[index];
 
-        if (['optionlabel', 'label', 'title'].includes(key)) {
-          fields.label = cells[1].textContent.trim();
-        }
+  if (!field) return '';
 
-        if (['optionlink', 'link', 'url', 'href'].includes(key)) {
-          fields.url = extractValue(cells[1]);
-        }
-      });
+  const link = field.querySelector('a[href]');
 
-      /*
-       * Positional fallback for markup where the child fields are
-       * rendered directly without field-name cells.
-       */
-      if (!fields.label || !fields.url) {
-        const cells = [...option.children];
+  return link?.getAttribute('href')
+    || link?.href
+    || field.textContent?.trim()
+    || '';
+}
 
-        if (!fields.label && cells[0]) {
-          fields.label = cells[0].textContent.trim();
-        }
+/**
+ * Read CTA child blocks before Canvas clears its original markup.
+ *
+ * CTA field positions:
+ * 0: text_cta
+ * 1: ctaLink
+ * 4: linkTarget
+ */
+function extractCtaOptions(ctaBlocks) {
+  return ctaBlocks
+    .map((ctaBlock) => {
+      const renderedLink = ctaBlock.querySelector('.cta-link, a[href]');
 
-        if (!fields.url && cells[1]) {
-          fields.url = extractValue(cells[1]);
-        }
+      if (renderedLink && ctaBlock.children.length === 1) {
+        return {
+          label: renderedLink
+            .querySelector('.cta-text')
+            ?.textContent
+            ?.trim()
+            || renderedLink.textContent?.trim()
+            || '',
+          url: renderedLink.getAttribute('href')
+            || renderedLink.href
+            || '',
+          target: renderedLink.target === '_blank'
+            ? '_blank'
+            : '',
+        };
       }
 
-      /*
-       * Final fallback if the authored option contains an anchor.
-       */
-      const authoredLink = option.querySelector('a');
-
-      if (authoredLink) {
-        if (!fields.label) {
-          fields.label = authoredLink.textContent.trim();
-        }
-
-        if (!fields.url) {
-          fields.url = authoredLink.href;
-        }
-      }
+      const label = getCtaFieldValue(ctaBlock, 0);
+      const url = getCtaLinkValue(ctaBlock, 1);
+      const linkTarget = getCtaFieldValue(
+        ctaBlock,
+        4,
+        'default',
+      );
 
       return {
-        label: fields.label?.trim() || '',
-        url: fields.url?.trim() || '',
+        label,
+        url,
+        target: linkTarget === 'new-window'
+          ? '_blank'
+          : '',
       };
     })
     .filter((option) => option.label && option.url);
@@ -136,7 +152,9 @@ function positiveInteger(value, fallback) {
 
 async function fetchDefaultOptions(maximumOptions) {
   try {
-    const response = await fetch('/blocks/canvas-block/dummy.json');
+    const response = await fetch(
+      '/blocks/canvas-block/dummy.json',
+    );
 
     if (!response.ok) {
       return [];
@@ -153,6 +171,7 @@ async function fetchDefaultOptions(maximumOptions) {
       .map((option) => ({
         label: String(option.label).trim(),
         url: String(option.url).trim(),
+        target: '',
       }))
       .slice(0, maximumOptions);
   } catch {
@@ -161,19 +180,22 @@ async function fetchDefaultOptions(maximumOptions) {
 }
 
 /**
- * Authored-first automatic fallback:
+ * Authored-first behavior:
  *
- * 1. If valid child options exist, return them.
- * 2. dummy.json is not fetched in that case.
- * 3. If no valid child options exist, load the default options.
+ * Valid CTA children exist:
+ * → Return authored CTA data.
+ * → Do not request dummy.json.
+ *
+ * No valid CTA children:
+ * → Fetch default pills from dummy.json.
  */
-async function resolveOptions(authoredItems, maximumOptions) {
-  const validAuthoredItems = authoredItems
+async function resolveOptions(authoredOptions, maximumOptions) {
+  const validAuthoredOptions = authoredOptions
     .filter((option) => option.label && option.url)
     .slice(0, maximumOptions);
 
-  if (validAuthoredItems.length > 0) {
-    return validAuthoredItems;
+  if (validAuthoredOptions.length > 0) {
+    return validAuthoredOptions;
   }
 
   return fetchDefaultOptions(maximumOptions);
@@ -183,23 +205,21 @@ function attachMotion(block) {
   if (block.dataset.motionType === 'none') return;
 
   const observer = new IntersectionObserver((entries) => {
-    if (entries.some((entry) => entry.isIntersecting)) {
-      block.classList.add('is-motion-visible');
-      observer.disconnect();
-    }
+    const isVisible = entries.some(
+      (entry) => entry.isIntersecting,
+    );
+
+    if (!isVisible) return;
+
+    block.classList.add('is-motion-visible');
+    observer.disconnect();
   });
 
   observer.observe(block);
 }
 
-function renderOptionPills(optionsContainer, configuredOptions) {
-  configuredOptions.forEach((item, index) => {
-    const link = document.createElement('a');
-
-    link.className = 'canvas-block-option-pill';
-    link.href = item.url;
-    link.textContent = item.label;
-
+function renderOptionPills(optionsContainer, options) {
+  options.forEach((item, index) => {
     const rowIndex = Math.floor(index / 3);
     let row = optionsContainer.children[rowIndex];
 
@@ -209,11 +229,22 @@ function renderOptionPills(optionsContainer, configuredOptions) {
       optionsContainer.appendChild(row);
     }
 
+    const link = document.createElement('a');
+
+    link.className = 'canvas-block-option-pill';
+    link.href = item.url;
+    link.textContent = item.label;
+
+    if (item.target === '_blank') {
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    }
+
     row.appendChild(link);
   });
 }
 
-async function render(block, data, authoredItems) {
+async function render(block, data, authoredOptions) {
   const section = document.createElement('section');
   section.className = 'canvas-block-stage';
 
@@ -236,15 +267,19 @@ async function render(block, data, authoredItems) {
 
   if (data.canvasTitle) {
     const title = document.createElement('h2');
+
     title.className = 'canvas-block-title';
     title.textContent = data.canvasTitle;
+
     content.appendChild(title);
   }
 
   if (data.canvasDescription) {
     const description = document.createElement('div');
+
     description.className = 'canvas-block-description';
     description.innerHTML = data.canvasDescription;
+
     content.appendChild(description);
   }
 
@@ -260,14 +295,15 @@ async function render(block, data, authoredItems) {
     positiveInteger(data.maximumOptions, 5),
   );
 
-  const authoredOptionData = extractOptions(authoredItems);
-
   const configuredOptions = await resolveOptions(
-    authoredOptionData,
+    authoredOptions,
     maximumOptions,
   );
 
-  renderOptionPills(optionsContainer, configuredOptions);
+  renderOptionPills(
+    optionsContainer,
+    configuredOptions,
+  );
 
   content.appendChild(optionsContainer);
   section.appendChild(content);
@@ -277,18 +313,28 @@ async function render(block, data, authoredItems) {
 }
 
 export default async function decorate(block) {
+  /*
+   * Read the parent fields and CTA children before clearing
+   * the original authored markup.
+   */
   const data = extractData(block);
 
-  /*
-   * Collect the child items before clearing the original block markup.
-   */
-  const optionRows = [
-    ...block.querySelectorAll('.canvas-block-item'),
+  const ctaBlocks = [
+    ...block.querySelectorAll(':scope > .cta'),
   ];
 
-  block.innerHTML = '';
-  block.classList.add('canvas-block');
-  block.dataset.motionType = normalizeMotionType(data.motionType);
+  const authoredOptions = extractCtaOptions(ctaBlocks);
 
-  await render(block, data, optionRows);
+  block.replaceChildren();
+  block.classList.add('canvas-block');
+
+  block.dataset.motionType = normalizeMotionType(
+    data.motionType,
+  );
+
+  await render(
+    block,
+    data,
+    authoredOptions,
+  );
 }
